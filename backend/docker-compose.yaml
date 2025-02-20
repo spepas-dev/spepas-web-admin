@@ -1,0 +1,145 @@
+# docker compose up -d spdbservice spotpservices spauthservices sporderservices productservices userservices gatewayservice 
+services:
+  gatewayservice:
+    container_name: gateway_service_container
+    image: jboadi/spepas-gateway:stable
+    restart: always
+    environment:
+      - ENABLE_APM=0
+      - GATEWAY_JWT_TOKEN=dfssdfkjbsfkbvnskjfbndksknksfvf
+      - GATEWAY_KEY=jdafdsvjkbnkadfnjkwefnjkwjfew
+      - JWT_TOKEN=e080d15c8dbad0c7644a401f747a9597
+      - NODE_ENV=development
+      - SECRET_KEY_ONE=013bfec1c5198b5a819c25f4a95ed46f
+      - SECRET_KEY_TWO=81374e5d58b9237d2d7547c5f4e74297
+      - CLIENT_URL=http://localhost:3000
+      - API_DOCS_URL=http://localhost:4000
+      - AUTH_BASE_URL=http://spauth_container:9007
+      - USER_BASE_URL=http://localhost:9009
+      - PRODUCT_BASE_URL=http://localhost:9010
+      - ORDER_BASE_URL=http://localhost:9011
+      - DATABASE_BASE_URL=http://spdb_container:9006
+      - OTP_BASE_URL=http://spot_container:9008
+      - REDIS_HOST=rediss://red-ct4332a3esus73fc9psg:eRFLu6utqE91ZJswST5vy9GEoSpX5CuN@frankfurt-redis.render.com:6379
+    ports:
+      - '4000:4000'
+  
+  spdbservice:
+    container_name: spdb_container
+    image: matkofbass/spdbservice:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - NODE_ENV=development
+      - PORT=9006
+      - ServiceName=ApplicationManager
+      - DATABASE_NAME=ApplicationManager
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=Temp123$
+      - DATABASE_PORT=5432
+      - DB_HOST=localhost
+      - ACCESS_TOKEN_SECRET=c276921190be471cc382c700c37e01018a3d038d615d1d038865f0e1a86c43f82103f7a4c9e54b992df0a27813ebcce7
+      - INVITE_TOKEN_SECRET=279b5609891f7f94f02ecad586eaa6619a721e0e13b87ddbc557d7398e05c361dabb4ee8f53c1591c7a5cc3da4f14033
+      - JWT_SECRET=279b5609891f7f94f02ecad586eaa6619a721e0e13b87ddbc557d7398e05c361dabb4ee8f53c1591c7a5cc3da4f14033
+    ports:
+      - '9006:9006'
+      
+  spotpservices:
+    container_name: spot_container
+    image: matkofbass/spotpservices:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - GATEWAY_JWT_TOKEN=dfssdfkjbsfkbvnskjfbndksknksfvf
+      - GATEWAY_KEY=jdafdsvjkbnkadfnjkwefnjkwjfew
+      - NODE_ENV=development
+      - PORT=9008
+      - DB_BASE_URL=http://spdb_container:9006/spdatbaseservice/api/v1/
+      - AES_KEY=64f65a9324688d77e67be2b9454d7f248f98b58e233d34f6a7ef2a7c89656723
+      - AES_IV=6b8f1df2ddcbe7f9ff7a9b9f1e3ddc21
+    ports:
+      - '9008:9008'
+    depends_on:
+      - spdbservice
+
+  spauthservices:
+    container_name: spauth_container
+    image: matkofbass/spauthservices:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - CLOUD_NAME=dgzcyuxzq
+      - CLOUD_KEY=937226686724155
+      - CLOUD_SECRET=-NLFTFI1h6-S60F5pLu_upadKn0
+      - NODE_ENV=development
+      - GATEWAY_JWT_TOKEN=dfssdfkjbsfkbvnskjfbndksknksfvf
+      - GATEWAY_KEY=jdafdsvjkbnkadfnjkwefnjkwjfew
+      - PORT=9007
+      - DB_HOST=localhost
+      - DB_BASE_URL=http://spdb_container:9006/spdatbaseservice/api/v1/
+      - OTP_SERVICES_URL=http://spot_container:9008/spotpservices/api/v1/
+      - JWT_TOKEN=e080d15c8dbad0c7644a401f747a9597
+      - JWT_TOKEN_REFRESH=e080d15c8dbad0c7644a401f747a9597
+    ports:
+      - '9007:9007'
+    depends_on:
+      - spdbservice
+      - spotpservices
+  
+  sporderservices:
+    container_name: sporder_container
+    image: matkofbass/sporderservices:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - NODE_ENV=development
+      - PORT=9011
+      - DB_HOST=localhost
+      - DB_BASE_URL=http://spdb_container:9006/spdatbaseservice/api/v1/
+      - OTP_SERVICES_URL=http://spot_container:9008/spotpservices/api/v1/
+      - JWT_TOKEN=e080d15c8dbad0c7644a401f747a9597
+      - JWT_TOKEN_REFRESH=e080d15c8dbad0c7644a401f747a9597
+      - CLOUD_NAME=dgzcyuxzq
+      - CLOUD_KEY=937226686724155
+      - CLOUD_SECRET=-NLFTFI1h6-S60F5pLu_upadKn0
+    ports:
+      - '9011:9011'
+    depends_on:
+      - spdbservice
+      - spotpservices
+  
+  productservices:
+    container_name: product_container
+    image: matkofbass/productservices:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - NODE_ENV=development
+      - PORT=9010
+      - DB_HOST=localhost
+      - DB_BASE_URL=http://spdb_container:9006/spdatbaseservice/api/v1/
+      - OTP_SERVICES_URL=http://spot_container:9008/spotpservices/api/v1/
+      - JWT_TOKEN=e080d15c8dbad0c7644a401f747a9597
+      - JWT_TOKEN_REFRESH=e080d15c8dbad0c7644a401f747a9597
+      - CLOUD_NAME=dgzcyuxzq
+      - CLOUD_KEY=937226686724155
+      - CLOUD_SECRET=-NLFTFI1h6-S60F5pLu_upadKn0
+    ports:
+      - '9010:9010'
+    depends_on:
+      - spdbservice
+      - spotpservices
+  
+  userservices:
+    container_name: user_container
+    image: matkofbass/userservices:stable
+    environment:
+      - DATABASE_URL=postgresql://spepasdb_owner:aivI8TsYcu7K@ep-hidden-leaf-a231vqsn-pooler.eu-central-1.aws.neon.tech/spepasdb?sslmode=require
+      - NODE_ENV=development
+      - PORT=9009
+      - DB_HOST=localhost
+      - DB_BASE_URL=http://spdb_container:9006/spdatbaseservice/api/v1/
+      - OTP_SERVICES_URL=http://spot_container:9008/spotpservices/api/v1/
+      - JWT_TOKEN=e080d15c8dbad0c7644a401f747a9597
+      - JWT_TOKEN_REFRESH=e080d15c8dbad0c7644a401f747a9597
+    ports:
+      - '9009:9009'
+    depends_on:
+      - spdbservice
+      - spotpservices
+      
