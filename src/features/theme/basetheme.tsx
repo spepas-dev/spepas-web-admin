@@ -7,60 +7,284 @@ import {
   Car, 
   Wrench, 
   GlassWater, 
-  Battery 
+  Battery,
+  LucideIcon
 } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 
-const AutoPartsApp = () => {
+import Logo from '@/assets/logo.svg';
+
+interface MenuItem {
+    id: string;
+    name: string;
+    icon?: LucideIcon;
+    path?: string;
+    children?: MenuItem[];
+    count?: number;
+    permissions?: string;
+}
+
+interface MenuGroup {
+    id: string;
+    title: string;
+    items: MenuItem[];
+}
+
+const BaseTheme = () => {
   const [activeTab, setActiveTab] = useState('parts');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [openCategories, setOpenCategories] = useState({});
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
 
-  const sidebarCategories = [
-    { 
-      name: 'Vehicles', 
-      icon: Car,
-      subcategories: [
-        { name: 'Sedans', count: 124 },
-        { name: 'SUVs', count: 87 },
-        { name: 'Trucks', count: 56 }
+  const toggleCategory = (categoryId: string) => {
+    setOpenCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  const renderMenuItem = (item: MenuItem, level = 0) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isOpen = openCategories[item.id];
+    const paddingLeft = `${(level + 1) * 1}rem`;
+
+    return (
+      <div key={item.id}>
+        <NavLink
+          to={item.path || '#'}
+          className={({ isActive }) => `
+            flex items-center 
+            p-4 
+            cursor-pointer
+            transition-colors
+            ${isSidebarOpen ? 'justify-between' : 'justify-center'}
+            ${level > 0 ? 'bg-opacity-50' : ''}
+            ${isActive 
+              ? 'bg-sidebar-primary text-sidebar-primary-foreground' 
+              : 'hover:bg-sidebar-accent text-sidebar-foreground'
+            }
+          `}
+          style={{ paddingLeft }}
+          onClick={(e) => {
+            if (hasChildren) {
+              e.preventDefault();
+              toggleCategory(item.id);
+            }
+          }}
+        >
+          <div className="flex items-center">
+            {item.icon && (
+              <item.icon 
+                className={`
+                  ${isSidebarOpen ? 'mr-4' : ''} 
+                  ${item.path ? 'text-current' : ''}
+                `} 
+                size={20} 
+              />
+            )}
+            {isSidebarOpen && (
+              <div className="flex items-center justify-between flex-1">
+                <span className="truncate">{item.name}</span>
+                {item.count !== undefined && (
+                  <span className="text-sm opacity-75 ml-2">({item.count})</span>
+                )}
+                {item.permissions && (
+                  <span className="ml-2 text-xs px-2 py-0.5 rounded-full bg-sidebar-accent">
+                    {item.permissions}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+          {isSidebarOpen && hasChildren && (
+            <ChevronDown 
+              className={`
+                transform transition-transform 
+                ${isOpen ? 'rotate-180' : ''}
+              `} 
+              size={16} 
+            />
+          )}
+        </NavLink>
+
+        {isSidebarOpen && isOpen && hasChildren && (
+          <div 
+            className="bg-sidebar-accent bg-opacity-50"
+            style={{ paddingLeft: `${level * 0.5}rem` }}
+          >
+            {item.children.map((child) => renderMenuItem(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const menuGroups: MenuGroup[] = [
+    {
+      id: 'vehicles',
+      title: 'Vehicle Categories',
+      items: [
+        {
+          id: 'passenger',
+          name: 'Passenger Vehicles',
+          icon: Car,
+          path: '/vehicles/passenger',
+          children: [
+            {
+              id: 'sedans',
+              name: 'Sedans',
+              path: '/vehicles/passenger/sedans',
+              count: 124,
+              children: [
+                { 
+                  id: 'compact', 
+                  name: 'Compact Sedans', 
+                  path: '/vehicles/passenger/sedans/compact',
+                  count: 45, 
+                  
+                },
+                { 
+                  id: 'midsize', 
+                  name: 'Midsize Sedans', 
+                  path: '/vehicles/passenger/sedans/midsize',
+                  count: 42 
+                },
+                { 
+                  id: 'luxury', 
+                  name: 'Luxury Sedans', 
+                  path: '/vehicles/passenger/sedans/luxury',
+                  count: 37,
+                  permissions: 'premium',
+                  children: [
+                    {
+                      id: 'sedan',
+                      name: 'Sedan',
+                      path: '/vehicles/passenger/sedans/luxury/sedan',
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              id: 'suvs',
+              name: 'SUVs',
+              path: '/vehicles/passenger/suvs',
+              count: 87,
+              children: [
+                { 
+                  id: 'compact-suv', 
+                  name: 'Compact SUVs', 
+                  path: '/vehicles/passenger/suvs/compact',
+                  count: 28 
+                },
+                { 
+                  id: 'midsize-suv', 
+                  name: 'Midsize SUVs', 
+                  path: '/vehicles/passenger/suvs/midsize',
+                  count: 34 
+                },
+                { 
+                  id: 'full-suv', 
+                  name: 'Full-size SUVs', 
+                  path: '/vehicles/passenger/suvs/full',
+                  count: 25,
+                  permissions: 'premium' 
+                }
+              ]
+            }
+          ]
+        }
       ]
     },
-    { 
-      name: 'Engine Parts', 
-      icon: Wrench,
-      subcategories: [
-        { name: 'Filters', count: 45 },
-        { name: 'Belts', count: 32 },
-        { name: 'Gaskets', count: 28 }
-      ]
-    },
-    { 
-      name: 'Fluids', 
-      icon: GlassWater,
-      subcategories: [
-        { name: 'Motor Oil', count: 67 },
-        { name: 'Transmission Fluid', count: 22 },
-        { name: 'Coolant', count: 18 }
-      ]
-    },
-    { 
-      name: 'Electrical', 
-      icon: Battery,
-      subcategories: [
-        { name: 'Batteries', count: 54 },
-        { name: 'Alternators', count: 29 },
-        { name: 'Starters', count: 37 }
+    {
+      id: 'parts',
+      title: 'Parts & Components',
+      items: [
+        {
+          id: 'engine',
+          name: 'Engine Components',
+          icon: Wrench,
+          path: '/parts/engine',
+          children: [
+            {
+              id: 'filters',
+              name: 'Filters',
+              path: '/parts/engine/filters',
+              count: 45,
+              children: [
+                { 
+                  id: 'air-filters', 
+                  name: 'Air Filters', 
+                  path: '/parts/engine/filters/air',
+                  count: 18 
+                },
+                { 
+                  id: 'oil-filters', 
+                  name: 'Oil Filters', 
+                  path: '/parts/engine/filters/oil',
+                  count: 15 
+                },
+                { 
+                  id: 'fuel-filters', 
+                  name: 'Fuel Filters', 
+                  path: '/parts/engine/filters/fuel',
+                  count: 12,
+                  permissions: 'dealer' 
+                }
+              ]
+            },
+            {
+              id: 'fluids',
+              name: 'Fluids & Chemicals',
+              icon: GlassWater,
+              path: '/parts/fluids',
+              children: [
+                { 
+                  id: 'oils', 
+                  name: 'Motor Oils', 
+                  path: '/parts/fluids/oils',
+                  count: 67 
+                },
+                { 
+                  id: 'transmission', 
+                  name: 'Transmission Fluid', 
+                  path: '/parts/fluids/transmission',
+                  count: 22 
+                },
+                { 
+                  id: 'coolant', 
+                  name: 'Coolant', 
+                  path: '/parts/fluids/coolant',
+                  count: 18 
+                }
+              ]
+            },
+            {
+              id: 'electrical',
+              name: 'Electrical Systems',
+              icon: Battery,
+              path: '/parts/electrical',
+              children: [
+                { 
+                  id: 'batteries', 
+                  name: 'Batteries & Power', 
+                  path: '/parts/electrical/batteries',
+                  count: 54 
+                },
+                { 
+                  id: 'alternators', 
+                  name: 'Alternators', 
+                  path: '/parts/electrical/alternators',
+                  count: 29,
+                  permissions: 'dealer' 
+                }
+              ]
+            }
+          ]
+        }
       ]
     }
   ];
-
-  const toggleCategory = (categoryName) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [categoryName]: !prev[categoryName]
-    }));
-  };
 
   const products = [
     { id: 1, name: 'Brake Pads', price: 49.99, category: 'brakes' },
@@ -83,6 +307,7 @@ const AutoPartsApp = () => {
           ease-in-out
         `}
       >
+        
         <div className="sticky top-0 bg-[#4A36EC] z-10">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -91,53 +316,19 @@ const AutoPartsApp = () => {
             <ChevronRight className={`mx-auto ${isSidebarOpen ? 'rotate-180' : ''}`} />
           </button>
         </div>
-
+        <div className='flex items-center justify-center'>
+          <img src={Logo} alt="Logo" className='w-10 h-10' />
+          <h2 className='text-2xl font-bold'>Spepas</h2>
+        </div>
         <nav className="mt-4">
-          {sidebarCategories.map((category) => (
-            <div key={category.name}>
-              <div 
-                onClick={() => toggleCategory(category.name)}
-                className={`
-                  flex items-center 
-                  p-4 
-                  hover:bg-[#F5B127] 
-                  cursor-pointer
-                  ${isSidebarOpen ? 'justify-between' : 'justify-center'}
-                `}
-              >
-                <div className="flex items-center">
-                  <category.icon className={isSidebarOpen ? 'mr-4' : ''} />
-                  {isSidebarOpen && <span>{category.name}</span>}
-                </div>
-                {isSidebarOpen && (
-                  <ChevronDown 
-                    className={`
-                      transform transition-transform 
-                      ${openCategories[category.name] ? 'rotate-180' : ''}
-                    `} 
-                    size={20} 
-                  />
-                )}
-              </div>
-
-              {isSidebarOpen && openCategories[category.name] && (
-                <div className="pl-4 bg-[#4336D3]">
-                  {category.subcategories.map((sub) => (
-                    <div 
-                      key={sub.name} 
-                      className="
-                        flex justify-between 
-                        p-2 
-                        hover:bg-[#F5B127] 
-                        cursor-pointer
-                      "
-                    >
-                      <span>{sub.name}</span>
-                      <span className="text-sm opacity-75">({sub.count})</span>
-                    </div>
-                  ))}
+          {menuGroups.map((group) => (
+            <div key={group.id}>
+              {isSidebarOpen && (
+                <div className="px-4 py-2 text-sm font-semibold text-gray-300 uppercase">
+                  {group.title}
                 </div>
               )}
+              {group.items.map((item) => renderMenuItem(item))}
             </div>
           ))}
         </nav>
@@ -194,4 +385,4 @@ const AutoPartsApp = () => {
   );
 };
 
-export default AutoPartsApp;
+export default BaseTheme;
