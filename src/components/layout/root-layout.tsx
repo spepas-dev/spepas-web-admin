@@ -1,4 +1,3 @@
-import ThemeTabs from "./theme-tab";
 import Sidebar from "./sidebar";
 import Navbar from "./navbar";
 import { Outlet } from "react-router-dom";
