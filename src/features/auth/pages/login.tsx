@@ -16,7 +16,7 @@ export default function LoginPage() {
     console.log(values)
     try {
       await login(values.email, values.password);
-      navigate(location.state?.from || '/');
+      navigate(location.state?.from || '/welcome');
     } catch (error) {
       console.error('Login failed:', error);
     }

@@ -12,7 +12,8 @@ interface AuthResponse {
 
 export class AuthService {
     static async login(email: string, password: string) {
-        return ApiService.post<AuthResponse>('/auth/signin', { email, password })
+        
+        return ApiService.post<AuthResponse>('auth/signin', { email, password })
     }
 
     static async logout() {

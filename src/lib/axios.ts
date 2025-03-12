@@ -4,8 +4,7 @@ import axios from 'axios'
 import {ENV_CONFIG} from '@/config'
 
 export const axiosInstance = axios.create({
-    // baseURL: ENV_CONFIG.API_BASE_URL,
-    baseURL:  'api',
+    baseURL: '/api',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
