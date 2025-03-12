@@ -5,12 +5,9 @@ import { Plus, ChevronRight, Building2, Factory, Car, Tags } from "lucide-react"
 import { BrandDialog } from "./brandDialog"
 import { BrandTable } from "./brandTable"
 import { Card, CardContent } from "@/components/ui/card"
+import { Brand } from "../../types"
 
-export interface Brand {
-  name: string
-  manufacturer_ID: string
-  type: 'CAR' | 'TRUCK' | 'MOTORCYCLE'
-}
+
 
 export default function BrandsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)

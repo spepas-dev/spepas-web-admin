@@ -5,11 +5,9 @@ import { Plus, ChevronRight, Factory, Globe, Car, Settings } from "lucide-react"
 import { ManufacturerDialog } from "./manufacturerDialog"
 import { ManufacturerTable } from "./manufacturerTable"
 import { Card, CardContent } from "@/components/ui/card"
+import { Manufacturer } from "../../types"
 
-export interface Manufacturer {
-  name: string
-  country: string
-}
+
 
 export default function ManufacturersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)

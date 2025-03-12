@@ -4,10 +4,10 @@ import { ROUTE_PATHS } from "@/config/routes.config";
 
 
 
-const ManufacturersPage = lazy(() => import("@/features/inventoryManagement/manufacturers"));
-const BrandsPage = lazy(() => import("@/features/inventoryManagement/brands"))
-const ModelsPage = lazy(() => import("@/features/inventoryManagement/models"))
-const SparePartsPage = lazy(() => import("@/features/inventoryManagement/spareparts"))
+const ManufacturersPage = lazy(() => import("@/features/inventoryManagement/components/manufacturers"));
+const BrandsPage = lazy(() => import("@/features/inventoryManagement/components/brands"))
+const ModelsPage = lazy(() => import("@/features/inventoryManagement/components/models"))
+const SparePartsPage = lazy(() => import("@/features/inventoryManagement/components/spareparts"))
 
 
 export const inventoryManagementRoutes: RouteObject[] = [

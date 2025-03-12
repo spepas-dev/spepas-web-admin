@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { SparePart } from "./index"
+import { SparePart } from "../../types"
 
 interface SparePartTableProps {
   spareParts: SparePart[]

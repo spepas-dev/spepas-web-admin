@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2 } from "lucide-react"
-import { SparePart } from "./index"
+import { SparePart } from "../../types"
 
 const sparePartSchema = z.object({
   name: z.string().min(1, "Part name is required"),

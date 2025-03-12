@@ -13,10 +13,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (values: LoginFormValues) => {
     // Handle login logic here
-    console.log(values)
     try {
       await login(values.email, values.password);
-      navigate(location.state?.from || '/welcome');
+      // navigate(location.state?.from || '/');
+      navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
     }

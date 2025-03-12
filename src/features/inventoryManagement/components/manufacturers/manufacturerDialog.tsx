@@ -17,52 +17,42 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Plus, Trash2 } from "lucide-react"
-import { Brand } from "."
+import { Manufacturer } from "../../types"
 
-const brandSchema = z.object({
-  name: z.string().min(1, "Brand name is required"),
-  manufacturer_ID: z.string().uuid("Invalid manufacturer ID"),
-  type: z.enum(["CAR", "TRUCK", "MOTORCYCLE"], {
-    required_error: "Brand type is required",
-  }),
+const manufacturerSchema = z.object({
+  name: z.string().min(1, "Manufacturer name is required"),
+  country: z.string().min(1, "Country is required"),
 })
 
 const formSchema = z.object({
-  brands: z.array(brandSchema).min(1, "Add at least one brand"),
+  manufacturers: z.array(manufacturerSchema).min(1, "Add at least one manufacturer"),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
-interface BrandDialogProps {
+interface ManufacturerDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSubmit: (brands: Brand[]) => void
+  onSubmit: (manufacturers: Manufacturer[]) => void
 }
 
-export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) {
+export function ManufacturerDialog({ open, onOpenChange, onSubmit }: ManufacturerDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      brands: [{ name: "", manufacturer_ID: "", type: "CAR" }],
+      manufacturers: [{ name: "", country: "" }],
     },
   })
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "brands",
+    name: "manufacturers",
   })
 
   const handleSubmit = (values: FormValues) => {
-    onSubmit(values.brands)
+    onSubmit(values.manufacturers)
     form.reset()
   }
 
@@ -70,9 +60,9 @@ export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-white">
         <DialogHeader>
-          <DialogTitle className="text-[#4A36EC] text-xl font-bold">Add Vehicle Brands</DialogTitle>
+          <DialogTitle className="text-[#4A36EC] text-xl font-bold">Add Manufacturers</DialogTitle>
           <DialogDescription className="text-gray-600">
-            Add one or more vehicle brands to the system
+            Add one or more manufacturers to the system
           </DialogDescription>
         </DialogHeader>
 
@@ -84,13 +74,13 @@ export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) 
                   <div className="flex-1 space-y-4">
                     <FormField
                       control={form.control}
-                      name={`brands.${index}.name`}
+                      name={`manufacturers.${index}.name`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700">Brand Name</FormLabel>
+                          <FormLabel className="text-gray-700">Name</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Enter brand name"
+                              placeholder="Enter manufacturer name"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
                             />
@@ -101,42 +91,17 @@ export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) 
                     />
                     <FormField
                       control={form.control}
-                      name={`brands.${index}.manufacturer_ID`}
+                      name={`manufacturers.${index}.country`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700">Manufacturer ID</FormLabel>
+                          <FormLabel className="text-gray-700">Country</FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="Enter manufacturer ID"
+                              placeholder="Enter country"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`brands.${index}.type`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-gray-700">Brand Type</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]">
-                                <SelectValue placeholder="Select brand type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="CAR">Car</SelectItem>
-                              <SelectItem value="TRUCK">Truck</SelectItem>
-                              <SelectItem value="MOTORCYCLE">Motorcycle</SelectItem>
-                            </SelectContent>
-                          </Select>
                           <FormMessage className="text-red-500" />
                         </FormItem>
                       )}
@@ -162,7 +127,7 @@ export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) 
                 type="button"
                 variant="outline"
                 className="hover:bg-gray-100"
-                onClick={() => append({ name: "", manufacturer_ID: "", type: "CAR" })}
+                onClick={() => append({ name: "", country: "" })}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Another
@@ -171,7 +136,7 @@ export function BrandDialog({ open, onOpenChange, onSubmit }: BrandDialogProps) 
                 type="submit"
                 className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white"
               >
-                Save Brands
+                Save Manufacturers
               </Button>
             </div>
           </form>

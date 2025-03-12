@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Manufacturer } from "."
+import { Manufacturer } from "../../types"
 
 interface ManufacturerTableProps {
   manufacturers: Manufacturer[]

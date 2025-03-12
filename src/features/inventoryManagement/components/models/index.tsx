@@ -5,12 +5,9 @@ import { Plus, ChevronRight, Car, Calendar, Factory, Settings } from "lucide-rea
 import { ModelDialog } from "./modelDialog"
 import { ModelTable } from "./modelTable"
 import { Card, CardContent } from "@/components/ui/card"
+import { Model } from "../../types"
 
-export interface Model {
-  name: string
-  carBrand_ID: string
-  yearOfMake: number
-}
+
 
 export default function ModelsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)

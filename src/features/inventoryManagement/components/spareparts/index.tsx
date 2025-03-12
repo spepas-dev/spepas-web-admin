@@ -6,12 +6,8 @@ import { Plus, ChevronRight, Wrench, Car, ClipboardList, Package } from "lucide-
 import { Card, CardContent } from "@/components/ui/card"
 import { SparePartTable } from "./sparePartTable"
 import { SparePartDialog } from "./sparePartDialog"
+import { SparePart } from "../../types"
 
-export interface SparePart {
-  name: string
-  description: string
-  carBrand_ID: string
-}
 
 export default function SparePartsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
