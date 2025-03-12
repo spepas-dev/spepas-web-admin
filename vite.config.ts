@@ -23,15 +23,15 @@ export default ({mode}: {mode: string}) => {
           target: process.env.VITE_API_URL,
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''),
-          configure: (proxy, options) => {
-            proxy.on('proxyReq', (proxyReq, req, res) => {
+          configure: (proxy: any, options: any) => {
+            proxy.on('proxyReq', (proxyReq: any, req: any, res: any) => {
               console.log('Proxy Request:', {
                 method: req.method,
                 url: req.url,
                 headers: req.headers
               });
             });
-            proxy.on('proxyRes', (proxyRes, req, res) => {
+            proxy.on('proxyRes', (proxyRes: any, req: any, res: any) => {
               console.log('Proxy Response:', {
                 statusCode: proxyRes.statusCode,
                 headers: proxyRes.headers

@@ -1,11 +1,25 @@
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion"
 import { LoginForm, LoginFormValues } from "../components/loginForm"
 import Logo from "@/assets/logo.svg?react"
+import { useAuth } from "../contexts/AuthContext/AuthContext";
+
+
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
   const handleSubmit = async (values: LoginFormValues) => {
     // Handle login logic here
     console.log(values)
+    try {
+      await login(values.email, values.password);
+      navigate(location.state?.from || '/');
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   }
 
   return (

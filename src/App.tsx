@@ -4,9 +4,8 @@ import { Suspense } from 'react'
 
 
 import ErrorBoundary from './components/errors/error-boundary'
-
-import BaseTheme from './features/theme/basetheme'
 import PageLoader from './components/loaders/pageLoader'
+import { AuthProvider } from './features/auth/contexts/AuthContext/AuthContext'
 
 
 function App() {
@@ -15,7 +14,9 @@ function App() {
     <>
       <ErrorBoundary>
         <Suspense fallback={<PageLoader />}>
-          <RouterProvider router={router} />
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
         </Suspense>
       </ErrorBoundary>
       </>
