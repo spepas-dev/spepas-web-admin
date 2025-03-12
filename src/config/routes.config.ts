@@ -70,34 +70,29 @@ export const ROUTE_PATHS = {
       DETAIL: (id: string) => `/requests/${id}`
     },
     INVENTORY_MANAGEMENT: {
-      BASE: 'inventory',
+      BASE: 'inventory-management',
       CAR: {
         BASE: 'cars',
         MANUFACTURER: {
-          BASE: 'manufacturer',
-          ALL: 'manufacturers',
-          CREATE: '/cars/manufacturer/create',
-          DETAIL: (id: string) => `/cars/manufacturer/${id}`
+          BASE: 'manufacturers',
+          CREATE: '/cars/manufacturers/create',
+          DETAIL: (id: string) => `/cars/manufacturers/${id}`
         },
-        DETAIL: (id: string) => `/cars/${id}`
+        BRAND: {
+          BASE: 'brands',
+          CREATE: '/cars/brand/create',
+          DETAIL: (id: string) => `/cars/brand/${id}`
+        },
+        MODEL: {
+          BASE: 'models',
+          CREATE: '/cars/model/create',
+          DETAIL: (id: string) => `/cars/model/${id}`
+        },
+        SPARE_PART: {
+          BASE: 'spare-parts',
+          CREATE: '/cars/spare-part/create',
+          DETAIL: (id: string) => `/cars/spare-part/${id}`
+        }
       },
-      BRAND: {
-        BASE: 'brand',
-        ALL: 'brands',
-        CREATE: '/cars/brand/create',
-        DETAIL: (id: string) => `/cars/brand/${id}`
-      },
-      MODEL: {
-        BASE: 'model',
-        ALL: 'models',
-        CREATE: '/cars/model/create',
-        DETAIL: (id: string) => `/cars/model/${id}`
-      },
-      SPARE_PART: {
-        BASE: 'spare-part',
-        ALL: 'spare-parts',
-        CREATE: '/cars/spare-part/create',
-        DETAIL: (id: string) => `/cars/spare-part/${id}`
-      }
     }
   };

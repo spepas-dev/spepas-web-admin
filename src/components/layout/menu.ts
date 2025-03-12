@@ -1,4 +1,4 @@
-import { Wrench, Shield, Users, Bike, Store, Handshake, Factory, Tag, Car, Bolt, Key, Key } from "lucide-react";
+import { Wrench, Shield, Users, Bike, Store, Handshake, Factory, Tag, Car, Bolt, Key, } from "lucide-react";
 import { MenuGroup } from "../../types/MenuItem";
 
 
@@ -71,25 +71,25 @@ export const menuGroups: MenuGroup[] = [
           id: 'manufacturers',
           name: 'Manufacturers',
           icon: Factory,
-          path: '/inventory-management/manufacturers',
+          path: '/inventory-management/cars/manufacturers',
         },
         {
           id: 'brands ',
           name: 'Brands',
           icon: Tag,
-          path: '/inventory-management/brands',
+          path: '/inventory-management/cars/brands',
         },
         {
           id: 'models',
           name: 'Models',
           icon: Car,
-          path: '/inventory-management/models',
+          path: '/inventory-management/cars/models',
         },
         {
           id: 'spare-parts',
           name: 'Spare Parts',
           icon: Bolt,
-          path: '/inventory-management/spare-parts',
+          path: '/inventory-management/cars/spare-parts',
         }
       ]
     }

@@ -18,13 +18,13 @@ export const inventoryManagementRoutes: RouteObject[] = [
                     {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MANUFACTURER.BASE, children: [
                         {index: true, element: <ManufacturersPage />}
                     ]},
-                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.BRAND.BASE, children: [
+                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BRAND.BASE, children: [
                         {index: true, element: <BrandsPage />}
                     ]},
-                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.MODEL.BASE, children: [
+                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MODEL.BASE, children: [
                         {index: true, element: <ModelsPage />}
                     ]},
-                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.SPARE_PART.BASE, children: [
+                    {path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.SPARE_PART.BASE, children: [
                         {index: true, element: <SparePartsPage />}
                     ]}
                 ]
