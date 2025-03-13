@@ -34,4 +34,8 @@ export interface CreateSparePartDTO {
     name: string
     description: string
     carBrand_ID: string
+}
+
+export interface UpdateSparePartDTO extends Partial<CreateSparePartDTO> {
+    // Additional fields specific to updates can go here
   }

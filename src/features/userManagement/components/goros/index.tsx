@@ -75,9 +75,9 @@ export default function GorosPage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Goro</h1>
+          <h1 className="text-3xl font-bold text-[#4A36EC]">Gopa</h1>
           <p className="text-sm text-gray-600">
-            Manage goro and their specialties
+            Manage gopa and their specialties
           </p>
         </div>
         <Button

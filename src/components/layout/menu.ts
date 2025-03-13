@@ -35,7 +35,7 @@ export const menuGroups: MenuGroup[] = [
           id: 'users',
           name: 'Users',
           icon: Users,
-          path: '/user-management/users',
+          path: '/user-management',
         },
         {
           id: 'sellers',
@@ -50,16 +50,16 @@ export const menuGroups: MenuGroup[] = [
           path: '/user-management/riders',
         },
         {
-          id: 'mechanics',
-          name: 'Mechanics',
+          id: 'mepa',
+          name: 'Mepa',
           icon: Wrench,
-          path: '/user-management/mechanics',
+          path: '/user-management/mepa',
         },
         {
-          id: 'goros',
-          name: 'Goros',
+          id: 'gopa',
+          name: 'Gopa',
           icon: Handshake,
-          path: '/user-management/goros',
+          path: '/user-management/gopa',
         }
       ]
     },

@@ -1,19 +1,20 @@
+import { CarModel } from "./models.types";
+
 export interface Brand {
-  id: string
-  name: string
-  description?: string
-  logo?: string
-  website?: string
-  manufacturerId: string
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
+  id: number;
+  CarBrand_ID: string;
+  name: string;
+  status: number;
+  manufacturer_ID: string;
+  createdAt: string;
+  type: string;
+  models: CarModel[];
 }
 
 export interface CreateBrandDTO {
-        name: string
-        manufacturer_ID: string
-        type: 'CAR' | 'TRUCK' | 'MOTORCYCLE'
+  name: string
+  manufacturer_ID: string
+  type: 'CAR' | 'TRUCK' | 'MOTORCYCLE'
 }
 
 

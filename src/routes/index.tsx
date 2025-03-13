@@ -12,7 +12,10 @@ const WelcomePage = lazy(() => import("../components/shared/welcome"));
 const routes: RouteObject[] = [
     {
         path: "/",
-        element: <ProtectedRoute><RootLayout /></ProtectedRoute>, 
+        element: 
+        // <ProtectedRoute>
+            <RootLayout />,
+            // </ProtectedRoute>, 
         children: [
             {index: true, element: <WelcomePage />},
             ...accessManagementRoutes,

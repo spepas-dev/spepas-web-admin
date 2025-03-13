@@ -3,13 +3,13 @@ import { lazy } from "react";
 import { ROUTE_PATHS } from "@/config/routes.config";
 
 
-const UsersPage = lazy(() => import("@/features/userManagement/users"));
-const SellersPage = lazy(() => import("@/features/userManagement/sellers"));
-const RidersPage = lazy(() => import("@/features/userManagement/riders"));
-const MechanicsPage = lazy(() => import("@/features/userManagement/mechanics"));
-const GorosPage = lazy(() => import("@/features/userManagement/goros"));
-const PaymentAccountsPage = lazy(() => import("@/features/userManagement/payments"));
-const VehiclesPage = lazy(() => import("@/features/userManagement/vehicles"));
+const UsersPage = lazy(() => import("@/features/userManagement/components/users"));
+const SellersPage = lazy(() => import("@/features/userManagement/components/sellers"));
+const RidersPage = lazy(() => import("@/features/userManagement/components/riders"));
+const MechanicsPage = lazy(() => import("@/features/userManagement/components/mechanics"));
+const GorosPage = lazy(() => import("@/features/userManagement/components/goros"));
+const PaymentAccountsPage = lazy(() => import("@/features/userManagement/components/payments"));
+const VehiclesPage = lazy(() => import("@/features/userManagement/components/vehicles"));
 
 export const userManagementRoutes: RouteObject[] = [
             {

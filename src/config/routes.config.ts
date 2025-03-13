@@ -51,13 +51,13 @@ export const ROUTE_PATHS = {
         DETAIL: (id: string) => `/riders/${id}`
       },
       MECHANIC: {
-        BASE: 'mechanics',
-        CREATE: '/mechanics/create',
+        BASE: 'mepa',
+        CREATE: '/mepa/create',
         DETAIL: (id: string) => `/mechanics/${id}`
       },
       GORO: {
-        BASE: 'goros',
-        CREATE: '/goros/create',
+        BASE: 'gopa',
+        CREATE: '/gopa/create',
         DETAIL: (id: string) => `/goros/${id}`
       },
       PAYMENT_ACCOUNT: {

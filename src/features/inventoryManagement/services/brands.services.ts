@@ -1,7 +1,20 @@
 import { ApiService } from '@/services/api.service'
 import type { Brand, CreateBrandDTO, UpdateBrandDTO } from '../types/brands.types'
 
-const BRANDS_ENDPOINT = '/car-brands-all'
+const ALL_BRANDS_ENDPOINT = '/car-brands-all'
+// const BRANDS_ENDPOINT = '/car-brands'
+// const CAR_MODELS_ENDPOINT = '/car-models'
+// const SPARE_PARTS_ENDPOINT = '/spare-parts'
+// const MANUFACTURERS_ENDPOINT = '/manufacturers'
+
+export interface BrandQueryParams {
+  search?: string
+  sort?: string
+  page?: number
+  limit?: number
+  manufacturer_ID?: string
+  type?: 'CAR' | 'TRUCK' | 'MOTORCYCLE'
+}
 
 export class BrandsService {
   /**
@@ -19,56 +32,56 @@ export class BrandsService {
       total: number
       page: number
       limit: number
-    }>(`${BRANDS_ENDPOINT}`, { params })
+    }>(`${ALL_BRANDS_ENDPOINT}`, { params })
   }
 
   /**
    * Get a single brand by ID
    */
   static async getBrand(id: string) {
-    return ApiService.get<Brand>(`${BRANDS_ENDPOINT}/${id}`)
+    return ApiService.get<Brand>(`${ALL_BRANDS_ENDPOINT}/${id}`)
   }
 
   /**
    * Create a new brand
    */
   static async createBrand(data: CreateBrandDTO) {
-    return ApiService.post<Brand>(`${BRANDS_ENDPOINT}`, data)
+    return ApiService.post<Brand>(`${ALL_BRANDS_ENDPOINT}`, data)
   }
 
   /**
    * Update an existing brand
    */
   static async updateBrand(id: string, data: UpdateBrandDTO) {
-    return ApiService.put<Brand>(`${BRANDS_ENDPOINT}/${id}`, data)
+    return ApiService.put<Brand>(`${ALL_BRANDS_ENDPOINT}/${id}`, data)
   }
 
   /**
    * Delete a brand
    */
   static async deleteBrand(id: string) {
-    return ApiService.delete<void>(`${BRANDS_ENDPOINT}/${id}`)
+    return ApiService.delete<void>(`${ALL_BRANDS_ENDPOINT}/${id}`)
   }
 
   /**
    * Get brands by manufacturer
    */
   static async getBrandsByManufacturer(manufacturerId: string) {
-    return ApiService.get<Brand[]>(`${BRANDS_ENDPOINT}/manufacturer/${manufacturerId}`)
+    return ApiService.get<Brand[]>(`${ALL_BRANDS_ENDPOINT}/manufacturer/${manufacturerId}`)
   }
 
   /**
    * Bulk delete brands
    */
   static async bulkDeleteBrands(ids: string[]) {
-    return ApiService.post<void>(`${BRANDS_ENDPOINT}/bulk-delete`, { ids })
+    return ApiService.post<void>(`${ALL_BRANDS_ENDPOINT}/bulk-delete`, { ids })
   }
 
   /**
    * Check if brand name exists
    */
   static async checkBrandNameExists(name: string) {
-    return ApiService.get<{ exists: boolean }>(`${BRANDS_ENDPOINT}/check-name`, {
+    return ApiService.get<{ exists: boolean }>(`${ALL_BRANDS_ENDPOINT}/check-name`, {
       params: { name }
     })
   }
@@ -81,6 +94,6 @@ export class BrandsService {
       totalProducts: number
       activeProducts: number
       discontinuedProducts: number
-    }>(`${BRANDS_ENDPOINT}/${id}/stats`)
+    }>(`${ALL_BRANDS_ENDPOINT}/${id}/stats`)
   }
 }
