@@ -1,3 +1,5 @@
+import { Response } from "@/types"
+
 export interface Permission {
     id: string
     name: string
@@ -10,3 +12,7 @@ export interface Permission {
 export type CreatePermissionDto = Omit<Permission, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>
 
 export type UpdatePermissionDto = Partial<CreatePermissionDto>
+
+export type PermissionListResponse = Response<Permission[]>
+
+export type PermissionResponse = Response<Permission>

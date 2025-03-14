@@ -5,26 +5,9 @@ import { MenuDialog } from "./menuDialog"
 import { MenuTable } from "./menuTable"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { MenuGroup } from "../../types/menugroup.types"
+import { MenuItem } from "../../types/menu.types"
 
-export interface MenuItem {
-  id: string
-  name: string
-  description?: string
-  icon?: string
-  path?: string
-  permissions?: string
-  parentId?: string | null
-  order?: number
-  isActive?: boolean
-}
-
-export interface MenuGroup {
-  id: string
-  title: string
-  description?: string
-  order?: number
-  isActive?: boolean
-}
 
 export default function MenuManagementPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)

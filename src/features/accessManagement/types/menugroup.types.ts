@@ -1,3 +1,5 @@
+import { Response } from "@/types"
+
 export interface MenuGroup {
     id: string
     title: string
@@ -22,3 +24,7 @@ export interface GroupListItem {
   export type CreateMenuGroupDto = Omit<MenuGroup, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>
 
   export type UpdateMenuGroupDto = Partial<CreateMenuGroupDto>
+
+  export type MenuGroupListResponse = Response<MenuGroup[]>
+
+  export type MenuGroupResponse = Response<MenuGroup>
