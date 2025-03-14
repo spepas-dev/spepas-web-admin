@@ -6,13 +6,14 @@ import { BrandDialog } from "./brandDialog"
 import { BrandTable } from "./brandTable"
 import { Card, CardContent } from "@/components/ui/card"
 import { Brand } from "../../types"
+import { useBrands } from "../../api/queries/brandsQueries"
 
 
 
 export default function BrandsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [brands, setBrands] = useState<Brand[]>([])
-
+  const { data, isLoading, isError } = useBrands()
   const handleAddBrands = async (newBrands: Brand[]) => {
     // Handle API call here
     console.log(newBrands)

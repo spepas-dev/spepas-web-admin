@@ -5,15 +5,15 @@ import { Plus, ChevronRight, Car, Calendar, Factory, Settings } from "lucide-rea
 import { ModelDialog } from "./modelDialog"
 import { ModelTable } from "./modelTable"
 import { Card, CardContent } from "@/components/ui/card"
-import { Model } from "../../types"
-
+import { CarModel } from "../../types"
+import { useCarModels } from "../../api/queries/modelsQueries"
 
 
 export default function ModelsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [models, setModels] = useState<Model[]>([])
-
-  const handleAddModels = async (newModels: Model[]) => {
+  const [models, setModels] = useState<CarModel[]>([])
+  const { data, isLoading, isError } = useCarModels()
+  const handleAddModels = async (newModels: CarModel[]) => {
     // Handle API call here
     console.log(newModels)
     setModels([...models, ...newModels])

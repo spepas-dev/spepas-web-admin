@@ -5,9 +5,9 @@ import { Plus, ChevronRight, Users, Menu, Shield, FolderTree } from "lucide-reac
 import { GroupDialog } from "./groupDialog"
 import { GroupTable } from "./groupTable"
 import { Card, CardContent } from "@/components/ui/card"
-import { MenuItem, MenuGroup } from "../menus"
-import { Permission } from "../permissions"
-import { Group, GroupListItem } from "../types"
+// import { MenuItem, MenuGroup } from "../menus"
+// import { Permission } from "../permissions"
+// import { GroupListItem } from "../../types"
 
 export interface Group {
   id: string

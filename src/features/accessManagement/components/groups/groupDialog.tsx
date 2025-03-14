@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { MultiSelect } from "@/components/ui/multi-select"
-import { Group, CreateGroupDto, User, MenuGroup, MenuItem, Permission } from "../types"
+import { Group, CreateGroupDto, User, MenuGroup, MenuItem, Permission } from "../../types"
 
 const formSchema = z.object({
   name: z.string().min(1, "Group name is required"),
@@ -80,6 +80,7 @@ export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) 
       ...values,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      isActive: false
     }
     onSubmit(newGroup)
     form.reset()

@@ -6,13 +6,14 @@ import { ManufacturerDialog } from "./manufacturerDialog"
 import { ManufacturerTable } from "./manufacturerTable"
 import { Card, CardContent } from "@/components/ui/card"
 import { Manufacturer } from "../../types"
+import { useManufactures } from "../../api/queries/manufacturesQueries"
 
 
 
 export default function ManufacturersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([])
-
+  const { data} = useManufactures()
   const handleAddManufacturers = async (newManufacturers: Manufacturer[]) => {
     // Handle API call here
     console.log(newManufacturers)

@@ -9,7 +9,8 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Edit, Trash2 } from "lucide-react"
-import { Group, GroupListItem } from "../types"
+import { Group } from "../../types"
+
 
 interface GroupTableProps {
   groups: Group[]
@@ -41,8 +42,8 @@ export function GroupTable({ groups }: GroupTableProps) {
               <TableCell>
                 <div className="flex flex-wrap gap-1">
                   {group.users.map((user) => (
-                    <Badge key={user} variant="outline" className="bg-blue-50 text-blue-700">
-                      {user}
+                    <Badge key={user.id} variant="outline" className="bg-blue-50 text-blue-700">
+                      {user.name}
                     </Badge>
                   ))}
                 </div>
@@ -52,8 +53,8 @@ export function GroupTable({ groups }: GroupTableProps) {
                   {group.permissions.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {group.permissions.map((permission) => (
-                        <Badge key={permission} variant="outline" className="bg-[#4A36EC]/10 text-[#4A36EC]">
-                          {permission}
+                        <Badge key={permission.id} variant="outline" className="bg-[#4A36EC]/10 text-[#4A36EC]">
+                          {permission.name}
                         </Badge>
                       ))}
                     </div>
@@ -61,8 +62,8 @@ export function GroupTable({ groups }: GroupTableProps) {
                   {group.menuGroups.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {group.menuGroups.map((menuGroup) => (
-                        <Badge key={menuGroup} variant="outline" className="bg-green-50 text-green-700">
-                          {menuGroup}
+                        <Badge key={menuGroup.id} variant="outline" className="bg-green-50 text-green-700">
+                          {menuGroup.title}
                         </Badge>
                       ))}
                     </div>
@@ -70,8 +71,8 @@ export function GroupTable({ groups }: GroupTableProps) {
                   {group.menuItems.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {group.menuItems.map((menuItem) => (
-                        <Badge key={menuItem} variant="outline" className="bg-orange-50 text-orange-700">
-                          {menuItem}
+                        <Badge key={menuItem.id} variant="outline" className="bg-orange-50 text-orange-700">
+                          {menuItem.name}
                         </Badge>
                       ))}
                     </div>

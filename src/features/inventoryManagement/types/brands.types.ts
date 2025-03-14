@@ -1,5 +1,8 @@
 import { CarModel } from "./models.types";
 
+export type VehicleType = 'CAR' | 'TRUCK' | 'MOTORCYCLE'
+
+
 export interface Brand {
   id: number;
   CarBrand_ID: string;
@@ -14,7 +17,7 @@ export interface Brand {
 export interface CreateBrandDTO {
   name: string
   manufacturer_ID: string
-  type: 'CAR' | 'TRUCK' | 'MOTORCYCLE'
+  type: VehicleType
 }
 
 

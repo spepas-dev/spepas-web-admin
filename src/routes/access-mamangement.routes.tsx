@@ -2,10 +2,10 @@ import { RouteObject} from "react-router-dom";
 import { lazy } from "react";
 import { ROUTE_PATHS } from "@/config/routes.config";
 
-const PermissionsPage = lazy(() => import("@/features/accessManagement/permissions"));
-const RolesPage  = lazy(() => import("@/features/accessManagement/roles"));
-const MenusPage = lazy(() => import("@/features/accessManagement/menus"));
-const GroupsPage = lazy(() => import("@/features/accessManagement/groups"));
+const PermissionsPage = lazy(() => import("@/features/accessManagement/components/permissions"));
+const RolesPage  = lazy(() => import("@/features/accessManagement/components/roles"));
+const MenusPage = lazy(() => import("@/features/accessManagement/components/menus"));
+const GroupsPage = lazy(() => import("@/features/accessManagement/components/groups"));
 
 export const accessManagementRoutes: RouteObject[] = [
             {

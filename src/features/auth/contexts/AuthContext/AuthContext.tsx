@@ -2,6 +2,7 @@
   import React, { createContext, useContext, useReducer, useEffect } from 'react';
   import { AuthState, User } from '../../types/auth.types';
   import { AuthService } from '@/services/auth.service';
+  import { useStore } from '@/stores';
   
   interface AuthContextType extends AuthState {
     login: (email: string, password: string) => Promise<void>;
@@ -48,6 +49,7 @@
   };
   
   export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { setToken, setUser, setRefreshToken } = useStore((state) => state.actions);
     const [state, dispatch] = useReducer(authReducer, initialState);
   
     useEffect(() => {
