@@ -1,5 +1,5 @@
 import { ApiService } from "@/services/api.service";
-import { MenuItem, CreateMenuItemDto, UpdateMenuItemDto, MenuListResponse } from "../types/menu.types";
+import { MenuItem, CreateMenuItemDto, UpdateMenuItemDto, MenuListResponse, MenuStats } from "../types/menu.types";
 
 const API_URL = '/access-management/menu'
 
@@ -12,7 +12,7 @@ export interface MenuQueryParams {
 
 
 export class MenuService {
-    
+
     static async getMenu(id: string) {
         return  ApiService.get<MenuItem>(`${API_URL}/${id}`)
     }
@@ -31,5 +31,9 @@ export class MenuService {
 
     static async getMenuList(params?: MenuQueryParams) {
         return  ApiService.get<MenuListResponse>(API_URL, { params })
+    }
+
+    static async getMenuStats(id: string) {
+        return  ApiService.get<MenuStats>(`${API_URL}/${id}/stats`)
     }
 }

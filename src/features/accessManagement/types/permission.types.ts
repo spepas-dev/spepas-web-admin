@@ -7,7 +7,13 @@ export interface Permission {
     code: string
     module: string
     isActive: boolean
-  }
+}
+
+export interface PermissionStats {
+    totalPermissions: number;
+    activePermissions: number;
+    inactivePermissions: number;
+}
 
 export type CreatePermissionDto = Omit<Permission, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>
 

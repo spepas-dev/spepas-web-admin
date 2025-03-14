@@ -10,7 +10,13 @@ export interface MenuItem {
     parentId?: string | null
     order?: number
     isActive: boolean
-  }
+}
+
+export interface MenuStats {
+    totalMenus: number;
+    activeMenus: number;
+    inactiveMenus: number;
+}
 
 export type CreateMenuItemDto = Omit<MenuItem, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>
 

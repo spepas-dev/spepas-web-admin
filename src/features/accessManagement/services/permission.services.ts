@@ -1,5 +1,5 @@
 import { ApiService } from "@/services/api.service";
-import { Permission, CreatePermissionDto, UpdatePermissionDto, PermissionListResponse, PermissionResponse } from "../types/permission.types";
+import { Permission, CreatePermissionDto, UpdatePermissionDto, PermissionListResponse, PermissionResponse, PermissionStats } from "../types/permission.types";
 
 const API_URL = '/access-management/permission'
 
@@ -12,7 +12,7 @@ export interface PermissionQueryParams {
 
 export class PermissionService {
     static async getPermission(id: string) {
-        return  ApiService.get<Permission>(`${API_URL}/${id}`)
+        return  ApiService.get<PermissionResponse>(`${API_URL}/${id}`)
     }
 
     static async createPermission(data: CreatePermissionDto) {
@@ -29,5 +29,9 @@ export class PermissionService {
 
     static async getPermissionList(params?: PermissionQueryParams) {
         return  ApiService.get<PermissionListResponse>(API_URL, { params })
+    }
+
+    static async getPermissionStats(id: string) {
+        return  ApiService.get<PermissionStats>(`${API_URL}/${id}/stats`)
     }
 }
