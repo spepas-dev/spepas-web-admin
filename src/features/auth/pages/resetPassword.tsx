@@ -1,12 +1,14 @@
-import { motion } from "framer-motion"
-import { ResetPasswordForm, ResetPasswordFormValues } from "../components/resetPasswordForm"
-import Logo from "@/assets/logo.svg?react"
+import { motion } from 'framer-motion';
+
+import Logo from '@/assets/logo.svg?react';
+
+import { ResetPasswordForm, ResetPasswordFormValues } from '../components/resetPasswordForm';
 
 export default function ResetPasswordPage() {
   const handleSubmit = async (values: ResetPasswordFormValues) => {
     // Handle password reset logic here
-    console.log(values)
-  }
+    console.log(values);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -47,5 +49,5 @@ export default function ResetPasswordPage() {
         <ResetPasswordForm onSubmit={handleSubmit} />
       </motion.div>
     </div>
-  )
+  );
 }

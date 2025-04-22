@@ -1,8 +1,8 @@
-import {resolve} from 'path'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
-import { defineConfig, loadEnv, ProxyOptions } from 'vite'
-import svgr from 'vite-plugin-svgr'
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
+import { defineConfig, loadEnv, ProxyOptions } from 'vite';
+import svgr from 'vite-plugin-svgr';
 
 interface ProxyError extends Error {
   statusCode?: number;
@@ -11,9 +11,9 @@ interface ProxyError extends Error {
 // https://vite.dev/config/
 export default ({ mode }: { mode: string }) => {
   console.log('🚀 Vite Config Mode:', mode);
-  process.env = {...process.env, ...loadEnv(mode, process.cwd())}
+  process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   // process.env = {...process.env, ...loadEnv(mode, process.cwd(), 'local')}
-  console.log('mode', mode)
+  console.log('mode', mode);
   const apiUrl = process.env.VITE_API_URL;
   console.log('📡 API URL:', apiUrl);
   const proxyConfig: ProxyOptions = {
@@ -28,11 +28,11 @@ export default ({ mode }: { mode: string }) => {
     ws: true, // Enable WebSocket proxying
     configure: (proxy, options) => {
       console.log('⚙️ Configuring proxy for mode:', mode);
-      
+
       // Log only in development
       if (mode === 'development') {
         console.log('🛠️ Setting up development proxy handlers');
-        
+
         proxy.on('proxyReq', (proxyReq, req, res) => {
           const { method, url, headers } = req;
           console.log('\n🔄 Outgoing Request:');
@@ -47,7 +47,7 @@ export default ({ mode }: { mode: string }) => {
 
         proxy.on('proxyRes', (proxyRes, req, res) => {
           const chunks: Buffer[] = [];
-          
+
           console.log('\n✨ Incoming Response:');
           console.log('Status:', proxyRes.statusCode);
           console.log('Headers:', proxyRes.headers);
@@ -69,7 +69,7 @@ export default ({ mode }: { mode: string }) => {
 
         proxy.on('error', (err: ProxyError, req, res) => {
           console.error('\n❌ Proxy Error:', err);
-          
+
           // Send a proper error response to the client
           const statusCode = err.statusCode || 500;
           if (!res.headersSent) {
@@ -77,38 +77,40 @@ export default ({ mode }: { mode: string }) => {
               'Content-Type': 'application/json'
             });
           }
-          
+
           const errorResponse = {
             status: statusCode,
             message: err.message || 'Proxy Error',
             timestamp: new Date().toISOString()
           };
-          
+
           res.end(JSON.stringify(errorResponse));
         });
       } else {
         console.log('⚠️ Not in development mode, proxy logging disabled');
       }
     }
-  }
+  };
 
   const config = {
     plugins: [react(), tailwindcss(), svgr()],
     resolve: {
       alias: {
-        '@': resolve(__dirname, './src'),
-      },
+        '@': resolve(__dirname, './src')
+      }
+    },
+    build: {
+      outDir: './build'
     },
     server: {
-      port: 5173,
-      host: 'localhost', 
+      port: 3000,
+      host: 'localhost',
       proxy: {
         '/api': proxyConfig
-      },
-    },
-  }
+      }
+    }
+  };
 
   console.log('📦 Final proxy configuration:', JSON.stringify(proxyConfig, null, 2));
-  return defineConfig(config)
-}
-
+  return defineConfig(config);
+};

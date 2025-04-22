@@ -1,78 +1,67 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { MultiSelect } from "@/components/ui/multi-select"
-import { Group, CreateGroupDto, User, MenuGroup, MenuItem, Permission } from "../../types"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { Textarea } from '@/components/ui/textarea';
+
+import { CreateGroupDto, Group, MenuGroup, MenuItem, Permission, User } from '../../types';
 
 const formSchema = z.object({
-  name: z.string().min(1, "Group name is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  users: z.array(z.string()).min(1, "Select at least one user"),
+  name: z.string().min(1, 'Group name is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  users: z.array(z.string()).min(1, 'Select at least one user'),
   menuGroups: z.array(z.string()),
   menuItems: z.array(z.string()),
-  permissions: z.array(z.string()),
-})
+  permissions: z.array(z.string())
+});
 
 interface GroupDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (group: Group) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (group: Group) => void;
 }
 
 // Mock data - replace with actual data from your API
 const mockData = {
   users: [
-    { value: "user1", label: "John Doe" },
-    { value: "user2", label: "Jane Smith" },
-    { value: "user3", label: "Bob Johnson" },
+    { value: 'user1', label: 'John Doe' },
+    { value: 'user2', label: 'Jane Smith' },
+    { value: 'user3', label: 'Bob Johnson' }
   ],
   menuGroups: [
-    { value: "group1", label: "Dashboard" },
-    { value: "group2", label: "Users" },
-    { value: "group3", label: "Settings" },
+    { value: 'group1', label: 'Dashboard' },
+    { value: 'group2', label: 'Users' },
+    { value: 'group3', label: 'Settings' }
   ],
   menuItems: [
-    { value: "item1", label: "View Users" },
-    { value: "item2", label: "Edit Profile" },
-    { value: "item3", label: "System Settings" },
+    { value: 'item1', label: 'View Users' },
+    { value: 'item2', label: 'Edit Profile' },
+    { value: 'item3', label: 'System Settings' }
   ],
   permissions: [
-    { value: "perm1", label: "Create Users" },
-    { value: "perm2", label: "Delete Users" },
-    { value: "perm3", label: "View Reports" },
-  ],
-}
+    { value: 'perm1', label: 'Create Users' },
+    { value: 'perm2', label: 'Delete Users' },
+    { value: 'perm3', label: 'View Reports' }
+  ]
+};
 
 export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
+      name: '',
+      description: '',
       users: [],
       menuGroups: [],
       menuItems: [],
-      permissions: [],
-    },
-  })
+      permissions: []
+    }
+  });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
     const newGroup: Group = {
@@ -81,19 +70,17 @@ export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: false
-    }
-    onSubmit(newGroup)
-    form.reset()
-  }
+    };
+    onSubmit(newGroup);
+    form.reset();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-white">
         <DialogHeader>
           <DialogTitle className="text-[#4A36EC] text-xl font-bold">Add Group</DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Create a new group and assign access rights
-          </DialogDescription>
+          <DialogDescription className="text-gray-600">Create a new group and assign access rights</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -133,12 +120,7 @@ export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) 
                 <FormItem>
                   <FormLabel>Users</FormLabel>
                   <FormControl>
-                    <MultiSelect
-                      options={mockData.users}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      placeholder="Select users"
-                    />
+                    <MultiSelect options={mockData.users} value={field.value} onValueChange={field.onChange} placeholder="Select users" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -203,11 +185,7 @@ export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) 
             />
 
             <div className="flex justify-end space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" className="bg-[#4A36EC] text-white">
@@ -218,5 +196,5 @@ export function GroupDialog({ open, onOpenChange, onSubmit }: GroupDialogProps) 
         </Form>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

@@ -1,15 +1,9 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { SparePart } from "../../types"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { SparePart } from '../../types';
 
 interface SparePartTableProps {
-  spareParts: SparePart[]
+  spareParts: SparePart[];
 }
 
 export function SparePartTable({ spareParts }: SparePartTableProps) {
@@ -25,10 +19,7 @@ export function SparePartTable({ spareParts }: SparePartTableProps) {
         </TableHeader>
         <TableBody>
           {spareParts.map((part, index) => (
-            <TableRow 
-              key={index}
-              className="hover:bg-gray-50 transition-colors"
-            >
+            <TableRow key={index} className="hover:bg-gray-50 transition-colors">
               <TableCell className="text-gray-700">{part.name}</TableCell>
               <TableCell className="text-gray-700">{part.description}</TableCell>
               <TableCell className="text-gray-700">{part.carBrand_ID}</TableCell>
@@ -36,10 +27,7 @@ export function SparePartTable({ spareParts }: SparePartTableProps) {
           ))}
           {spareParts.length === 0 && (
             <TableRow>
-              <TableCell 
-                colSpan={3} 
-                className="text-center text-gray-500 py-8"
-              >
+              <TableCell colSpan={3} className="text-center text-gray-500 py-8">
                 No spare parts added yet
               </TableCell>
             </TableRow>
@@ -47,5 +35,5 @@ export function SparePartTable({ spareParts }: SparePartTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
-} 
+  );
+}

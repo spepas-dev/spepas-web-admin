@@ -1,92 +1,77 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { MenuGroup, MenuItem } from "."
-import { Plus, Trash2, FolderTree } from "lucide-react"
-import { IconPicker } from "./iconPicker"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FolderTree, Plus, Trash2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
+import { MenuGroup, MenuItem } from '.';
+import { IconPicker } from './iconPicker';
 
 const menuGroupSchema = z.object({
   id: z.string().optional(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   order: z.number().optional(),
-  isActive: z.boolean().default(true),
-})
+  isActive: z.boolean().default(true)
+});
 
 const menuItemSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   icon: z.string().optional(),
-  path: z.string().min(1, "Path is required"),
+  path: z.string().min(1, 'Path is required'),
   permissions: z.string().optional(),
   parentId: z.string().nullable(),
   order: z.number().optional(),
-  isActive: z.boolean().default(true),
-})
+  isActive: z.boolean().default(true)
+});
 
 const formSchema = z.object({
   groups: z.array(menuGroupSchema),
-  items: z.array(menuItemSchema),
-})
+  items: z.array(menuItemSchema)
+});
 
 interface MenuDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (data: { groups: MenuGroup[], items: MenuItem[] }) => void
-  existingGroups: MenuGroup[]
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (data: { groups: MenuGroup[]; items: MenuItem[] }) => void;
+  existingGroups: MenuGroup[];
 }
 
-export function MenuDialog({
-  open,
-  onOpenChange,
-  onSubmit,
-  existingGroups,
-}: MenuDialogProps) {
+export function MenuDialog({ open, onOpenChange, onSubmit, existingGroups }: MenuDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       groups: [],
-      items: [],
-    },
-  })
+      items: []
+    }
+  });
 
-  const { fields: groupFields, append: appendGroup, remove: removeGroup } = 
-    useFieldArray({
-      control: form.control,
-      name: "groups",
-    })
+  const {
+    fields: groupFields,
+    append: appendGroup,
+    remove: removeGroup
+  } = useFieldArray({
+    control: form.control,
+    name: 'groups'
+  });
 
-  const { fields: itemFields, append: appendItem, remove: removeItem } = 
-    useFieldArray({
-      control: form.control,
-      name: "items",
-    })
+  const {
+    fields: itemFields,
+    append: appendItem,
+    remove: removeItem
+  } = useFieldArray({
+    control: form.control,
+    name: 'items'
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -104,11 +89,13 @@ export function MenuDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => appendGroup({
-                    title: "",
-                    description: "",
-                    isActive: true,
-                  })}
+                  onClick={() =>
+                    appendGroup({
+                      title: '',
+                      description: '',
+                      isActive: true
+                    })
+                  }
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Group
@@ -152,21 +139,13 @@ export function MenuDialog({
                       <FormItem className="flex items-center justify-between">
                         <FormLabel>Active</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => removeGroup(index)}
-                  >
+                  <Button type="button" variant="outline" className="w-full" onClick={() => removeGroup(index)}>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Remove Group
                   </Button>
@@ -181,12 +160,14 @@ export function MenuDialog({
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => appendItem({
-                    name: "",
-                    path: "",
-                    isActive: true,
-                    parentId: null
-                  })}
+                  onClick={() =>
+                    appendItem({
+                      name: '',
+                      path: '',
+                      isActive: true,
+                      parentId: null
+                    })
+                  }
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Item
@@ -229,10 +210,7 @@ export function MenuDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Parent Group</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value || undefined}
-                        >
+                        <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select parent group" />
@@ -272,21 +250,13 @@ export function MenuDialog({
                       <FormItem className="flex items-center justify-between">
                         <FormLabel>Active</FormLabel>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={() => removeItem(index)}
-                  >
+                  <Button type="button" variant="outline" className="w-full" onClick={() => removeItem(index)}>
                     <Trash2 className="w-4 h-4 mr-2" />
                     Remove Item
                   </Button>
@@ -295,11 +265,7 @@ export function MenuDialog({
             </div>
 
             <div className="flex justify-end space-x-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit" className="bg-[#4A36EC] text-white">
@@ -310,5 +276,5 @@ export function MenuDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

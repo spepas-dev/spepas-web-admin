@@ -1,27 +1,28 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { SparePartsService } from '../../services/spareparts.services'
-import type { CreateSparePartDTO, UpdateSparePartDTO } from '../../types/spareparts.types'
-import { sparepartKeys } from '../queries/sparepartsQueries'
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { SparePartsService } from '../../services/spareparts.services';
+import type { CreateSparePartDTO, UpdateSparePartDTO } from '../../types/spareparts.types';
+import { sparepartKeys } from '../queries/sparepartsQueries';
 
 export const useCreateSparePart = () => {
-  const queryClient = useQueryClient()
-  
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (data: CreateSparePartDTO) => SparePartsService.createSparePart(data),
+    mutationFn: (data: CreateSparePartDTO[]) => SparePartsService.createSparePart(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sparepartKeys.all })
-    },
-  })
-}
+      queryClient.invalidateQueries({ queryKey: sparepartKeys.all });
+    }
+  });
+};
 
 export const useUpdateSparePart = (id: string) => {
-  const queryClient = useQueryClient()
-  
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: UpdateSparePartDTO) => SparePartsService.updateSparePart(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: sparepartKeys.detail(id) })
-      queryClient.invalidateQueries({ queryKey: sparepartKeys.lists() })
-    },
-  })
-}
+      queryClient.invalidateQueries({ queryKey: sparepartKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: sparepartKeys.lists() });
+    }
+  });
+};

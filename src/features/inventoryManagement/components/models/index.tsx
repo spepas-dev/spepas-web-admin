@@ -1,87 +1,117 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Plus, ChevronRight, Car, Calendar, Factory, Settings } from "lucide-react"
-import { ModelDialog } from "./modelDialog"
-import { ModelTable } from "./modelTable"
-import { Card, CardContent } from "@/components/ui/card"
-import { CarModel } from "../../types"
-import { useCarModels } from "../../api/queries/modelsQueries"
+import { motion } from 'framer-motion';
+import { Calendar, Car, ChevronRight, Factory, Plus, Settings } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
+import PageLoader from '@/components/loaders/pageLoader';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { toastConfig } from '@/lib/toast';
+
+import { useCreateModel } from '../../api/mutations/modelMutations';
+import { useCarModels } from '../../api/queries/modelsQueries';
+import { CarModel, CreateCarModel } from '../../types';
+import { ModelDialog } from './modelDialog';
+import { ModelTable } from './modelTable';
 
 export default function ModelsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [models, setModels] = useState<CarModel[]>([])
-  const { data, isLoading, isError } = useCarModels()
-  const handleAddModels = async (newModels: CarModel[]) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [models, setModels] = useState<CarModel[]>([]);
+  const { data, isLoading, isError } = useCarModels();
+  useEffect(() => {
+    if (data) {
+      setModels(data.data);
+    }
+
+    return () => {
+      setModels([]);
+    };
+  }, [data?.data]);
+
+  // function to handle add models
+  const { mutate: createModel } = useCreateModel();
+  const handleAddModels = async (newModels: CreateCarModel[]) => {
     // Handle API call here
-    console.log(newModels)
-    setModels([...models, ...newModels])
-    setIsDialogOpen(false)
-  }
+    console.log(newModels);
+    createModel(newModels, {
+      onSuccess: () => {
+        setIsDialogOpen(false);
+        toastConfig.success('Model created successfully');
+      },
+      onError: () => {
+        setIsDialogOpen(false);
+        toastConfig.error('Failed to create model');
+      }
+    });
+  };
 
   const stats = [
     {
-      title: "Total Models",
+      title: 'Total Models',
       value: models.length,
       icon: Car,
-      description: "Active car models in the system",
-      trend: "+3.2%",
+      description: 'Active car models in the system',
+      trend: '+3.2%',
       trendUp: true
     },
     {
-      title: "Latest Year",
-      value: models.length > 0 ? Math.max(...models.map(m => m.yearOfMake)) : "-",
+      title: 'Latest Year',
+      value: models.length > 0 ? Math.max(...models.map((m) => m.yearOfMake)) : '-',
       icon: Calendar,
-      description: "Most recent model year",
-      trend: "+1.5%",
+      description: 'Most recent model year',
+      trend: '+1.5%',
       trendUp: true
     },
     {
-      title: "Manufacturers",
-      value: new Set(models.map(m => m.carBrand_ID)).size,
+      title: 'Manufacturers',
+      value: new Set(models.map((m) => m.carBrand_ID)).size,
       icon: Factory,
-      description: "Associated manufacturers",
-      trend: "+2.8%",
+      description: 'Associated manufacturers',
+      trend: '+2.8%',
       trendUp: true
     },
     {
-      title: "Parts Categories",
-      value: "89",
+      title: 'Parts Categories',
+      value: '89',
       icon: Settings,
-      description: "Compatible parts categories",
-      trend: "+4.1%",
+      description: 'Compatible parts categories',
+      trend: '+4.1%',
       trendUp: true
     }
-  ]
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="p-8 space-y-8">
+        <PageLoader />
+      </div>
+    );
+  }
+  if (isError) {
+    return <div>Error loading models</div>;
+  }
 
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">Dashboard</a>
+        <a href="/" className="hover:text-[#4A36EC]">
+          Dashboard
+        </a>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/inventory" className="hover:text-[#4A36EC]">Inventory</a>
+        <a href="/inventory" className="hover:text-[#4A36EC]">
+          Inventory
+        </a>
         <ChevronRight className="w-4 h-4 mx-2" />
         <span className="text-[#4A36EC] font-medium">Models</span>
       </div>
 
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-[#4A36EC]">Vehicle Models</h1>
-          <p className="text-sm text-gray-600">
-            Manage vehicle models and their specifications
-          </p>
+          <p className="text-sm text-gray-600">Manage vehicle models and their specifications</p>
         </div>
-        <Button
-          onClick={() => setIsDialogOpen(true)}
-          className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white"
-        >
+        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
           <Plus className="w-4 h-4 mr-2" />
           Add Model
         </Button>
@@ -108,9 +138,7 @@ export default function ModelsPage() {
               </div>
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
-                  {stat.trend}
-                </span>
+                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
               </div>
             </CardContent>
           </Card>
@@ -118,19 +146,11 @@ export default function ModelsPage() {
       </motion.div>
 
       {/* Table */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
         <ModelTable models={models} />
       </motion.div>
 
-      <ModelDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSubmit={handleAddModels}
-      />
+      <ModelDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddModels} />
     </div>
-  )
+  );
 }

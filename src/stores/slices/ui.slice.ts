@@ -1,16 +1,16 @@
-import { StateCreator } from 'zustand'
+import { StateCreator } from 'zustand';
 
 export interface UISlice {
   sidebar: {
-    isOpen: boolean
-    width: number
-  }
-  theme: 'light' | 'dark'
+    isOpen: boolean;
+    width: number;
+  };
+  theme: 'light' | 'dark';
   actions: {
-    toggleSidebar: () => void
-    setSidebarWidth: (width: number) => void
-    setTheme: (theme: UISlice['theme']) => void
-  }
+    toggleSidebar: () => void;
+    setSidebarWidth: (width: number) => void;
+    setTheme: (theme: UISlice['theme']) => void;
+  };
 }
 
 export const createUISlice: StateCreator<UISlice> = (set) => ({
@@ -20,7 +20,7 @@ export const createUISlice: StateCreator<UISlice> = (set) => ({
   },
   theme: 'light',
   actions: {
-    toggleSidebar: () => 
+    toggleSidebar: () =>
       set((state) => ({
         sidebar: { ...state.sidebar, isOpen: !state.sidebar.isOpen }
       })),
@@ -30,4 +30,4 @@ export const createUISlice: StateCreator<UISlice> = (set) => ({
       })),
     setTheme: (theme) => set({ theme })
   }
-}) 
+});

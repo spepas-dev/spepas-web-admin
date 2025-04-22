@@ -1,36 +1,29 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-})
+  email: z.string().email('Please enter a valid email address')
+});
 
-export type ForgotPasswordFormValues = z.infer<typeof formSchema>
+export type ForgotPasswordFormValues = z.infer<typeof formSchema>;
 
 interface ForgotPasswordFormProps {
-  onSubmit: (values: ForgotPasswordFormValues) => void
+  onSubmit: (values: ForgotPasswordFormValues) => void;
 }
 
 export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-    },
-  })
+      email: ''
+    }
+  });
 
   return (
     <motion.div
@@ -51,34 +44,22 @@ export function ForgotPasswordForm({ onSubmit }: ForgotPasswordFormProps) {
                   Enter your email address and we'll send you a link to reset your password.
                 </FormDescription>
                 <FormControl>
-                  <Input 
-                    placeholder="Enter your email" 
-                    className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
-                  />
+                  <Input placeholder="Enter your email" className="bg-input text-foreground placeholder:text-muted-foreground" {...field} />
                 </FormControl>
                 <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />
           <div className="space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground"
-            >
+            <Button type="submit" className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground">
               Send Reset Link
             </Button>
-            <Button 
-              type="button" 
-              variant="outline"
-              className="w-full hover:bg-muted"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" className="w-full hover:bg-muted" onClick={() => window.history.back()}>
               Back to Login
             </Button>
           </div>
         </form>
       </Form>
     </motion.div>
-  )
+  );
 }

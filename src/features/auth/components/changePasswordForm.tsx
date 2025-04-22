@@ -1,44 +1,34 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
-  oldPassword: z.string().min(8, "Password must be at least 8 characters"),
+  oldPassword: z.string().min(8, 'Password must be at least 8 characters'),
   newPassword: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
-})
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number')
+});
 
-export type ChangePasswordFormValues = z.infer<typeof formSchema>
+export type ChangePasswordFormValues = z.infer<typeof formSchema>;
 
 interface ChangePasswordFormProps {
-  onSubmit: (values: ChangePasswordFormValues) => void
+  onSubmit: (values: ChangePasswordFormValues) => void;
 }
 
 export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
   const form = useForm<ChangePasswordFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      oldPassword: "",
-      newPassword: "",
-    },
-  })
+      oldPassword: '',
+      newPassword: ''
+    }
+  });
 
   return (
     <motion.div
@@ -55,15 +45,13 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">Current Password</FormLabel>
-                <FormDescription className="text-muted-foreground">
-                  Enter your current password to verify it's you
-                </FormDescription>
+                <FormDescription className="text-muted-foreground">Enter your current password to verify it's you</FormDescription>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="password"
-                    placeholder="Enter current password" 
+                    placeholder="Enter current password"
                     className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-destructive" />
@@ -80,11 +68,11 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
                   Create a strong password with at least 8 characters, including uppercase, lowercase, and numbers
                 </FormDescription>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="password"
-                    placeholder="Enter new password" 
+                    placeholder="Enter new password"
                     className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-destructive" />
@@ -92,23 +80,15 @@ export function ChangePasswordForm({ onSubmit }: ChangePasswordFormProps) {
             )}
           />
           <div className="space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground"
-            >
+            <Button type="submit" className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground">
               Change Password
             </Button>
-            <Button 
-              type="button" 
-              variant="outline"
-              className="w-full hover:bg-muted"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" className="w-full hover:bg-muted" onClick={() => window.history.back()}>
               Cancel
             </Button>
           </div>
         </form>
       </Form>
     </motion.div>
-  )
+  );
 }

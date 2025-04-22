@@ -1,16 +1,10 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Permission } from "."
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { Permission } from '../../types';
 
 interface PermissionTableProps {
-  permissions: Permission[]
+  permissions: Permission[];
 }
 
 export function PermissionTable({ permissions }: PermissionTableProps) {
@@ -26,21 +20,19 @@ export function PermissionTable({ permissions }: PermissionTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {permissions.map((permission, index) => (
-            <TableRow 
-              key={index}
-              className="hover:bg-gray-50 transition-colors"
-            >
-              <TableCell className="text-gray-700">{permission.name}</TableCell>
-              <TableCell className="text-gray-700">{permission.description}</TableCell>
-              <TableCell className="text-gray-700">
-                <Badge variant="outline" className="bg-[#4A36EC]/10 text-[#4A36EC] border-0">
-                  {permission.module}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-gray-700">
-                <div className="flex gap-2 flex-wrap">
-                  {permission.actions.map(action => (
+          {permissions &&
+            permissions.map((permission, index) => (
+              <TableRow key={index} className="hover:bg-gray-50 transition-colors">
+                <TableCell className="text-gray-700">{permission.title}</TableCell>
+                <TableCell className="text-gray-700">{permission.description}</TableCell>
+                <TableCell className="text-gray-700">
+                  <Badge variant="outline" className="bg-[#4A36EC]/10 text-[#4A36EC] border-0">
+                    {permission.module}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-gray-700">
+                  {/* <div className="flex gap-2 flex-wrap">
+                  {permission.actions && permission.actions.map(action => (
                     <Badge 
                       key={action}
                       variant="outline" 
@@ -49,16 +41,13 @@ export function PermissionTable({ permissions }: PermissionTableProps) {
                       {action}
                     </Badge>
                   ))}
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+                </div> */}
+                </TableCell>
+              </TableRow>
+            ))}
           {permissions.length === 0 && (
             <TableRow>
-              <TableCell 
-                colSpan={4} 
-                className="text-center text-gray-500 py-8"
-              >
+              <TableCell colSpan={4} className="text-center text-gray-500 py-8">
                 No permissions added yet
               </TableCell>
             </TableRow>
@@ -66,5 +55,5 @@ export function PermissionTable({ permissions }: PermissionTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
-} 
+  );
+}

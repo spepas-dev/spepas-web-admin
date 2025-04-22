@@ -1,15 +1,9 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Manufacturer } from "../../types"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { Manufacturer } from '../../types';
 
 interface ManufacturerTableProps {
-  manufacturers: Manufacturer[]
+  manufacturers: Manufacturer[];
 }
 
 export function ManufacturerTable({ manufacturers }: ManufacturerTableProps) {
@@ -24,20 +18,14 @@ export function ManufacturerTable({ manufacturers }: ManufacturerTableProps) {
         </TableHeader>
         <TableBody>
           {manufacturers.map((manufacturer, index) => (
-            <TableRow 
-              key={index}
-              className="hover:bg-gray-50 transition-colors"
-            >
+            <TableRow key={index} className="hover:bg-gray-50 transition-colors">
               <TableCell className="text-gray-700">{manufacturer.name}</TableCell>
               <TableCell className="text-gray-700">{manufacturer.country}</TableCell>
             </TableRow>
           ))}
           {manufacturers.length === 0 && (
             <TableRow>
-              <TableCell 
-                colSpan={2} 
-                className="text-center text-gray-500 py-8"
-              >
+              <TableCell colSpan={2} className="text-center text-gray-500 py-8">
                 No manufacturers added yet
               </TableCell>
             </TableRow>
@@ -45,5 +33,5 @@ export function ManufacturerTable({ manufacturers }: ManufacturerTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
-} 
+  );
+}

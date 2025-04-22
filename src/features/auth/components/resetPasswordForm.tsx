@@ -1,44 +1,34 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  FormDescription,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const formSchema = z.object({
-  otp: z.string().min(6, "OTP must be at least 6 characters"),
+  otp: z.string().min(6, 'OTP must be at least 6 characters'),
   newPassword: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-    ),
-})
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one uppercase letter, one lowercase letter, and one number')
+});
 
-export type ResetPasswordFormValues = z.infer<typeof formSchema>
+export type ResetPasswordFormValues = z.infer<typeof formSchema>;
 
 interface ResetPasswordFormProps {
-  onSubmit: (values: ResetPasswordFormValues) => void
+  onSubmit: (values: ResetPasswordFormValues) => void;
 }
 
 export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      otp: "",
-      newPassword: "",
-    },
-  })
+      otp: '',
+      newPassword: ''
+    }
+  });
 
   return (
     <motion.div
@@ -55,15 +45,9 @@ export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">OTP Code</FormLabel>
-                <FormDescription className="text-muted-foreground">
-                  Enter the verification code sent to your email
-                </FormDescription>
+                <FormDescription className="text-muted-foreground">Enter the verification code sent to your email</FormDescription>
                 <FormControl>
-                  <Input 
-                    placeholder="Enter OTP code" 
-                    className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
-                  />
+                  <Input placeholder="Enter OTP code" className="bg-input text-foreground placeholder:text-muted-foreground" {...field} />
                 </FormControl>
                 <FormMessage className="text-destructive" />
               </FormItem>
@@ -75,15 +59,13 @@ export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-foreground">New Password</FormLabel>
-                <FormDescription className="text-muted-foreground">
-                  Create a strong password with at least 8 characters
-                </FormDescription>
+                <FormDescription className="text-muted-foreground">Create a strong password with at least 8 characters</FormDescription>
                 <FormControl>
-                  <Input 
+                  <Input
                     type="password"
-                    placeholder="Enter new password" 
+                    placeholder="Enter new password"
                     className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-destructive" />
@@ -91,23 +73,15 @@ export function ResetPasswordForm({ onSubmit }: ResetPasswordFormProps) {
             )}
           />
           <div className="space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground"
-            >
+            <Button type="submit" className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground">
               Reset Password
             </Button>
-            <Button 
-              type="button" 
-              variant="outline"
-              className="w-full hover:bg-muted"
-              onClick={() => window.history.back()}
-            >
+            <Button type="button" variant="outline" className="w-full hover:bg-muted" onClick={() => window.history.back()}>
               Back to Login
             </Button>
           </div>
         </form>
       </Form>
     </motion.div>
-  )
+  );
 }

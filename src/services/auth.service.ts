@@ -1,26 +1,25 @@
-import { ApiService } from './api.service'
+import { ApiService } from './api.service';
 
 interface AuthResponse {
-    status: number
-    message: string
-    data: {
-        token: string
-        user: any
-        refreshToken: string
-    }
+  status: number;
+  message: string;
+  data: {
+    token: string;
+    user: any;
+    refreshToken: string;
+  };
 }
 
 export class AuthService {
-    static async login(email: string, password: string) {
-        
-        return ApiService.post<AuthResponse>('auth/signin', { email, password })
-    }
+  static async login(email: string, password: string) {
+    return ApiService.post<AuthResponse>('auth/signin', { email, password });
+  }
 
-    static async logout() {
-        return ApiService.post('/auth/logout')
-    }
+  static async logout() {
+    return ApiService.post('/auth/logout');
+  }
 
-    static async getCurrentUser() {
-        return ApiService.get<AuthResponse['data']['user']>('/auth/user')
-    }
+  static async getCurrentUser() {
+    return ApiService.get<AuthResponse['data']['user']>('/auth/user');
+  }
 }

@@ -1,25 +1,19 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Edit, Trash2 } from "lucide-react"
-import { Group } from "../../types"
+import { Edit, Trash2 } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { Group } from '../../types';
 
 interface GroupTableProps {
-  groups: Group[]
+  groups: Group[];
 }
 
 export function GroupTable({ groups }: GroupTableProps) {
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString()
-  }
+    return new Date(dateString).toLocaleDateString();
+  };
 
   return (
     <div className="border rounded-lg bg-white">
@@ -85,14 +79,18 @@ export function GroupTable({ groups }: GroupTableProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {/* Handle edit */}}
+                    onClick={() => {
+                      /* Handle edit */
+                    }}
                   >
                     <Edit className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => {/* Handle delete */}}
+                    onClick={() => {
+                      /* Handle delete */
+                    }}
                     className="text-red-600"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -111,5 +109,5 @@ export function GroupTable({ groups }: GroupTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
-} 
+  );
+}

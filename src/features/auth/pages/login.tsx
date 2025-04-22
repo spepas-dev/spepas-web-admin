@@ -1,26 +1,27 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion"
-import { LoginForm, LoginFormValues } from "../components/loginForm"
-import Logo from "@/assets/logo.svg?react"
-import { useAuth } from "../contexts/AuthContext/AuthContext";
+import { motion } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import Logo from '@/assets/logo.svg?react';
 
+import { LoginForm, LoginFormValues } from '../components/loginForm';
+import { useStore } from '@/stores';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { actions, isLoading } = useStore((state) => state);
 
   const handleSubmit = async (values: LoginFormValues) => {
     // Handle login logic here
     try {
-      await login(values.email, values.password);
-      // navigate(location.state?.from || '/');
-      navigate('/');
+      await actions.login(values.email, values.password);
+      
+      navigate(location.state?.from || '/');
+      // navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -61,5 +62,5 @@ export default function LoginPage() {
         <LoginForm onSubmit={handleSubmit} />
       </motion.div>
     </div>
-  )
+  );
 }

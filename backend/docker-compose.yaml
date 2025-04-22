@@ -2,7 +2,7 @@
 services:
   gatewayservice:
     container_name: gateway_service_container
-    image: jboadi/spepas-gateway:stable
+    image: jboadi/sp-gateway:stable
     restart: always
     environment:
       - ENABLE_APM=0
@@ -13,11 +13,11 @@ services:
       - SECRET_KEY_ONE=013bfec1c5198b5a819c25f4a95ed46f
       - SECRET_KEY_TWO=81374e5d58b9237d2d7547c5f4e74297
       - CLIENT_URL=http://localhost:3000
-      - API_DOCS_URL=http://localhost:4000
+      - API_DOCS_URL=http://gateway_service_container:4000
       - AUTH_BASE_URL=http://spauth_container:9007
-      - USER_BASE_URL=http://localhost:9009
-      - PRODUCT_BASE_URL=http://localhost:9010
-      - ORDER_BASE_URL=http://localhost:9011
+      - USER_BASE_URL=http://user_container:9009
+      - PRODUCT_BASE_URL=http://product_container:9010
+      - ORDER_BASE_URL=http://sporder_container:9011
       - DATABASE_BASE_URL=http://spdb_container:9006
       - OTP_BASE_URL=http://spot_container:9008
       - REDIS_HOST=rediss://red-ct4332a3esus73fc9psg:eRFLu6utqE91ZJswST5vy9GEoSpX5CuN@frankfurt-redis.render.com:6379

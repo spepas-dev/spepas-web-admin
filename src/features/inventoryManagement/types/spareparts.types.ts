@@ -29,13 +29,12 @@ export interface SparePart {
   images: SparePartImage[];
 }
 
-
 export interface CreateSparePartDTO {
-    name: string
-    description: string
-    carBrand_ID: string
+  name: string;
+  description: string;
+  carModel_ID: string;
 }
 
-export interface UpdateSparePartDTO extends Partial<CreateSparePartDTO> {
-    // Additional fields specific to updates can go here
-  }
+// export interface UpdateSparePartDTO extends Partial<CreateSparePartDTO> {
+//   // Additional fields specific to updates can go here
+// }

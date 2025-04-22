@@ -1,37 +1,34 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
 
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useStore } from '@/stores';
+import { Loader2 } from 'lucide-react';
 const formSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-})
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters')
+});
 
-export type LoginFormValues = z.infer<typeof formSchema>
+export type LoginFormValues = z.infer<typeof formSchema>;
 
 interface LoginFormProps {
-  onSubmit: (values: LoginFormValues) => void
+  onSubmit: (values: LoginFormValues) => void;
 }
 
 export function LoginForm({ onSubmit }: LoginFormProps) {
+  const { isLoading } = useStore((state) => state);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
+      email: '',
+      password: ''
+    }
+  });
 
   return (
     <motion.div
@@ -49,11 +46,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
               <FormItem>
                 <FormLabel className="text-foreground">Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="Enter your email" 
-                    className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
-                  />
+                  <Input placeholder="Enter your email" className="bg-input text-foreground placeholder:text-muted-foreground" {...field} />
                 </FormControl>
                 <FormMessage className="text-destructive" />
               </FormItem>
@@ -66,25 +59,22 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
               <FormItem>
                 <FormLabel className="text-foreground">Password</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="password" 
-                    placeholder="Enter your password" 
+                  <Input
+                    type="password"
+                    placeholder="Enter your password"
                     className="bg-input text-foreground placeholder:text-muted-foreground"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-destructive" />
               </FormItem>
             )}
           />
-          <Button 
-            type="submit" 
-            className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground"
-          >
-            Sign In
+          <Button type="submit" className="w-full bg-secondary hover:bg-secondary-light text-secondary-foreground" disabled={isLoading}>
+            {isLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : 'Sign In'}
           </Button>
         </form>
       </Form>
     </motion.div>
-  )
+  );
 }
