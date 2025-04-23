@@ -98,7 +98,7 @@ export const ROUTE_PATHS = {
   },
   ORDER_MANAGEMENT: {
     BASE: 'order-management',
-    BIDS: {
+    ORDERS: {
       BASE: 'orders',
       DETAIL: (id: string) => `/orders/${id}`
     }
