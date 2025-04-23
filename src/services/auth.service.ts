@@ -5,7 +5,7 @@ interface AuthResponse {
   message: string;
   data: {
     token: string;
-    user: any;
+    user: unknown;
     refreshToken: string;
   };
 }

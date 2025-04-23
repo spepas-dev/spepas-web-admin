@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { ManufactureQueryParams, ManufacturesService } from '../../services/manufactures.services';
-import { Manufacturer } from '../../types/manufactures.types';
+// import { Manufacturer } from '../../types/manufactures.types';
 
 export const manufactureKeys = {
   all: ['manufactures'] as const,

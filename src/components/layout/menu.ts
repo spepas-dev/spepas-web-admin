@@ -1,4 +1,19 @@
-import { Bike, Bolt, Car, CreditCard, Factory, Handshake, Key, Shield, ShoppingCart, Store, Tag, Users, Wrench } from 'lucide-react';
+import {
+  Bike,
+  Bolt,
+  Car,
+  CreditCard,
+  Factory,
+  Handshake,
+  Key,
+  LayoutDashboard,
+  Shield,
+  ShoppingCart,
+  Store,
+  Tag,
+  Users,
+  Wrench
+} from 'lucide-react';
 
 import { MenuGroup } from '../../types/MenuItem';
 
@@ -18,6 +33,12 @@ export const menuGroups: MenuGroup[] = [
         name: 'Roles',
         icon: Shield,
         path: '/access-management/roles'
+      },
+      {
+        id: 'applications',
+        name: 'Applications',
+        icon: LayoutDashboard,
+        path: '/access-management/applications'
       },
       {
         id: 'groups',
