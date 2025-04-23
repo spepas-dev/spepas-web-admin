@@ -102,5 +102,11 @@ export const ROUTE_PATHS = {
       BASE: 'orders',
       DETAIL: (id: string) => `/orders/${id}`
     }
+  },
+  WALLET_MANAGEMENT: {
+    BASE: 'wallet-management',
+    WALLETS: {
+      BASE: 'wallets'
+    }
   }
 };

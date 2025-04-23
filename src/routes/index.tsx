@@ -9,6 +9,7 @@ import { authRoutes } from './authentication.routes';
 import { inventoryManagementRoutes } from './inventory-management.routes';
 import { orderManagementRoutes } from './order-management.routes';
 import { userManagementRoutes } from './user-management.routes';
+import { walletManagementRoutes } from './wallet-management.routes';
 
 const WelcomePage = lazy(() => import('../components/shared/welcome'));
 
@@ -25,7 +26,8 @@ const routes: RouteObject[] = [
       ...accessManagementRoutes,
       ...inventoryManagementRoutes,
       ...userManagementRoutes,
-      ...orderManagementRoutes
+      ...orderManagementRoutes,
+      ...walletManagementRoutes
     ]
   },
   ...authRoutes

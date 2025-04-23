@@ -12,6 +12,7 @@ import {
   Store,
   Tag,
   Users,
+  Wallet,
   Wrench
 } from 'lucide-react';
 
@@ -115,14 +116,14 @@ export const menuGroups: MenuGroup[] = [
     ]
   },
   {
-    id: 'payment-management',
-    title: 'Payment Management',
+    id: 'wallet-management',
+    title: 'Wallet Management',
     items: [
       {
-        id: 'payments',
-        name: 'Payments',
-        icon: CreditCard,
-        path: '/payment-management/payments'
+        id: 'wallets',
+        name: 'Wallets',
+        icon: Wallet,
+        path: '/wallet-management/wallets'
       }
     ]
   },

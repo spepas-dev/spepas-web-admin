@@ -5,11 +5,11 @@ import Sidebar from './sidebar';
 
 export const RootLayout = () => {
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       <Sidebar categories={[]} />
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      <div className="flex-1 flex flex-col">
         <Navbar />
-        <div className="p-4 ">
+        <div className="container mx-auto px-4">
           <Outlet />
         </div>
       </div>
