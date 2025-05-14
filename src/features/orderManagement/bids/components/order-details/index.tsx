@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, ChevronRight, Package, ShoppingCart, Tag, Truck, User } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Handshake, Package, ShoppingCart, Tag, Truck, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -261,7 +261,7 @@ export default function OrderDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Request ID</p>
-                      <p className="text-lg font-mono text-sm">{order.request_ID.substring(0, 8)}...</p>
+                      <p className="font-mono text-sm">{order.request_ID.substring(0, 8)}...</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Date Created</p>
@@ -279,7 +279,7 @@ export default function OrderDetailsPage() {
                     )}
                     <div>
                       <p className="text-sm font-medium text-gray-600">Price</p>
-                      <p className="text-lg font-bold text-[#4A36EC]">${order.price.toFixed(2)}</p>
+                      <p className="text-lg font-bold text-[#4A36EC]">GHS {order.price.toFixed(2)}</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Quantity</p>
@@ -391,7 +391,7 @@ export default function OrderDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Seller ID</p>
-                      <p className="text-lg font-mono text-sm">{order.seller.Seller_ID.substring(0, 8)}...</p>
+                      <p className="font-mono text-sm">{order.seller.Seller_ID.substring(0, 8)}...</p>
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">Date Added</p>
@@ -409,7 +409,7 @@ export default function OrderDetailsPage() {
                       <CardDescription>GOPA information</CardDescription>
                     </div>
                     <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                      <Tag className="w-5 h-5 text-[#4A36EC]" />
+                      <Handshake className="w-5 h-5 text-[#4A36EC]" />
                     </div>
                   </div>
                 </CardHeader>
@@ -421,7 +421,7 @@ export default function OrderDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-gray-600">User ID</p>
-                      <p className="text-lg font-mono text-sm">{order.gopa.User_ID.substring(0, 8)}...</p>
+                      <p className="font-mono text-sm">{order.gopa.User_ID.substring(0, 8)}...</p>
                     </div>
                   </div>
                 </CardContent>

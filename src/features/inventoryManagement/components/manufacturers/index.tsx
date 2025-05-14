@@ -6,6 +6,7 @@ import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { toastConfig } from '@/lib/toast';
+import { AuthService } from '@/services/auth.service';
 
 import { useCreateManufacturer } from '../../api/mutations/manufacturerMutations';
 import { useManufactures } from '../../api/queries/manufacturesQueries';
@@ -34,14 +35,26 @@ export default function ManufacturersPage() {
   };
 
   useEffect(() => {
-    if (data) {
-      setManufacturers(data.data);
-    }
-
-    return () => {
-      setManufacturers([]);
+    const queryManufacturers = async () => {
+      try {
+        const data = await AuthService.getManufactures();
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
     };
-  }, [data]);
+    queryManufacturers();
+  }, []);
+
+  // useEffect(() => {
+  //   if (data) {
+  //     setManufacturers(data.data);
+  //   }
+
+  //   return () => {
+  //     setManufacturers([]);
+  //   };
+  // }, [data]);
 
   const stats = [
     {

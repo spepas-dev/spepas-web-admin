@@ -9,12 +9,12 @@ interface ProxyError extends Error {
 }
 
 // https://vite.dev/config/
-export default ({ mode }: { mode: string }) => {
+export default defineConfig(({ mode }: { mode: string }) => {
   console.log('🚀 Vite Config Mode:', mode);
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   // process.env = {...process.env, ...loadEnv(mode, process.cwd(), 'local')}
   console.log('mode', mode);
-  const apiUrl = process.env.VITE_API_URL;
+  const apiUrl = process.env.VITE_BASE_API_URL;
   console.log('📡 API URL:', apiUrl);
   const proxyConfig: ProxyOptions = {
     target: apiUrl,
@@ -42,7 +42,7 @@ export default ({ mode }: { mode: string }) => {
 
           // Add any custom headers if needed
           proxyReq.setHeader('X-Forwarded-Proto', 'http');
-          proxyReq.setHeader('Origin', 'http://localhost:5173');
+          proxyReq.setHeader('Origin', 'http://localhost:3000');
         });
 
         proxy.on('proxyRes', (proxyRes, req, res) => {
@@ -112,5 +112,5 @@ export default ({ mode }: { mode: string }) => {
   };
 
   console.log('📦 Final proxy configuration:', JSON.stringify(proxyConfig, null, 2));
-  return defineConfig(config);
-};
+  return config;
+});

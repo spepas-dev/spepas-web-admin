@@ -1,12 +1,12 @@
 import { ENV_CONFIG } from './env.config';
 
-const API_VERSION = ENV_CONFIG.API_VERSION || 'v1';
-const PROXY_BASE = ENV_CONFIG.PROXY_BASE_URL;
-const BASE_PATH = `${ENV_CONFIG.PROXY_BASE_URL}/gateway/${API_VERSION}`;
+// const API_VERSION = ENV_CONFIG.API_VERSION || 'v1';
+// const PROXY_BASE = ENV_CONFIG.PROXY_BASE_URL;
+const BASE_PATH = ENV_CONFIG.PROXY_BASE_URL;
 
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: `${BASE_PATH}/auth/login`,
+    LOGIN: `${BASE_PATH}/auth/signin`,
     LOGOUT: `${BASE_PATH}/auth/logout`,
     REFRESH_TOKEN: `${BASE_PATH}/auth/refresh`,
     FORGOT_PASSWORD: `${BASE_PATH}/auth/forgot-password`,

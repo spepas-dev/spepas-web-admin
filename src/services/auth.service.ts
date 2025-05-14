@@ -1,3 +1,5 @@
+import { API_ROUTES } from '@/config/api.config';
+
 import { ApiService } from './api.service';
 
 interface AuthResponse {
@@ -12,7 +14,13 @@ interface AuthResponse {
 
 export class AuthService {
   static async login(email: string, password: string) {
-    return ApiService.postAuth<AuthResponse>('auth/signin', { email, password });
+    return ApiService.post<AuthResponse>(API_ROUTES.AUTH.LOGIN, { email, password });
+  }
+
+  static async getManufactures() {
+    const data = ApiService.get<unknown>('/api/gateway/v1/inventry/car-manufacturers-all');
+    console.log(data, 'Data=============================================;');
+    return data;
   }
 
   static async logout() {

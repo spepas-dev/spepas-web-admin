@@ -419,7 +419,7 @@ export default function SparePartOrdersPage() {
                     <TableCell>{order.gopa.name}</TableCell>
                     <TableCell>{order.orderRequest.sparePart.name}</TableCell>
                     <TableCell className="max-w-xs truncate">{order.orderRequest.sparePart.description}</TableCell>
-                    <TableCell>${order.price.toFixed(2)}</TableCell>
+                    <TableCell>GHS {order.price.toFixed(2)}</TableCell>
                     <TableCell>{order.orderRequest.quantity}</TableCell>
                     <TableCell>
                       {order.orderRequest.sparePart.carModel.name} ({order.orderRequest.sparePart.carModel.yearOfMake})

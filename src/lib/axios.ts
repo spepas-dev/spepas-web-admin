@@ -39,10 +39,10 @@
 
 import axios from 'axios';
 
-// import { ENV_CONFIG } from '@/config';
+import { ENV_CONFIG } from '@/config';
 
 export const axiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: ENV_CONFIG.PROXY_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -51,8 +51,18 @@ export const axiosInstance = axios.create({
   withCredentials: true
 });
 
+// export const axiosInstance = axios.create({
+//   baseURL: '/api',
+//   timeout: 10000,
+//   headers: {
+//     'Content-Type': 'application/json',
+//     Accept: 'application/json'
+//   },
+//   withCredentials: true
+// });
+
 export const axiosInstanceAuth = axios.create({
-  baseURL: '/api',
+  baseURL: ENV_CONFIG.PROXY_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

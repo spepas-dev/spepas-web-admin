@@ -17,9 +17,9 @@ const routes: RouteObject[] = [
   {
     path: '/',
     element: (
-      <ProtectedRoute>
-        <RootLayout />
-      </ProtectedRoute>
+      // <ProtectedRoute>
+      <RootLayout />
+      // </ProtectedRoute>
     ),
     children: [
       { index: true, element: <WelcomePage /> },

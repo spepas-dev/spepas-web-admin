@@ -100,7 +100,12 @@ export const ROUTE_PATHS = {
     BASE: 'order-management',
     ORDERS: {
       BASE: 'orders',
-      DETAIL: (id: string) => `/orders/${id}`
+      DETAIL: (id: string) => `/orders/${id}`,
+      SELLERS: {
+        BASE: 'sellers',
+        DETAIL: (id: string) => `/orders/sellers/${id}`,
+        HISTORY: (id: string) => `/orders/sellers/${id}/history`
+      }
     }
   },
   WALLET_MANAGEMENT: {

@@ -216,7 +216,7 @@ export default function BidsPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Price:</span>
-                  <span className="font-semibold">${part.price}</span>
+                  <span className="font-semibold">GHS {part.price}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Stock:</span>

@@ -5,13 +5,13 @@ import { BrandQueryParams, BrandsService } from '../../services/brands.services'
 import { Brand } from '../../types/brands.types';
 
 export const brandKeys = {
-  all: ['brands'] as const,
-  detail: (id: string) => [...brandKeys.all, 'detail', id] as const,
-  lists: () => [...brandKeys.all, 'list'] as const,
-  list: (params: BrandQueryParams) => [...brandKeys.lists(), params] as const,
-  byType: (type: Brand['type']) => [...brandKeys.all, 'type', type] as const,
-  stats: () => [...brandKeys.all, 'stats'] as const
-};
+  all: ['brands'],
+  detail: (id: string) => [...brandKeys.all, 'detail', id],
+  lists: () => [...brandKeys.all, 'list'],
+  list: (params: BrandQueryParams) => [...brandKeys.lists(), params],
+  byType: (type: Brand['type']) => [...brandKeys.all, 'type', type],
+  stats: () => [...brandKeys.all, 'stats']
+} as const;
 
 export const useBrands = (params?: BrandQueryParams) => {
   return useQuery({

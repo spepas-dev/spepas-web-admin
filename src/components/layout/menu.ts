@@ -105,14 +105,14 @@ export const menuGroups: MenuGroup[] = [
         id: 'seller-orders',
         name: 'Seller Orders',
         icon: Store,
-        path: '/order-management/seller-orders'
-      },
-      {
-        id: 'requests',
-        name: 'Requests',
-        icon: ShoppingCart,
-        path: '/order-management/requests'
+        path: '/order-management/orders/sellers'
       }
+      // {
+      //   id: 'requests',
+      //   name: 'Requests',
+      //   icon: ShoppingCart,
+      //   path: '/order-management/requests'
+      // }
     ]
   },
   {
