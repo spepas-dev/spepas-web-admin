@@ -14,7 +14,7 @@ interface AuthResponse {
 
 export class AuthService {
   static async login(email: string, password: string) {
-    return ApiService.post<AuthResponse>(API_ROUTES.AUTH.LOGIN, { email, password });
+    return ApiService.postAuth<AuthResponse>(API_ROUTES.AUTH.LOGIN, { email, password }, { withCredentials: true });
   }
 
   static async getManufactures() {

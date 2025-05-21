@@ -9,7 +9,7 @@ interface ProxyError extends Error {
 }
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }: { mode: string }) => {
+export default ({ mode }: { mode: string }) => {
   console.log('🚀 Vite Config Mode:', mode);
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   // process.env = {...process.env, ...loadEnv(mode, process.cwd(), 'local')}
@@ -26,9 +26,12 @@ export default defineConfig(({ mode }: { mode: string }) => {
     },
     secure: false, // Set to true in production
     ws: true, // Enable WebSocket proxying
+    // This is critical for cookie-based authentication
+    cookieDomainRewrite: {
+      '*': 'localhost'
+    },
     configure: (proxy, options) => {
       console.log('⚙️ Configuring proxy for mode:', mode);
-
       // Log only in development
       if (mode === 'development') {
         console.log('🛠️ Setting up development proxy handlers');
@@ -40,8 +43,15 @@ export default defineConfig(({ mode }: { mode: string }) => {
           console.log('Method:', method);
           console.log('Headers:', headers);
 
-          // Add any custom headers if needed
-          proxyReq.setHeader('X-Forwarded-Proto', 'http');
+          // Forward cookies from the browser request to the API server
+          if (headers.cookie) {
+            console.log('🍪 Forwarding cookies:', headers.cookie);
+            proxyReq.setHeader('Cookie', headers.cookie);
+          } else {
+            console.log('⚠️ No cookies found in request');
+          }
+
+          // Set Origin to match your frontend
           proxyReq.setHeader('Origin', 'http://localhost:3000');
         });
 
@@ -51,6 +61,11 @@ export default defineConfig(({ mode }: { mode: string }) => {
           console.log('\n✨ Incoming Response:');
           console.log('Status:', proxyRes.statusCode);
           console.log('Headers:', proxyRes.headers);
+
+          // Log Set-Cookie headers if present
+          if (proxyRes.headers['set-cookie']) {
+            console.log('🍪 Received cookies:', proxyRes.headers['set-cookie']);
+          }
 
           proxyRes.on('data', (chunk) => {
             chunks.push(chunk);
@@ -112,5 +127,5 @@ export default defineConfig(({ mode }: { mode: string }) => {
   };
 
   console.log('📦 Final proxy configuration:', JSON.stringify(proxyConfig, null, 2));
-  return config;
-});
+  return defineConfig(config);
+};

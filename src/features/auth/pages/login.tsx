@@ -2,9 +2,9 @@ import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Logo from '@/assets/logo.svg?react';
+import { useStore } from '@/stores';
 
 import { LoginForm, LoginFormValues } from '../components/loginForm';
-import { useStore } from '@/stores';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ export default function LoginPage() {
     // Handle login logic here
     try {
       await actions.login(values.email, values.password);
-      
       navigate(location.state?.from || '/');
       // navigate('/');
     } catch (error) {

@@ -1,9 +1,10 @@
+import { NavigateFunction } from 'react-router-dom';
 import { StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { User } from '@/types';
-import { AuthService } from '@/services/auth.service';
+
 import { toastConfig } from '@/lib/toast';
-import { NavigateFunction } from 'react-router-dom';
+import { AuthService } from '@/services/auth.service';
+import { User } from '@/types';
 
 export interface AuthSlice {
   token: string | null;
@@ -33,7 +34,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     setRefreshToken: (refresh_token) => set({ refresh_token, isAuthenticated: !!refresh_token }),
     setUser: (user) => set({ user }),
     setLoading: (isLoading) => set({ isLoading }),
-    
+
     login: async (email: string, password: string) => {
       try {
         set({ isLoading: true });
@@ -43,9 +44,9 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
 
         localStorage.setItem('auth_token', token);
 
-        set({ 
-          token, 
-          refresh_token: refreshToken, 
+        set({
+          token,
+          refresh_token: refreshToken,
           user,
           isAuthenticated: true,
           isLoading: false
@@ -63,14 +64,14 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
         set({ isLoading: true });
         // await AuthService.logout();
         localStorage.removeItem('auth_token');
-        set({ 
-          token: null, 
+        set({
+          token: null,
           refresh_token: null,
-          user: null, 
+          user: null,
           isAuthenticated: false,
           isLoading: false
         });
-        
+
         if (navigate) {
           console.log('navigate');
           navigate('/auth/login');
@@ -94,17 +95,17 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
         }
 
         const currentUser = await AuthService.getCurrentUser();
-        set({ 
+        set({
           token,
           user: currentUser,
           isAuthenticated: true,
           isLoading: false
         });
       } catch (error) {
-        set({ 
-          token: null, 
+        set({
+          token: null,
           refresh_token: null,
-          user: null, 
+          user: null,
           isAuthenticated: false,
           isLoading: false
         });

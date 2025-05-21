@@ -3,34 +3,31 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { toastConfig } from '@/lib/toast';
 import { AuthService } from '@/services/auth.service';
 import { useStore } from '@/stores';
+import { User } from '@/types';
 
 interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
+// Define error type for better type safety
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { actions, user: loggedInUser, token} = useStore((state) => state);
+  const { actions } = useStore((state) => state);
 
   useEffect(() => {
-    checkAuth();
+    actions.checkAuth();
   }, []);
-
-  const checkAuth = async () => {
-    try {
-      if (!token) {
-        return;
-      }
-
-      const user = loggedInUser;
-      actions.setToken(token);
-      actions.setUser(user);
-    } catch (error) {
-      actions.logout();
-    }
-  };
 
   const login = async (email: string, password: string) => {
     try {
@@ -38,14 +35,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         data: { token, refreshToken, user }
       } = await AuthService.login(email, password);
 
-      // localStorage.setItem('auth_token', token);
-
       actions.setToken(token);
       actions.setRefreshToken(refreshToken);
-      actions.setUser(user);
+      actions.setUser(user as User);
 
       toastConfig.success('Login successful');
-    } catch (error) {
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      const errorMessage = apiError?.response?.data?.message || apiError.message || 'Login failed';
+      toastConfig.error(errorMessage);
       throw error;
     }
   };
@@ -53,20 +51,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       await AuthService.logout();
-      // localStorage.removeItem('auth_token');
       actions.logout();
-    } catch (error) {
-      console.error('Logout error:', error);
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      console.error('Logout error:', apiError);
+      toastConfig.error('Logout failed');
     }
   };
 
   return <AuthContext.Provider value={{ login, logout }}>{children}</AuthContext.Provider>;
 };
 
-export const useAuthContext = () => {
+export const useAuthContext = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
 };
