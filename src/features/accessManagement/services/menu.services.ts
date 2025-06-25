@@ -1,8 +1,9 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import { CreateMenuItemDto, MenuItem, MenuListResponse, MenuStats, UpdateMenuItemDto } from '../types/menu.types';
 
-const API_URL = '/access-management/menu';
+const API_URL = API_ROUTES.ACCESS_MANAGEMENT.MENU;
 
 export interface MenuQueryParams {
   search?: string;
@@ -13,11 +14,11 @@ export interface MenuQueryParams {
 
 export class MenuService {
   static async getMenu(id: string) {
-    return ApiService.get<MenuItem>(`${API_URL}/${id}`);
+    return ApiService.get<MenuItem>(`${API_URL.DETAIL(id)}`);
   }
 
   static async createMenu(data: CreateMenuItemDto) {
-    return ApiService.post<MenuItem>(API_URL, data);
+    return ApiService.post<MenuItem>(API_URL.CREATE, data);
   }
 
   static async updateMenu(id: string, data: UpdateMenuItemDto) {
@@ -29,7 +30,7 @@ export class MenuService {
   }
 
   static async getMenuList(params?: MenuQueryParams) {
-    return ApiService.get<MenuListResponse>(API_URL, { params });
+    return ApiService.get<MenuListResponse>(API_URL.BASE, { params });
   }
 
   static async getMenuStats(id: string) {

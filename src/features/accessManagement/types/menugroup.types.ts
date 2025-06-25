@@ -26,5 +26,3 @@ export type CreateMenuGroupDto = Omit<MenuGroup, 'id' | 'createdAt' | 'updatedAt
 export type UpdateMenuGroupDto = Partial<CreateMenuGroupDto>;
 
 export type MenuGroupListResponse = Response<MenuGroup[]>;
-
-export type MenuGroupResponse = Response<MenuGroup>;

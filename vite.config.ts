@@ -30,13 +30,13 @@ export default ({ mode }: { mode: string }) => {
     cookieDomainRewrite: {
       '*': 'localhost'
     },
-    configure: (proxy, options) => {
+    configure: (proxy) => {
       console.log('⚙️ Configuring proxy for mode:', mode);
       // Log only in development
       if (mode === 'development') {
         console.log('🛠️ Setting up development proxy handlers');
 
-        proxy.on('proxyReq', (proxyReq, req, res) => {
+        proxy.on('proxyReq', (proxyReq, req) => {
           const { method, url, headers } = req;
           console.log('\n🔄 Outgoing Request:');
           console.log('URL:', apiUrl + (url?.replace(/^\/api/, '') || ''));
@@ -55,7 +55,7 @@ export default ({ mode }: { mode: string }) => {
           proxyReq.setHeader('Origin', 'http://localhost:3000');
         });
 
-        proxy.on('proxyRes', (proxyRes, req, res) => {
+        proxy.on('proxyRes', (proxyRes) => {
           const chunks: Buffer[] = [];
 
           console.log('\n✨ Incoming Response:');

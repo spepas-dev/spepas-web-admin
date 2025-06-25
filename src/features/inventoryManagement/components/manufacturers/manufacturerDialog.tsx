@@ -4,6 +4,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
+import { CountryDropdown } from '@/components/ui/country-dropdown';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -41,7 +42,7 @@ export function ManufacturerDialog({ open, onOpenChange, onSubmit }: Manufacture
   });
 
   const handleSubmit = (values: FormValues) => {
-    onSubmit(values.manufacturers);
+    onSubmit(values.manufacturers as Manufacturer[]);
     form.reset();
   };
 
@@ -82,13 +83,11 @@ export function ManufacturerDialog({ open, onOpenChange, onSubmit }: Manufacture
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700">Country</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Enter country"
-                              className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
-                              {...field}
-                            />
-                          </FormControl>
+                          <CountryDropdown
+                            placeholder="Enter country"
+                            defaultValue={field.value}
+                            onChange={(country) => field.onChange(country.name)}
+                          />
                           <FormMessage className="text-red-500" />
                         </FormItem>
                       )}

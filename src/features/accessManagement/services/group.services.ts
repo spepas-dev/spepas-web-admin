@@ -1,8 +1,7 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import { CreateGroupDto, Group, GroupListResponse, GroupStats, UpdateGroupDto } from '../types/group.types';
-
-const API_URL = '/access-management/group';
 
 export interface GroupQueryParams {
   search?: string;
@@ -11,13 +10,15 @@ export interface GroupQueryParams {
   limit?: number;
 }
 
+const API_URL = API_ROUTES.ACCESS_MANAGEMENT.GROUP;
+
 export class GroupService {
   static async getGroup(id: string) {
-    return ApiService.get<Group>(`${API_URL}/${id}`);
+    return ApiService.get<Group>(`${API_URL.DETAIL(id)}`);
   }
 
   static async createGroup(data: CreateGroupDto) {
-    return ApiService.post<Group>(API_URL, data);
+    return ApiService.post<Group>(API_URL.CREATE, data);
   }
 
   static async updateGroup(id: string, data: UpdateGroupDto) {
@@ -33,6 +34,6 @@ export class GroupService {
   }
 
   static async getGroupList(params?: GroupQueryParams) {
-    return ApiService.get<GroupListResponse>(API_URL, { params });
+    return ApiService.get<GroupListResponse>(API_URL.BASE, { params });
   }
 }

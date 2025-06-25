@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Input } from '@/components/ui/input';
 
 // Mock data for spare parts - replace with actual data later
@@ -91,7 +92,7 @@ export default function BidsPage() {
     {
       title: 'Total Parts',
       value: spareParts.length,
-      icon: Package,
+      Icon: Package,
       description: 'Available spare parts',
       trend: '+12.5%',
       trendUp: true
@@ -99,7 +100,7 @@ export default function BidsPage() {
     {
       title: 'Active Bids',
       value: spareParts.reduce((sum, part) => sum + part.bids, 0),
-      icon: Tag,
+      Icon: Tag,
       description: 'Total active bids',
       trend: '+8.3%',
       trendUp: true
@@ -107,7 +108,7 @@ export default function BidsPage() {
     {
       title: 'Categories',
       value: [...new Set(spareParts.map((part) => part.category))].length,
-      icon: ShoppingCart,
+      Icon: ShoppingCart,
       description: 'Different part categories',
       trend: '+5.2%',
       trendUp: true
@@ -115,7 +116,7 @@ export default function BidsPage() {
     {
       title: 'Manufacturers',
       value: [...new Set(spareParts.map((part) => part.manufacturer))].length,
-      icon: Package,
+      Icon: Package,
       description: 'Different manufacturers',
       trend: '+3.7%',
       trendUp: true
@@ -161,32 +162,7 @@ export default function BidsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Spare Parts Grid */}
       <motion.div

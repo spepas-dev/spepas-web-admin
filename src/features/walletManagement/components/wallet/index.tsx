@@ -1,14 +1,26 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ChevronRight, CreditCard, Plus, Search, Wallet as WalletIcon } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronRight, CreditCard, MoreHorizontal, Plus, Search, Wallet as WalletIcon } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/custom/dataTable';
+import { CardGrid } from '@/components/ui/custom/staticCards';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { toastConfig } from '@/lib/toast';
+import { cn } from '@/lib/utils';
 
+import { useWallets } from '../../api/queries/walletQueries';
 import { WalletDialog } from './walletDialog';
 import { WalletSearchDialog } from './walletSearchDialog';
-import { WalletTable } from './walletTable';
 
 export interface Wallet {
   id: number;
@@ -24,38 +36,87 @@ export interface Wallet {
 export default function WalletsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
-  const [wallets, setWallets] = useState<Wallet[]>([
-    {
-      id: 5,
-      walletID: 'b6ad0f05-70e8-4945-a9e1-9fc3584063d6',
-      date_created: '2025-03-11T11:27:22.625Z',
-      status: 1,
-      wallet_type: 'REVENUE',
-      User_ID: null,
-      WalletNumber: 'S000005',
-      balance: 0
-    },
-    {
-      id: 6,
-      walletID: 'c7be1f16-81f9-5a56-b0f2-0gd4695174e7',
-      date_created: '2025-03-12T12:38:33.736Z',
-      status: 1,
-      wallet_type: 'EXPENSE',
-      User_ID: 'user123',
-      WalletNumber: 'S000006',
-      balance: 1250.75
-    },
-    {
-      id: 7,
-      walletID: 'd8cf2g27-92g0-6b67-c1g3-1he5706285f8',
-      date_created: '2025-03-13T13:49:44.847Z',
-      status: 0,
-      wallet_type: 'REVENUE',
-      User_ID: 'user456',
-      WalletNumber: 'S000007',
-      balance: 500.25
+  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const { data, isLoading, isError } = useWallets();
+  useEffect(() => {
+    if (data?.data) {
+      setWallets(data?.data as Wallet[]);
     }
-  ]);
+    console.log(data);
+  }, [data]);
+
+  const columns = useMemo((): ColumnDef<Wallet>[] => {
+    return [
+      {
+        header: 'Wallet Number',
+        accessorKey: 'WalletNumber'
+      },
+      {
+        header: 'Wallet Type',
+        accessorKey: 'wallet_type'
+      },
+      {
+        header: 'Balance',
+        accessorKey: 'balance',
+        cell: ({ row }) => {
+          return <span>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'GHS' }).format(row.original.balance)}</span>;
+        }
+      },
+      {
+        header: 'User ID',
+        accessorKey: 'User_ID'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          return (
+            <span
+              className={cn(
+                'px-2 py-1 rounded-md text-sm',
+                row.original.status === 1 ? 'text-green-900 bg-green-200' : 'text-red-900 bg-red-200'
+              )}
+            >
+              {row.original.status === 1 ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created On',
+        accessorKey: 'date_created',
+        cell: ({ row }) => {
+          return <span>{format(new Date(row.original.date_created), 'yyyy/MM/dd HH:mm:a')}</span>;
+        }
+      },
+      {
+        header: 'Actions',
+        id: 'actions',
+        accessorKey: 'actions',
+        cell: ({ row }) => {
+          return (
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-8 w-8 p-0">
+                    <span className="sr-only">Open menu</span>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem>View Details</DropdownMenuItem>
+                  <DropdownMenuItem>Edit Wallet</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600">Deactivate</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        }
+      }
+    ];
+  }, []);
 
   const handleAddWallet = async (walletData: { wallet_type: string }) => {
     // In a real implementation, this would call an API
@@ -79,7 +140,7 @@ export default function WalletsPage() {
     {
       title: 'Total Wallets',
       value: wallets.length,
-      icon: WalletIcon,
+      Icon: WalletIcon,
       description: 'Active wallets in system',
       trend: '+3.2%',
       trendUp: true
@@ -87,7 +148,7 @@ export default function WalletsPage() {
     {
       title: 'Total Balance',
       value: `$${wallets.reduce((sum, wallet) => sum + wallet.balance, 0).toFixed(2)}`,
-      icon: CreditCard,
+      Icon: CreditCard,
       description: 'Combined wallet balance',
       trend: '+5.4%',
       trendUp: true
@@ -95,7 +156,7 @@ export default function WalletsPage() {
     {
       title: 'Revenue Wallets',
       value: wallets.filter((w) => w.wallet_type === 'REVENUE').length,
-      icon: WalletIcon,
+      Icon: WalletIcon,
       description: 'Wallets for revenue',
       trend: '+2.1%',
       trendUp: true
@@ -103,7 +164,7 @@ export default function WalletsPage() {
     {
       title: 'Expense Wallets',
       value: wallets.filter((w) => w.wallet_type === 'EXPENSE').length,
-      icon: CreditCard,
+      Icon: CreditCard,
       description: 'Wallets for expenses',
       trend: '+1.8%',
       trendUp: true
@@ -144,36 +205,19 @@ export default function WalletsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+
+      <CardGrid cards={stats} />
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <WalletTable wallets={wallets} />
+        <DataTable
+          columns={columns}
+          data={wallets}
+          loading={isLoading}
+          placeholder="Search wallets..."
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
 
       <WalletDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddWallet} />

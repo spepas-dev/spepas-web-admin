@@ -1,26 +1,69 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Car, ChevronRight, Factory, Globe, Plus, Settings } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/custom/dataTable';
+import { useFormModal } from '@/components/ui/custom/modals';
+import { CardGrid } from '@/components/ui/custom/staticCards';
 import { toastConfig } from '@/lib/toast';
-import { AuthService } from '@/services/auth.service';
+import { cn } from '@/lib/utils';
 
 import { useCreateManufacturer } from '../../api/mutations/manufacturerMutations';
 import { useManufactures } from '../../api/queries/manufacturesQueries';
 import { CreateManufacturerDTO, Manufacturer } from '../../types';
 import { ManufacturerDialog } from './manufacturerDialog';
-import { ManufacturerTable } from './manufacturerTable';
 
 export default function ManufacturersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const { data, isLoading, isError } = useManufactures();
 
   const { mutate: createManufacturer } = useCreateManufacturer();
-  const handleAddManufacturers = async (newManufacturers: CreateManufacturerDTO[]) => {
+
+  const manufacturers = useMemo(() => {
+    return data?.data || [];
+  }, [data]);
+
+  const columns: ColumnDef<Manufacturer>[] = useMemo(() => {
+    return [
+      {
+        header: 'Name',
+        accessorKey: 'name'
+      },
+      {
+        header: 'Country',
+        accessorKey: 'country'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          return (
+            <span
+              className={cn(
+                'px-2 py-1 rounded-md text-sm',
+                row.original.status === 1 ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900'
+              )}
+            >
+              {row.original.status === 1 ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created On',
+        accessorKey: 'createdAt',
+        cell: ({ row }) => {
+          return <span>{format(new Date(row.original.createdAt), 'yyyy/MM/dd HH:mm:a')}</span>;
+        }
+      }
+    ];
+  }, []);
+
+  const handleAddManufacturers = (newManufacturers: CreateManufacturerDTO[]) => {
     // Handle API call here
     console.log(newManufacturers);
     createManufacturer(newManufacturers, {
@@ -34,33 +77,28 @@ export default function ManufacturersPage() {
     });
   };
 
-  useEffect(() => {
-    const queryManufacturers = async () => {
-      try {
-        const data = await AuthService.getManufactures();
-        console.log(data);
-      } catch (error) {
-        console.log(error);
+  const addManufacturerModal = useFormModal();
+
+  const handleAddManufacturer = () => {
+    addManufacturerModal.openForm({
+      title: 'Add Manufacturer',
+      size: 'md',
+      children: (
+        <>
+          <p>Add a new manufacturer to the system</p>
+        </>
+      ),
+      onSubmit: () => {
+        console.log('yes');
       }
-    };
-    queryManufacturers();
-  }, []);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     setManufacturers(data.data);
-  //   }
-
-  //   return () => {
-  //     setManufacturers([]);
-  //   };
-  // }, [data]);
+    });
+  };
 
   const stats = [
     {
       title: 'Total Manufacturers',
       value: manufacturers.length,
-      icon: Factory,
+      Icon: Factory,
       description: 'Active manufacturers in the system',
       trend: '+2.5%',
       trendUp: true
@@ -68,23 +106,23 @@ export default function ManufacturersPage() {
     {
       title: 'Countries',
       value: new Set(manufacturers.map((m) => m.country)).size,
-      icon: Globe,
+      Icon: Globe,
       description: 'Countries represented',
       trend: '+1.2%',
       trendUp: true
     },
     {
       title: 'Vehicle Models',
-      value: '234',
-      icon: Car,
+      value: 234,
+      Icon: Car,
       description: 'Associated vehicle models',
       trend: '+5.4%',
       trendUp: true
     },
     {
       title: 'Parts Categories',
-      value: '56',
-      icon: Settings,
+      value: 56,
+      Icon: Settings,
       description: 'Available part categories',
       trend: '+3.1%',
       trendUp: true
@@ -130,36 +168,17 @@ export default function ManufacturersPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <ManufacturerTable manufacturers={manufacturers} />
+        <DataTable
+          columns={columns}
+          data={manufacturers}
+          loading={isLoading}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
 
       <ManufacturerDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddManufacturers} />

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 // import { toastConfig } from '@/lib/toast';
@@ -302,7 +303,7 @@ export default function SparePartOrdersPage() {
     {
       title: 'Total Orders',
       value: orders.length,
-      icon: Package,
+      Icon: Package,
       description: 'Orders for this spare part',
       trend: '+12.5%',
       trendUp: true
@@ -310,7 +311,7 @@ export default function SparePartOrdersPage() {
     {
       title: 'Active Orders',
       value: orders.filter((o) => o.status === 0 || o.status === 1).length,
-      icon: Tag,
+      Icon: Tag,
       description: 'Pending or accepted orders',
       trend: '+8.3%',
       trendUp: true
@@ -318,7 +319,7 @@ export default function SparePartOrdersPage() {
     {
       title: 'Completed Orders',
       value: orders.filter((o) => o.status === 3).length,
-      icon: ShoppingCart,
+      Icon: ShoppingCart,
       description: 'Successfully completed orders',
       trend: '+5.2%',
       trendUp: true
@@ -326,7 +327,7 @@ export default function SparePartOrdersPage() {
     {
       title: 'Total Quantity',
       value: orders.reduce((sum, order) => sum + order.orderRequest.quantity, 0),
-      icon: Truck,
+      Icon: Truck,
       description: 'Total parts ordered',
       trend: '+3.7%',
       trendUp: true
@@ -361,7 +362,7 @@ export default function SparePartOrdersPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
@@ -386,7 +387,9 @@ export default function SparePartOrdersPage() {
             </CardContent>
           </Card>
         ))}
-      </motion.div>
+      </motion.div> */}
+
+      <CardGrid cards={stats} />
 
       {/* Orders Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>

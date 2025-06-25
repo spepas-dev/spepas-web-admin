@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { Activity, ArrowRight, Bike, Car, UserCheck, Users, Wallet } from 'lucide-react';
+import { Activity, ArrowRight, Bike, Car, Package, UserCheck, Users, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+
+import { CardGrid } from '../ui/custom/staticCards';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -13,37 +15,37 @@ const fadeInUp = {
 const stats = [
   {
     title: 'Total Users',
-    value: '2,345',
+    value: new Intl.NumberFormat('en-US').format(2345),
     trend: '+12.5%',
     trendUp: true,
-    icon: Users,
+    Icon: Users,
     description: 'Active platform users',
     color: 'text-blue-500'
   },
   {
     title: 'Active Riders',
-    value: '856',
+    value: new Intl.NumberFormat('en-US').format(856),
     trend: '+8.2%',
     trendUp: true,
-    icon: Bike,
+    Icon: Bike,
     description: 'Registered riders',
     color: 'text-green-500'
   },
   {
     title: 'Registered Vehicles',
-    value: '1,204',
+    value: new Intl.NumberFormat('en-US').format(1204),
     trend: '+15.3%',
     trendUp: true,
-    icon: Car,
+    Icon: Car,
     description: 'Fleet size',
     color: 'text-purple-500'
   },
   {
     title: 'Payment Methods',
-    value: '3,678',
+    value: new Intl.NumberFormat('en-US').format(3678),
     trend: '+10.8%',
     trendUp: true,
-    icon: Wallet,
+    Icon: Wallet,
     description: 'Active accounts',
     color: 'text-orange-500'
   }
@@ -113,40 +115,8 @@ export default function WelcomePage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            variants={fadeInUp}
-            initial="initial"
-            animate="animate"
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <Card className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                  </div>
-                  <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                    <stat.icon className={`w-5 h-5 ${stat.color}`} />
-                  </div>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <p className="text-xs text-gray-500">{stat.description}</p>
-                  <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
+
+      <CardGrid cards={stats} />
 
       {/* Quick Actions */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="space-y-4">

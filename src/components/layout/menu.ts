@@ -2,11 +2,11 @@ import {
   Bike,
   Bolt,
   Car,
-  CreditCard,
   Factory,
   Handshake,
   Key,
   LayoutDashboard,
+  Menu,
   Shield,
   ShoppingCart,
   Store,
@@ -46,6 +46,12 @@ export const menuGroups: MenuGroup[] = [
         name: 'Groups',
         icon: Users,
         path: '/access-management/groups'
+      },
+      {
+        id: 'menus',
+        name: 'Menus',
+        icon: Menu,
+        path: '/access-management/menus'
       }
     ]
   },

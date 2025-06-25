@@ -19,6 +19,8 @@ export default function BrandsPage() {
   // brands related code
   const { data, isLoading, isError } = useBrands();
   const [brands, setBrands] = useState<Brand[]>([]);
+
+  // Move all useEffect hooks to the top before any conditional returns
   useEffect(() => {
     if (data) {
       setBrands(data.data);
@@ -91,17 +93,6 @@ export default function BrandsPage() {
   if (isError) {
     return <div>Error loading brands</div>;
   }
-
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-      // setBrands(data.data)
-    }
-
-    return () => {
-      setBrands([]);
-    };
-  }, [data]);
 
   return (
     <div className="p-8 space-y-8">

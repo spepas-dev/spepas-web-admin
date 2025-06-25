@@ -10,8 +10,6 @@ import { AuthProvider } from '@/features/auth/contexts/AuthContext/AuthContext';
 import { queryClient } from '@/lib/react-query';
 import { router } from '@/routes';
 
-import LoginDebug from './Debug';
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>

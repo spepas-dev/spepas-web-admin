@@ -1,10 +1,13 @@
+import { ColumnDef } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { Calendar, Car, ChevronRight, Factory, Plus, Settings } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/custom/dataTable';
+import { CardGrid } from '@/components/ui/custom/staticCards';
 import { toastConfig } from '@/lib/toast';
 
 import { useCreateModel } from '../../api/mutations/modelMutations';
@@ -17,6 +20,24 @@ export default function ModelsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [models, setModels] = useState<CarModel[]>([]);
   const { data, isLoading, isError } = useCarModels();
+
+  const columns: ColumnDef<CarModel>[] = useMemo(() => {
+    return [
+      {
+        header: 'Name of Model',
+        accessorKey: 'name'
+      },
+      {
+        header: 'Manufacturer ID',
+        accessorKey: 'carBrand_ID'
+      },
+      {
+        header: 'Year of Make',
+        accessorKey: 'yearOfMake'
+      }
+    ];
+  }, []);
+
   useEffect(() => {
     if (data) {
       setModels(data.data);
@@ -48,15 +69,15 @@ export default function ModelsPage() {
     {
       title: 'Total Models',
       value: models.length,
-      icon: Car,
+      Icon: Car,
       description: 'Active car models in the system',
       trend: '+3.2%',
       trendUp: true
     },
     {
       title: 'Latest Year',
-      value: models.length > 0 ? Math.max(...models.map((m) => m.yearOfMake)) : '-',
-      icon: Calendar,
+      value: models.length > 0 ? Math.max(...models.map((m) => m.yearOfMake)) : 0,
+      Icon: Calendar,
       description: 'Most recent model year',
       trend: '+1.5%',
       trendUp: true
@@ -64,15 +85,15 @@ export default function ModelsPage() {
     {
       title: 'Manufacturers',
       value: new Set(models.map((m) => m.carBrand_ID)).size,
-      icon: Factory,
+      Icon: Factory,
       description: 'Associated manufacturers',
       trend: '+2.8%',
       trendUp: true
     },
     {
       title: 'Parts Categories',
-      value: '89',
-      icon: Settings,
+      value: 89,
+      Icon: Settings,
       description: 'Compatible parts categories',
       trend: '+4.1%',
       trendUp: true
@@ -118,36 +139,17 @@ export default function ModelsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <ModelTable models={models} />
+        <DataTable
+          columns={columns}
+          data={models}
+          placeholder="Seach models..."
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
 
       <ModelDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddModels} />

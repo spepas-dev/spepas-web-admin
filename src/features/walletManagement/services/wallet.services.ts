@@ -1,9 +1,9 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import { Wallet } from '../types';
 
-const WALLETS_ENDPOINT = '/wallets/get-system-wallets';
-
+const WALLETS_ENDPOINT = API_ROUTES.WALLET_MANAGEMENT;
 export interface WalletQueryParams {
   search?: string;
   sort?: string;
@@ -11,25 +11,31 @@ export interface WalletQueryParams {
   limit?: number;
 }
 
+export interface WalletResponse {
+  status: number;
+  message: string;
+  data: Wallet[];
+}
+
 export class WalletService {
-  static async getWallets(params?: WalletQueryParams): Promise<Wallet[]> {
-    return ApiService.get<Wallet[]>(WALLETS_ENDPOINT, { params });
+  static async getWallets(params?: WalletQueryParams): Promise<WalletResponse> {
+    return ApiService.get<WalletResponse>(WALLETS_ENDPOINT.BASE, { params });
   }
 
   static async getWalletByWalletID(walletID: string): Promise<Wallet> {
-    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT}/${walletID}`);
+    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT.DETAIL_BY_ID(walletID)}`);
   }
 
   static async getWalletByWalletNumber(walletNumber: string): Promise<Wallet> {
-    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT}/wallet-number/${walletNumber}`);
+    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT.DETAIL_BY_WALLET_NUMBER(walletNumber)}`);
   }
 
   static async getWalletByUser(userID: string): Promise<Wallet> {
-    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT}/user/${userID}`);
+    return ApiService.get<Wallet>(`${WALLETS_ENDPOINT.DETAIL_BY_USER(userID)}`);
   }
 
   static async createWallet(data: Pick<Wallet, 'wallet_type'>): Promise<Wallet> {
-    return ApiService.post<Wallet>(WALLETS_ENDPOINT, data);
+    return ApiService.post<Wallet>(WALLETS_ENDPOINT.CREATE, data);
   }
 
   static async updateWallet(id: string, data: Partial<Wallet>): Promise<Wallet> {

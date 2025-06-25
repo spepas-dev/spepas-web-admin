@@ -1,6 +1,5 @@
 import { NavigateFunction } from 'react-router-dom';
 import { StateCreator } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 import { toastConfig } from '@/lib/toast';
 import { AuthService } from '@/services/auth.service';
@@ -42,8 +41,6 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
           data: { token, refreshToken, user }
         } = await AuthService.login(email, password);
 
-        localStorage.setItem('auth_token', token);
-
         set({
           token,
           refresh_token: refreshToken,
@@ -62,8 +59,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
     logout: async (navigate?: NavigateFunction) => {
       try {
         set({ isLoading: true });
-        // await AuthService.logout();
-        localStorage.removeItem('auth_token');
+        await AuthService.logout();
         set({
           token: null,
           refresh_token: null,

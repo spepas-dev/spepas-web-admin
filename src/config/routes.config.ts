@@ -34,6 +34,9 @@ export const ROUTE_PATHS = {
     USER: {
       CREATE: 'create-user',
       UPDATE: 'update-user'
+    },
+    APPLICATION: {
+      BASE: 'applications'
     }
   },
   USER_MANAGEMENT: {

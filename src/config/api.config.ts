@@ -1,109 +1,117 @@
-import { ENV_CONFIG } from './env.config';
-
-// const API_VERSION = ENV_CONFIG.API_VERSION || 'v1';
-// const PROXY_BASE = ENV_CONFIG.PROXY_BASE_URL;
-const BASE_PATH = ENV_CONFIG.PROXY_BASE_URL;
-
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: `${BASE_PATH}/auth/signin`,
-    LOGOUT: `${BASE_PATH}/auth/logout`,
-    REFRESH_TOKEN: `${BASE_PATH}/auth/refresh`,
-    FORGOT_PASSWORD: `${BASE_PATH}/auth/forgot-password`,
-    RESET_PASSWORD: `${BASE_PATH}/auth/reset-password`,
-    CHANGE_PASSWORD: `${BASE_PATH}/auth/change-password`,
-    USER: `${BASE_PATH}/auth/user`
+    LOGIN: '/auth/signin',
+    LOGOUT: '/auth/signout',
+    REFRESH_TOKEN: '/auth/refresh',
+    FORGOT_PASSWORD: '/auth/forgot-password',
+    RESET_PASSWORD: '/auth/reset-password',
+    CHANGE_PASSWORD: '/auth/change-password',
+    USER: '/auth/user'
   },
   ACCESS_MANAGEMENT: {
+    APPLICATION: {
+      BASE: '/auth/applications',
+      DETAIL: (id: string) => `/auth/applications/${id}`,
+      CREATE: '/auth/create-applications',
+      UPDATE: '/auth/update-applications'
+    },
     MENU_GROUP: {
-      BASE: `${BASE_PATH}/menu-groups`,
-      DETAIL: (id: string) => `${BASE_PATH}/menu-groups/${id}`
+      BASE: '/auth/menu-groups',
+      DETAIL: (id: string) => `/auth/menu-groups/${id}`,
+      CREATE: '/auth/add-groupmenus'
     },
     MENU: {
-      BASE: `${BASE_PATH}/menus`,
-      DETAIL: (id: string) => `${BASE_PATH}/menus/${id}`
+      BASE: '/auth/menus',
+      DETAIL: (id: string) => `/auth/menus/${id}`,
+      CREATE: '/auth/add-menus'
     },
     GROUP: {
-      BASE: `${BASE_PATH}/groups`,
-      DETAIL: (id: string) => `${BASE_PATH}/groups/${id}`
+      BASE: '/auth/groups',
+      DETAIL: (id: string) => `/auth/groups/${id}`,
+      CREATE: '/auth/create-group'
     },
     PERMISSION: {
-      BASE: `${BASE_PATH}/permissions`,
-      DETAIL: (id: string) => `${BASE_PATH}/permissions/${id}`
+      BASE: '/auth/permissions',
+      DETAIL: (id: string) => `/auth/permissions/${id}`,
+      CREATE: '/auth/add-permissions',
+      UPDATE: '/auth/update-permissions'
     },
     ROLE: {
-      BASE: `${BASE_PATH}/roles`,
-      DETAIL: (id: string) => `${BASE_PATH}/roles/${id}`
+      BASE: '/auth/roles',
+      DETAIL: (id: string) => `/roles/${id}`,
+      CREATE: '/auth/add-roles'
     },
     USER: {
-      BASE: `${BASE_PATH}/users`,
-      DETAIL: (id: string) => `${BASE_PATH}/users/${id}`
+      BASE: '/auth/users',
+      DETAIL: (id: string) => `/users/${id}`
     }
   },
   INVENTORY_MANAGEMENT: {
     CAR: {
       MANUFACTURER: {
-        BASE: `${BASE_PATH}/manufacturers`,
-        DETAIL: (id: string) => `${BASE_PATH}/manufacturers/${id}`,
-        BRANDS: (id: string) => `${BASE_PATH}/manufacturers/${id}/brands`
+        BASE: '/inventry/car-manufacturers-all',
+        DETAIL: (id: string) => `/inventry/manufacturers/${id}`,
+        CREATE: '/inventry/add-car-manufacturer-admin'
       },
       BRAND: {
-        BASE: `${BASE_PATH}/brands`,
-        DETAIL: (id: string) => `${BASE_PATH}/brands/${id}`,
-        MODELS: (id: string) => `${BASE_PATH}/brands/${id}/models`,
-        STATS: (id: string) => `${BASE_PATH}/brands/${id}/stats`,
-        SUMMARY: `${BASE_PATH}/brands/summary`,
-        CHECK_NAME: `${BASE_PATH}/brands/check-name`,
-        BULK_DELETE: `${BASE_PATH}/brands/bulk-delete`
+        BASE: '/inventry/car-brands-all',
+        DETAIL: (id: string) => `/inventry/brands/${id}`,
+        CREATE: '/inventry/add-car-brand-admin'
       },
       MODEL: {
-        BASE: `${BASE_PATH}/models`,
-        DETAIL: (id: string) => `${BASE_PATH}/models/${id}`,
-        SPARE_PARTS: (id: string) => `${BASE_PATH}/models/${id}/spare-parts`
+        BASE: '/inventry/car-models-all',
+        DETAIL: (id: string) => `/models/${id}`,
+        CREATE: '/inventry/add-car-model-admin'
       },
       SPARE_PART: {
-        BASE: `${BASE_PATH}/spare-parts`,
-        DETAIL: (id: string) => `${BASE_PATH}/spare-parts/${id}`,
-        BULK_UPDATE: `${BASE_PATH}/spare-parts/bulk-update`,
-        CATEGORIES: `${BASE_PATH}/spare-parts/categories`
+        BASE: '/inventry/sparepart-all',
+        DETAIL: (id: string) => `/inventry/spare-parts/${id}`,
+        CREATE: '/inventry/add-spare-part-admin'
       }
     }
   },
   USER_MANAGEMENT: {
     SELLER: {
-      BASE: `${BASE_PATH}/sellers`,
-      DETAIL: (id: string) => `${BASE_PATH}/sellers/${id}`,
-      STATS: (id: string) => `${BASE_PATH}/sellers/${id}/stats`
+      BASE: '/gateway/v1/sellers',
+      DETAIL: (id: string) => `/gateway/v1/sellers/${id}`,
+      STATS: (id: string) => `/gateway/v1/sellers/${id}/stats`
     },
     RIDER: {
-      BASE: `${BASE_PATH}/riders`,
-      DETAIL: (id: string) => `${BASE_PATH}/riders/${id}`,
+      BASE: '/gateway/v1/riders',
+      DETAIL: (id: string) => `/gateway/v1/riders/${id}`,
       VEHICLES: {
-        BASE: `${BASE_PATH}/riders/vehicles`,
-        DETAIL: (id: string) => `${BASE_PATH}/riders/vehicles/${id}`
+        BASE: '/gateway/v1/riders/vehicles',
+        DETAIL: (id: string) => `/gateway/v1/riders/vehicles/${id}`
       }
     },
     MECHANIC: {
-      BASE: `${BASE_PATH}/mechanics`,
-      DETAIL: (id: string) => `${BASE_PATH}/mechanics/${id}`,
-      SERVICES: (id: string) => `${BASE_PATH}/mechanics/${id}/services`
+      BASE: '/gateway/v1/mechanics',
+      DETAIL: (id: string) => `/gateway/v1/mechanics/${id}`,
+      SERVICES: (id: string) => `/gateway/v1/mechanics/${id}/services`
     },
     GORO: {
-      BASE: `${BASE_PATH}/goros`,
-      DETAIL: (id: string) => `${BASE_PATH}/goros/${id}`
+      BASE: '/goros',
+      DETAIL: (id: string) => `/gateway/v1/goros/${id}`
     },
     PAYMENT_ACCOUNT: {
-      BASE: `${BASE_PATH}/payment-accounts`,
-      DETAIL: (id: string) => `${BASE_PATH}/payment-accounts/${id}`,
-      VERIFY: (id: string) => `${BASE_PATH}/payment-accounts/${id}/verify`
+      BASE: '/gateway/v1/payment-accounts',
+      DETAIL: (id: string) => `/gateway/v1/payment-accounts/${id}`,
+      VERIFY: (id: string) => `/gateway/v1/payment-accounts/${id}/verify`
     }
   },
   REQUESTS: {
-    BASE: `${BASE_PATH}/requests`,
-    DETAIL: (id: string) => `${BASE_PATH}/requests/${id}`,
-    ASSIGN: (id: string) => `${BASE_PATH}/requests/${id}/assign`,
-    CANCEL: (id: string) => `${BASE_PATH}/requests/${id}/cancel`,
-    COMPLETE: (id: string) => `${BASE_PATH}/requests/${id}/complete`
+    BASE: '/gateway/v1/requests',
+    DETAIL: (id: string) => `/gateway/v1/requests/${id}`,
+    ASSIGN: (id: string) => `/gateway/v1/requests/${id}/assign`,
+    CANCEL: (id: string) => `/gateway/v1/requests/${id}/cancel`,
+    COMPLETE: (id: string) => `/gateway/v1/requests/${id}/complete`
+  },
+  WALLET_MANAGEMENT: {
+    BASE: '/wallet/get-system-wallets',
+    DETAIL_BY_ID: (id: string) => `/wallet/get-wallet-details-by-id/${id}`,
+    DETAIL_BY_WALLET_NUMBER: (walletNumber: string) => `/wallet/get-wallet-details-bynumber/${walletNumber}`,
+    DETAIL_BY_USER: (userID: string) => `/wallet/get-user-wallet-details/${userID}`,
+    CREATE: '/wallet/add-wallet'
   }
 } as const;
 

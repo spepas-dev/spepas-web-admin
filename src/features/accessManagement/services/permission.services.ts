@@ -1,3 +1,4 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import {
@@ -9,9 +10,7 @@ import {
   UpdatePermissionDto
 } from '../types/permission.types';
 
-const API_URL = '/all';
-const PERMISSIONS_LIST_URL = '/auth/permissions';
-const PERMISSION_CREATE_URL = '/auth/add-permission';
+const API_URL = API_ROUTES.ACCESS_MANAGEMENT.PERMISSION;
 
 export interface PermissionQueryParams {
   search?: string;
@@ -26,11 +25,11 @@ export class PermissionService {
   }
 
   static async createPermission(data: CreatePermissionDto) {
-    return ApiService.post<Permission>(PERMISSION_CREATE_URL, data);
+    return ApiService.post<Permission>(API_URL.CREATE, data);
   }
 
   static async updatePermission(id: string, data: UpdatePermissionDto) {
-    return ApiService.put<Permission>(`${API_URL}/${id}`, data);
+    return ApiService.put<Permission>(API_URL.UPDATE, data);
   }
 
   static async deletePermission(id: string) {
@@ -38,7 +37,7 @@ export class PermissionService {
   }
 
   static async getPermissionList(params?: PermissionQueryParams) {
-    return ApiService.get<PermissionListResponse>(PERMISSIONS_LIST_URL, { params });
+    return ApiService.get<PermissionListResponse>(API_URL.BASE, { params });
   }
 
   static async getPermissionStats(id: string) {

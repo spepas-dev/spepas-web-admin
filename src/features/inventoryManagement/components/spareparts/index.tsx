@@ -1,35 +1,74 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Car, ChevronRight, ClipboardList, Package, Plus, Wrench } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/custom/dataTable';
+import { CardGrid } from '@/components/ui/custom/staticCards';
 import { toastConfig } from '@/lib/toast';
+import { cn } from '@/lib/utils';
 
 import { useCreateSparePart } from '../../api/mutations/sparepartMutations';
 import { useSpareParts } from '../../api/queries/sparepartsQueries';
 import { CreateSparePartDTO, SparePart } from '../../types';
 import { SparePartDialog } from './sparePartDialog';
-import { SparePartTable } from './sparePartTable';
 
 export default function SparePartsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [spareParts, setSpareParts] = useState<SparePart[]>([]);
   const { data, isLoading, isError } = useSpareParts();
-  useEffect(() => {
-    if (data) {
-      setSpareParts(data.data);
-    }
 
-    return () => {
-      setSpareParts([]);
-    };
+  const columns: ColumnDef<SparePart>[] = useMemo(() => {
+    return [
+      {
+        header: 'Name of Part',
+        accessorKey: 'name'
+      },
+      {
+        header: 'Description',
+        accessorKey: 'description'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          return (
+            <span
+              className={cn(
+                'text-sm font-medium py-1 px-2 rounded-md',
+                `${row.original.status ? 'bg-green-100 text-green-900' : 'bg-red-100 text-red-900'}`
+              )}
+            >
+              {row.original.status ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Price',
+        accessorKey: 'price',
+        cell: ({ row }) => {
+          return <div>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'GHS' }).format(row.original.price)}</div>;
+        }
+      },
+      {
+        header: 'Created At',
+        accessorKey: 'createdAt',
+        cell: ({ row }) => {
+          return <div>{format(new Date(row.original.createdAt), 'yyyy/MM/dd HH:mm:a')}</div>;
+        }
+      }
+    ];
+  }, []);
+  const spareParts = useMemo(() => {
+    return data?.data || [];
   }, [data?.data]);
 
   // function to handle add spare parts
   const { mutate: createSparePart } = useCreateSparePart();
-  const handleAddSpareParts = async (newSpareParts: CreateSparePartDTO[]) => {
+  const handleAddSpareParts = (newSpareParts: CreateSparePartDTO[]) => {
     // Handle API call here
     console.log(newSpareParts);
     createSparePart(newSpareParts, {
@@ -48,7 +87,7 @@ export default function SparePartsPage() {
     {
       title: 'Total Parts',
       value: spareParts.length,
-      icon: Wrench,
+      Icon: Wrench,
       description: 'Active spare parts in system',
       trend: '+4.3%',
       trendUp: true
@@ -56,23 +95,23 @@ export default function SparePartsPage() {
     {
       title: 'Car Brands',
       value: new Set(spareParts.map((p) => p.carModel_ID)).size,
-      icon: Car,
+      Icon: Car,
       description: 'Compatible car brands',
       trend: '+2.7%',
       trendUp: true
     },
     {
       title: 'Categories',
-      value: '12',
-      icon: ClipboardList,
+      value: 12,
+      Icon: ClipboardList,
       description: 'Part categories',
       trend: '+1.5%',
       trendUp: true
     },
     {
       title: 'In Stock',
-      value: '1,234',
-      icon: Package,
+      value: new Intl.NumberFormat('en-US').format(spareParts.length),
+      Icon: Package,
       description: 'Available inventory',
       trend: '-0.8%',
       trendUp: false
@@ -118,36 +157,17 @@ export default function SparePartsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <SparePartTable spareParts={spareParts} />
+        <DataTable
+          columns={columns}
+          data={spareParts}
+          placeholder="Search spare parts..."
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
 
       <SparePartDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddSpareParts} />
