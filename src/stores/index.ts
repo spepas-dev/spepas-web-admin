@@ -7,10 +7,8 @@ import { ModalConfig } from '@/types';
 import { type AuthSlice, createAuthSlice } from './slices/auth.slice';
 import { createFiltersSlice, type FiltersSlice } from './slices/filters.slice';
 import { createModalSlice, type ModalSlice } from './slices/modal.slice';
-// Remove unused imports
 import { createUISlice, type UISlice } from './slices/ui.slice';
 
-// export type StoreState = AuthSlice & UISlice & FiltersSlice;
 export type StoreState = Omit<AuthSlice, 'actions'> &
   Omit<FiltersSlice, 'actions'> &
   Omit<UISlice, 'actions'> &
@@ -31,7 +29,7 @@ export const useStore = create<StoreState>()(
           ...filtersSlice,
           ...uiSlice,
           ...modalSlice,
-          // Merge actions from both slices
+          // Merge actions from all slices
           actions: {
             ...authSlice.actions,
             ...filtersSlice.actions,
@@ -54,23 +52,7 @@ export const useStore = create<StoreState>()(
   )
 );
 
-// Create typed hooks for each slice
-export const useAuth = () => {
-  const token = useStore((state) => state.token);
-  const user = useStore((state) => state.user);
-  const isAuthenticated = useStore((state) => state.isAuthenticated);
-  const actions = useStore((state) => state.actions);
-
-  return {
-    token,
-    user,
-    isAuthenticated,
-    setToken: actions.setToken,
-    setUser: actions.setUser,
-    logout: actions.logout
-  };
-};
-
+// UI Hook
 export const useUI = () => {
   const sidebar = useStore((state) => state.sidebar);
   const theme = useStore((state) => state.theme);
@@ -85,6 +67,7 @@ export const useUI = () => {
   };
 };
 
+// Modal Hook
 export const useModal = (id: string) => {
   const openModal = useStore((state) => state.actions.openModal);
   const closeModal = useStore((state) => state.actions.closeModal);

@@ -2,21 +2,19 @@ import { motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import Logo from '@/assets/logo.svg?react';
-import { useStore } from '@/stores';
+import { useAuth } from '@/hooks/use-auth';
 
 import { LoginForm, LoginFormValues } from '../components/loginForm';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { actions, isLoading } = useStore((state) => state);
+  const { login } = useAuth();
 
   const handleSubmit = async (values: LoginFormValues) => {
-    // Handle login logic here
     try {
-      await actions.login(values.email, values.password);
+      await login(values.email, values.password);
       navigate(location.state?.from || '/');
-      // navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
     }

@@ -18,11 +18,11 @@ export interface AuthSlice {
     setLoading: (isLoading: boolean) => void;
     logout: (navigate?: NavigateFunction) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
-    checkAuth: () => Promise<void>;
+    checkAuth: () => void;
   };
 }
 
-export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
+export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
   token: null,
   refresh_token: null,
   user: null,
@@ -40,6 +40,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
         const {
           data: { token, refreshToken, user }
         } = await AuthService.login(email, password);
+
+        localStorage.setItem('auth_token', token);
 
         set({
           token,
@@ -60,6 +62,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       try {
         set({ isLoading: true });
         await AuthService.logout();
+        localStorage.removeItem('auth_token');
         set({
           token: null,
           refresh_token: null,
@@ -69,10 +72,8 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
         });
 
         if (navigate) {
-          console.log('navigate');
           navigate('/auth/login');
         } else {
-          console.log('window.location.replace');
           window.location.replace('/auth/login');
         }
       } catch (error) {
@@ -81,23 +82,21 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set) => ({
       }
     },
 
-    checkAuth: async () => {
-      try {
-        set({ isLoading: true });
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-          set({ isLoading: false });
-          return;
-        }
+    checkAuth: () => {
+      set({ isLoading: true });
+      const token = localStorage.getItem('auth_token');
+      const state = get();
 
-        const currentUser = await AuthService.getCurrentUser();
+      if (token && state.user) {
+        // User is authenticated if we have both token and user data
         set({
           token,
-          user: currentUser,
           isAuthenticated: true,
           isLoading: false
         });
-      } catch (error) {
+      } else {
+        // No token or user data, clear auth state
+        localStorage.removeItem('auth_token');
         set({
           token: null,
           refresh_token: null,
