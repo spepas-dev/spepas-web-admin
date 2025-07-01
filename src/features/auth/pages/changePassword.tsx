@@ -1,12 +1,14 @@
-import { motion } from "framer-motion"
-import { ChangePasswordForm, ChangePasswordFormValues } from "../components/changePasswordForm"
-import Logo from "@/assets/logo.svg?react"
+import { motion } from 'framer-motion';
+
+import Logo from '@/assets/logo.svg?react';
+
+import { ChangePasswordForm, ChangePasswordFormValues } from '../components/changePasswordForm';
 
 export default function ChangePasswordPage() {
   const handleSubmit = async (values: ChangePasswordFormValues) => {
     // Handle password change logic here
-    console.log(values)
-  }
+    console.log(values);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -47,5 +49,5 @@ export default function ChangePasswordPage() {
         <ChangePasswordForm onSubmit={handleSubmit} />
       </motion.div>
     </div>
-  )
+  );
 }

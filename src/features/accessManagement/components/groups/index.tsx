@@ -1,102 +1,99 @@
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Plus, ChevronRight, Users, Menu, Shield, FolderTree } from "lucide-react"
-import { GroupDialog } from "./groupDialog"
-import { GroupTable } from "./groupTable"
-import { Card, CardContent } from "@/components/ui/card"
+import { motion } from 'framer-motion';
+import { ChevronRight, FolderTree, Menu, Plus, Shield, Users } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+import { GroupDialog } from './groupDialog';
+import { GroupTable } from './groupTable';
 // import { MenuItem, MenuGroup } from "../menus"
 // import { Permission } from "../permissions"
 // import { GroupListItem } from "../../types"
 
 export interface Group {
-  id: string
-  name: string
-  description: string
-  users: string[]
-  menuGroups: string[]  // MenuGroup IDs
-  menuItems: string[]   // MenuItem IDs
-  permissions: string[] // Permission IDs
-  createdAt: string
-  updatedAt: string
+  id: string;
+  name: string;
+  description: string;
+  users: string[];
+  menuGroups: string[]; // MenuGroup IDs
+  menuItems: string[]; // MenuItem IDs
+  permissions: string[]; // Permission IDs
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function GroupsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [groups, setGroups] = useState<Group[]>([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [groups, setGroups] = useState<Group[]>([]);
 
   const handleAddGroup = async (newGroup: Group) => {
     try {
       // Handle API call here
-      setGroups([...groups, newGroup])
-      setIsDialogOpen(false)
+      setGroups([...groups, newGroup]);
+      setIsDialogOpen(false);
     } catch (error) {
-      console.error('Failed to add group:', error)
+      console.error('Failed to add group:', error);
     }
-  }
+  };
 
   const stats = [
     {
-      title: "Total Groups",
+      title: 'Total Groups',
       value: groups.length,
       icon: Users,
-      description: "Active groups",
-      trend: "+2.5%",
+      description: 'Active groups',
+      trend: '+2.5%',
       trendUp: true
     },
     {
-      title: "Menu Access",
-      value: new Set(groups.flatMap(g => [...g.menuGroups, ...g.menuItems])).size,
+      title: 'Menu Access',
+      value: new Set(groups.flatMap((g) => [...g.menuGroups, ...g.menuItems])).size,
       icon: Menu,
-      description: "Assigned menus",
-      trend: "+1.8%",
+      description: 'Assigned menus',
+      trend: '+1.8%',
       trendUp: true
     },
     {
-      title: "Permissions",
-      value: new Set(groups.flatMap(g => g.permissions)).size,
+      title: 'Permissions',
+      value: new Set(groups.flatMap((g) => g.permissions)).size,
       icon: Shield,
-      description: "Total permissions",
-      trend: "+3.2%",
+      description: 'Total permissions',
+      trend: '+3.2%',
       trendUp: true
     },
     {
-      title: "Menu Groups",
-      value: new Set(groups.flatMap(g => g.menuGroups)).size,
+      title: 'Menu Groups',
+      value: new Set(groups.flatMap((g) => g.menuGroups)).size,
       icon: FolderTree,
-      description: "Assigned groups",
-      trend: "+1.5%",
+      description: 'Assigned groups',
+      trend: '+1.5%',
       trendUp: true
     }
-  ]
+  ];
 
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">Dashboard</a>
+        <a href="/" className="hover:text-[#4A36EC]">
+          Dashboard
+        </a>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/access-control" className="hover:text-[#4A36EC]">Access Control</a>
+        <a href="/access-control" className="hover:text-[#4A36EC]">
+          Access Control
+        </a>
         <ChevronRight className="w-4 h-4 mx-2" />
         <span className="text-[#4A36EC] font-medium">Groups</span>
       </div>
 
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex justify-between items-center"
-      >
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-[#4A36EC]">Groups</h1>
-          <p className="text-sm text-gray-600">
-            Manage user groups and their access rights
-          </p>
+          <p className="text-sm text-gray-600">Manage user groups and their access rights</p>
         </div>
-        <Button
-          onClick={() => setIsDialogOpen(true)}
-          className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white"
-        >
+        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
           <Plus className="w-4 h-4 mr-2" />
           Add Group
         </Button>
@@ -123,9 +120,7 @@ export default function GroupsPage() {
               </div>
               <div className="mt-4 flex items-center justify-between">
                 <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
-                  {stat.trend}
-                </span>
+                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
               </div>
             </CardContent>
           </Card>
@@ -133,20 +128,12 @@ export default function GroupsPage() {
       </motion.div>
 
       {/* Group Table */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-      >
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
         <GroupTable groups={groups} />
       </motion.div>
 
       {/* Add/Edit Dialog */}
-      <GroupDialog
-        open={isDialogOpen}
-        onOpenChange={setIsDialogOpen}
-        onSubmit={handleAddGroup}
-      />
+      <GroupDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddGroup} />
     </div>
-  )
-} 
+  );
+}

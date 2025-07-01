@@ -1,23 +1,24 @@
-import { StateCreator } from 'zustand'
-import type { VehicleType } from '@/features/inventoryManagement/types/brands.type'
+import { StateCreator } from 'zustand';
+
+import type { VehicleType } from '@/features/inventoryManagement/types/brands.type';
 
 export interface FiltersSlice {
   inventory: {
-    selectedTypes: VehicleType[]
-    searchTerm: string
-    manufacturerId: string | null
+    selectedTypes: VehicleType[];
+    searchTerm: string;
+    manufacturerId: string | null;
     dateRange: {
-      start: Date | null
-      end: Date | null
-    }
-  }
+      start: Date | null;
+      end: Date | null;
+    };
+  };
   actions: {
-    setSelectedTypes: (types: VehicleType[]) => void
-    setSearchTerm: (term: string) => void
-    setManufacturerId: (id: string | null) => void
-    setDateRange: (start: Date | null, end: Date | null) => void
-    resetFilters: () => void
-  }
+    setSelectedTypes: (types: VehicleType[]) => void;
+    setSearchTerm: (term: string) => void;
+    setManufacturerId: (id: string | null) => void;
+    setDateRange: (start: Date | null, end: Date | null) => void;
+    resetFilters: () => void;
+  };
 }
 
 export const createFiltersSlice: StateCreator<FiltersSlice> = (set) => ({
@@ -57,4 +58,4 @@ export const createFiltersSlice: StateCreator<FiltersSlice> = (set) => ({
         }
       }))
   }
-}) 
+});

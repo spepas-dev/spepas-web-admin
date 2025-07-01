@@ -1,4 +1,4 @@
-import { SparePart } from "./spareparts.types";
+import { SparePart } from './spareparts.types';
 
 export interface CarModel {
   id: number;
@@ -11,13 +11,12 @@ export interface CarModel {
   spareParts: SparePart[];
 }
 
-
 export interface CreateCarModel {
-    name: string
-    carBrand_ID: string
-    yearOfMake: number
+  name: string;
+  carBrand_ID: string;
+  yearOfMake: number;
 }
 
 export interface UpdateCarModel extends Partial<CreateCarModel> {
-    // Additional fields specific to updates can go here
-  }
+  // Additional fields specific to updates can go here
+}

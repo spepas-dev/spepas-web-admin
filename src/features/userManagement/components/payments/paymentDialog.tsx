@@ -1,138 +1,113 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Plus, Trash2, Wallet } from "lucide-react"
-import { PaymentAccount } from "."
-import { MultiSelect } from "@/components/ui/multi-select"
-import { useEffect } from "react"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus, Trash2, Wallet } from 'lucide-react';
+import { useEffect } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { MultiSelect } from '@/components/ui/multi-select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+import { PaymentAccount } from '.';
 
 const paymentSchema = z.object({
   mode: z.enum(['WALLET', 'BANK', 'CARD'], {
-    required_error: "Please select a payment mode",
+    required_error: 'Please select a payment mode'
   }),
-  accountNumber: z.string()
-    .min(1, "Account number is required")
-    .regex(/^\d+$/, "Account number must contain only numbers"),
-  provider: z.string().min(1, "Please select a provider"),
-  User_ID: z.string().min(1, "Please select a user"),
-  name: z.string().min(1, "Account holder name is required"),
-})
+  accountNumber: z.string().min(1, 'Account number is required').regex(/^\d+$/, 'Account number must contain only numbers'),
+  provider: z.string().min(1, 'Please select a provider'),
+  User_ID: z.string().min(1, 'Please select a user'),
+  name: z.string().min(1, 'Account holder name is required')
+});
 
 const formSchema = z.object({
-  accounts: z.array(paymentSchema).min(1, "Add at least one payment account"),
-})
+  accounts: z.array(paymentSchema).min(1, 'Add at least one payment account')
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 interface PaymentDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (accounts: PaymentAccount[]) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (accounts: PaymentAccount[]) => void;
 }
 
 // Mock data - replace with actual API data
 const availableUsers = [
-  { 
-    value: "4298e2e3-4215-4884-9bb1-3fc7d9695e49", 
-    label: "James Baako",
+  {
+    value: '4298e2e3-4215-4884-9bb1-3fc7d9695e49',
+    label: 'James Baako',
     icon: Wallet
-  },
-]
+  }
+];
 
-const paymentModes = [
-  'WALLET',
-  'BANK',
-  'CARD'
-]
+const paymentModes = ['WALLET', 'BANK', 'CARD'];
 
 const providers = {
   WALLET: ['MTN', 'VODAFONE', 'AIRTELTIGO'],
   BANK: ['GCB', 'ECOBANK', 'ABSA', 'FIDELITY'],
   CARD: ['VISA', 'MASTERCARD', 'AMEX']
-}
+};
 
-export function PaymentDialog({ 
-  open, 
-  onOpenChange, 
-  onSubmit,
-}: PaymentDialogProps) {
+export function PaymentDialog({ open, onOpenChange, onSubmit }: PaymentDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      accounts: [{
-        mode: 'WALLET',
-        accountNumber: "",
-        provider: "",
-        User_ID: "",
-        name: "",
-      }],
-    },
-  })
+      accounts: [
+        {
+          mode: 'WALLET',
+          accountNumber: '',
+          provider: '',
+          User_ID: '',
+          name: ''
+        }
+      ]
+    }
+  });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "accounts",
-  })
+    name: 'accounts'
+  });
 
   useEffect(() => {
     if (!open) {
       form.reset({
-        accounts: [{
-          mode: 'WALLET',
-          accountNumber: "",
-          provider: "",
-          User_ID: "",
-          name: "",
-        }]
-      })
+        accounts: [
+          {
+            mode: 'WALLET',
+            accountNumber: '',
+            provider: '',
+            User_ID: '',
+            name: ''
+          }
+        ]
+      });
     }
-  }, [open])
+  }, [open]);
 
   const handleSubmit = (values: FormValues) => {
-    onSubmit(values.accounts)
-    form.reset()
-  }
+    onSubmit(values.accounts);
+    form.reset();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-white">
         <DialogHeader>
           <DialogTitle className="text-[#4A36EC] text-xl font-bold">Add Payment Account</DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Register new payment accounts for users
-          </DialogDescription>
+          <DialogDescription className="text-gray-600">Register new payment accounts for users</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
             <div className="space-y-4">
               {fields.map((field, index) => {
-                const currentMode = form.watch(`accounts.${index}.mode`)
-                
+                const currentMode = form.watch(`accounts.${index}.mode`);
+
                 return (
                   <div key={field.id} className="space-y-4 p-4 border rounded-lg">
                     <FormField
@@ -161,11 +136,14 @@ export function PaymentDialog({
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-gray-700">Payment Mode</FormLabel>
-                          <Select onValueChange={(value: 'WALLET' | 'BANK' | 'CARD') => {
-                            field.onChange(value)
-                            // Reset provider when mode changes
-                            form.setValue(`accounts.${index}.provider`, '')
-                          }} defaultValue={field.value}>
+                          <Select
+                            onValueChange={(value: 'WALLET' | 'BANK' | 'CARD') => {
+                              field.onChange(value);
+                              // Reset provider when mode changes
+                              form.setValue(`accounts.${index}.provider`, '');
+                            }}
+                            defaultValue={field.value}
+                          >
                             <FormControl>
                               <SelectTrigger>
                                 <SelectValue placeholder="Select payment mode" />
@@ -216,7 +194,7 @@ export function PaymentDialog({
                         <FormItem>
                           <FormLabel className="text-gray-700">Account Number</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               placeholder="Enter account number"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
@@ -234,7 +212,7 @@ export function PaymentDialog({
                         <FormItem>
                           <FormLabel className="text-gray-700">Account Holder Name</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               placeholder="Enter account holder name"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
@@ -246,18 +224,12 @@ export function PaymentDialog({
                     />
 
                     {fields.length > 1 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        className="hover:bg-gray-100"
-                        onClick={() => remove(index)}
-                      >
+                      <Button type="button" variant="outline" size="icon" className="hover:bg-gray-100" onClick={() => remove(index)}>
                         <Trash2 className="w-4 h-4 text-gray-600" />
                       </Button>
                     )}
                   </div>
-                )
+                );
               })}
             </div>
 
@@ -266,21 +238,20 @@ export function PaymentDialog({
                 type="button"
                 variant="outline"
                 className="hover:bg-gray-100"
-                onClick={() => append({
-                  mode: 'WALLET',
-                  accountNumber: "",
-                  provider: "",
-                  User_ID: "",
-                  name: "",
-                })}
+                onClick={() =>
+                  append({
+                    mode: 'WALLET',
+                    accountNumber: '',
+                    provider: '',
+                    User_ID: '',
+                    name: ''
+                  })
+                }
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Another
               </Button>
-              <Button 
-                type="submit"
-                className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white"
-              >
+              <Button type="submit" className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
                 Save Accounts
               </Button>
             </div>
@@ -288,5 +259,5 @@ export function PaymentDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}

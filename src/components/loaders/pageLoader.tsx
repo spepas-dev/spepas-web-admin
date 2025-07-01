@@ -1,5 +1,6 @@
-import { motion } from "framer-motion"
-import Logo from "@/assets/logo.svg"
+import { motion } from 'framer-motion';
+
+import Logo from '@/assets/logo.svg';
 
 export default function PageLoader() {
   return (
@@ -16,7 +17,7 @@ export default function PageLoader() {
           transition={{
             duration: 2,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: 'easeInOut'
           }}
         />
 
@@ -26,7 +27,7 @@ export default function PageLoader() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{
             duration: 0.5,
-            ease: "easeOut"
+            ease: 'easeOut'
           }}
           className="relative"
         >
@@ -38,15 +39,11 @@ export default function PageLoader() {
             transition={{
               duration: 20,
               repeat: Infinity,
-              ease: "linear"
+              ease: 'linear'
             }}
             className="w-24 h-24"
           >
-            <img 
-              src={Logo} 
-              alt="Logo"
-              className="w-full h-full"
-            />
+            <img src={Logo} alt="Logo" className="w-full h-full" />
           </motion.div>
 
           {/* Loading Text */}
@@ -93,7 +90,7 @@ export default function PageLoader() {
                     transition={{
                       duration: 0.6,
                       repeat: Infinity,
-                      ease: "easeInOut"
+                      ease: 'easeInOut'
                     }}
                   />
                 ))}
@@ -113,18 +110,18 @@ export default function PageLoader() {
           transition={{
             duration: 1.5,
             repeat: Infinity,
-            ease: "easeOut"
+            ease: 'easeOut'
           }}
         />
       </div>
     </div>
-  )
+  );
 }
 
 // Optional: Export a hook to manage the loader state
 export const usePageLoader = () => {
   return {
-    PageLoader,
+    PageLoader
     // Add any additional loader state management here
-  }
-}
+  };
+};

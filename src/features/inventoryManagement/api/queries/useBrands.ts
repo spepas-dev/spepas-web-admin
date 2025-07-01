@@ -60,7 +60,7 @@
 // // Mutations
 // export const useCreateBrand = () => {
 //   const queryClient = useQueryClient()
-  
+
 //   return useMutation({
 //     mutationFn: (data: {
 //       name: string
@@ -79,7 +79,7 @@
 
 // export const useUpdateBrand = (id: string) => {
 //   const queryClient = useQueryClient()
-  
+
 //   return useMutation({
 //     mutationFn: (data: Partial<Brand>) => BrandsService.updateBrand(id, data),
 //     onSuccess: () => {
@@ -91,7 +91,7 @@
 
 // export const useDeleteBrand = () => {
 //   const queryClient = useQueryClient()
-  
+
 //   return useMutation({
 //     mutationFn: (id: string) => BrandsService.deleteBrand(id),
 //     onSuccess: (_, id) => {
@@ -103,11 +103,11 @@
 
 // export const useBulkDeleteBrands = () => {
 //   const queryClient = useQueryClient()
-  
+
 //   return useMutation({
 //     mutationFn: (ids: string[]) => BrandsService.bulkDeleteBrands(ids),
 //     onSuccess: () => {
 //       queryClient.invalidateQueries({ queryKey: inventoryKeys.brands.lists() })
 //     },
 //   })
-// } 
+// }

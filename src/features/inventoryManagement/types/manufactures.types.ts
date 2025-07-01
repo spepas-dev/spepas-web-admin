@@ -1,4 +1,4 @@
-import { Brand } from "./brands.types";
+import { Brand } from './brands.types';
 
 export interface Manufacturer {
   id: number;
@@ -11,8 +11,8 @@ export interface Manufacturer {
 }
 
 export interface CreateManufacturerDTO {
-    name: string
-    country: string
+  name: string;
+  country: string;
 }
 
 export interface UpdateManufacturerDTO extends Partial<CreateManufacturerDTO> {

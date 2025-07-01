@@ -1,98 +1,65 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useFieldArray, useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Plus, Trash2 } from "lucide-react"
-import { Permission } from "."
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Plus, Trash2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+import { Permission } from '.';
 
 const permissionSchema = z.object({
-  name: z.string().min(1, "Permission name is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  module: z.string().min(1, "Module is required"),
-  actions: z.array(z.string()).min(1, "Select at least one action"),
-})
+  name: z.string().min(1, 'Permission name is required'),
+  description: z.string().min(10, 'Description must be at least 10 characters'),
+  module: z.string().min(1, 'Module is required'),
+  actions: z.array(z.string()).min(1, 'Select at least one action')
+});
 
 const formSchema = z.object({
-  permissions: z.array(permissionSchema).min(1, "Add at least one permission"),
-})
+  permissions: z.array(permissionSchema).min(1, 'Add at least one permission')
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 interface PermissionDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onSubmit: (permissions: Permission[]) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (permissions: Permission[]) => void;
 }
 
-const availableActions = [
-  "create",
-  "read",
-  "update",
-  "delete",
-  "approve",
-  "reject",
-]
+const availableActions = ['create', 'read', 'update', 'delete', 'approve', 'reject'];
 
-const availableModules = [
-  "inventory",
-  "sales",
-  "purchases",
-  "reports",
-  "users",
-  "settings",
-]
+const availableModules = ['inventory', 'sales', 'purchases', 'reports', 'users', 'settings'];
 
 export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      permissions: [{ name: "", description: "", module: "", actions: [] }],
-    },
-  })
+      permissions: [{ name: '', description: '', module: '', actions: [] }]
+    }
+  });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "permissions",
-  })
+    name: 'permissions'
+  });
 
   const handleSubmit = (values: FormValues) => {
-    onSubmit(values.permissions)
-    form.reset()
-  }
+    onSubmit(values.permissions);
+    form.reset();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl bg-white">
         <DialogHeader>
           <DialogTitle className="text-[#4A36EC] text-xl font-bold">Add Permissions</DialogTitle>
-          <DialogDescription className="text-gray-600">
-            Define new permissions and their access levels
-          </DialogDescription>
+          <DialogDescription className="text-gray-600">Define new permissions and their access levels</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -108,7 +75,7 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                         <FormItem>
                           <FormLabel className="text-gray-700">Permission Name</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               placeholder="Enter permission name"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
@@ -125,7 +92,7 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                         <FormItem>
                           <FormLabel className="text-gray-700">Description</FormLabel>
                           <FormControl>
-                            <Textarea 
+                            <Textarea
                               placeholder="Enter permission description"
                               className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                               {...field}
@@ -148,7 +115,7 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {availableModules.map(module => (
+                              {availableModules.map((module) => (
                                 <SelectItem key={module} value={module}>
                                   {module.charAt(0).toUpperCase() + module.slice(1)}
                                 </SelectItem>
@@ -166,28 +133,21 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                         <FormItem>
                           <FormLabel className="text-gray-700">Actions</FormLabel>
                           <div className="grid grid-cols-3 gap-4">
-                            {availableActions.map(action => (
+                            {availableActions.map((action) => (
                               <FormField
                                 key={action}
                                 control={form.control}
                                 name={`permissions.${index}.actions`}
                                 render={({ field }) => {
                                   return (
-                                    <FormItem
-                                      key={action}
-                                      className="flex flex-row items-start space-x-3 space-y-0"
-                                    >
+                                    <FormItem key={action} className="flex flex-row items-start space-x-3 space-y-0">
                                       <FormControl>
                                         <Checkbox
                                           checked={field.value?.includes(action)}
                                           onCheckedChange={(checked) => {
                                             return checked
                                               ? field.onChange([...field.value, action])
-                                              : field.onChange(
-                                                  field.value?.filter(
-                                                    (value) => value !== action
-                                                  )
-                                                )
+                                              : field.onChange(field.value?.filter((value) => value !== action));
                                           }}
                                         />
                                       </FormControl>
@@ -195,7 +155,7 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                                         {action.charAt(0).toUpperCase() + action.slice(1)}
                                       </FormLabel>
                                     </FormItem>
-                                  )
+                                  );
                                 }}
                               />
                             ))}
@@ -206,13 +166,7 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                     />
                   </div>
                   {fields.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="mt-8 hover:bg-gray-100"
-                      onClick={() => remove(index)}
-                    >
+                    <Button type="button" variant="outline" size="icon" className="mt-8 hover:bg-gray-100" onClick={() => remove(index)}>
                       <Trash2 className="w-4 h-4 text-gray-600" />
                     </Button>
                   )}
@@ -225,15 +179,12 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
                 type="button"
                 variant="outline"
                 className="hover:bg-gray-100"
-                onClick={() => append({ name: "", description: "", module: "", actions: [] })}
+                onClick={() => append({ name: '', description: '', module: '', actions: [] })}
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Another
               </Button>
-              <Button 
-                type="submit"
-                className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white"
-              >
+              <Button type="submit" className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
                 Save Permissions
               </Button>
             </div>
@@ -241,5 +192,5 @@ export function PermissionDialog({ open, onOpenChange, onSubmit }: PermissionDia
         </Form>
       </DialogContent>
     </Dialog>
-  )
-} 
+  );
+}
