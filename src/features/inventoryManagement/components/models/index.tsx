@@ -1,51 +1,27 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { Calendar, Car, ChevronRight, Factory, Plus, Settings } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/custom/dataTable';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { toastConfig } from '@/lib/toast';
+import { cn } from '@/lib/utils';
+import { useGlobal } from '@/stores';
+import { useStore } from '@/stores';
 
 import { useCreateModel } from '../../api/mutations/modelMutations';
 import { useCarModels } from '../../api/queries/modelsQueries';
 import { CarModel, CreateCarModel } from '../../types';
 import { ModelDialog } from './modelDialog';
-import { ModelTable } from './modelTable';
 
 export default function ModelsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [models, setModels] = useState<CarModel[]>([]);
   const { data, isLoading, isError } = useCarModels();
-
-  const columns: ColumnDef<CarModel>[] = useMemo(() => {
-    return [
-      {
-        header: 'Name of Model',
-        accessorKey: 'name'
-      },
-      {
-        header: 'Manufacturer ID',
-        accessorKey: 'carBrand_ID'
-      },
-      {
-        header: 'Year of Make',
-        accessorKey: 'yearOfMake'
-      }
-    ];
-  }, []);
-
-  useEffect(() => {
-    if (data) {
-      setModels(data.data);
-    }
-
-    return () => {
-      setModels([]);
-    };
+  const models = useMemo((): CarModel[] => {
+    return data?.data || [];
   }, [data?.data]);
 
   // function to handle add models
@@ -64,6 +40,110 @@ export default function ModelsPage() {
       }
     });
   };
+
+  const { data: inventoryData, isLoading: isInventoryLoading } = useGlobal();
+
+  // Load inventory data on component mount
+  useEffect(() => {
+    const loadData = useStore.getState().actions.loadInventoryData;
+    loadData();
+  }, []);
+
+  const manufacturerLookup = useMemo(() => {
+    if (!inventoryData?.manufacturers) {
+      return new Map();
+    }
+
+    return new Map(inventoryData.manufacturers.map((manufacturer) => [manufacturer.Manufacturer_ID, manufacturer]));
+  }, [inventoryData?.manufacturers]);
+
+  // Helper function to get manufacturer name with fallback
+  const getManufacturerName = useCallback(
+    (manufacturerId: string): string => {
+      const manufacturer = manufacturerLookup.get(manufacturerId);
+      return manufacturer?.name || manufacturerId || 'Unknown';
+    },
+    [manufacturerLookup]
+  );
+
+  const columns = useMemo((): ColumnDef<CarModel>[] => {
+    return [
+      {
+        header: 'Name of Model',
+        accessorKey: 'name'
+      },
+      {
+        header: 'Manufacturer',
+        accessorKey: 'carBrand.manufacturer_ID',
+        cell: ({ row }) => {
+          const manufacturerId = row.original.carBrand?.manufacturer_ID;
+          const manufacturerName = getManufacturerName(manufacturerId || '');
+          const isLoading = isInventoryLoading && !inventoryData?.manufacturers;
+          const isUnknown = manufacturerName === manufacturerId;
+
+          // Debug logging for development
+          console.log('Debug Models Manufacturer:', {
+            modelName: row.original.name,
+            carBrand: row.original.carBrand,
+            manufacturerId,
+            manufacturerName,
+            availableManufacturers:
+              inventoryData?.manufacturers?.map((m) => ({
+                id: m.Manufacturer_ID,
+                name: m.name
+              })) || [],
+            lookupResult: manufacturerLookup.get(manufacturerId || '')
+          });
+
+          if (isLoading) {
+            return (
+              <div className="flex items-center space-x-2">
+                <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+              </div>
+            );
+          }
+
+          if (!manufacturerId) {
+            return <span className="text-gray-400">No manufacturer</span>;
+          }
+
+          return (
+            <div className="flex flex-col">
+              <span
+                className={cn('font-medium', isUnknown ? 'text-amber-600' : 'text-gray-900')}
+                title={isUnknown ? `ID: ${manufacturerId}` : manufacturerName}
+              >
+                {manufacturerName}
+              </span>
+              {isUnknown && <span className="text-xs text-gray-400">ID: {manufacturerId}</span>}
+            </div>
+          );
+        }
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          const isActive = row.original.status === 1;
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Year of Make',
+        accessorKey: 'yearOfMake'
+      }
+    ];
+  }, [getManufacturerName, inventoryData?.manufacturers, isInventoryLoading]);
 
   const stats = [
     {

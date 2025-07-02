@@ -6,14 +6,16 @@ import { ModalConfig } from '@/types';
 
 import { type AuthSlice, createAuthSlice } from './slices/auth.slice';
 import { createFiltersSlice, type FiltersSlice } from './slices/filters.slice';
+import { createGlobalSlice, type GlobalSlice } from './slices/global.slice';
 import { createModalSlice, type ModalSlice } from './slices/modal.slice';
 import { createUISlice, type UISlice } from './slices/ui.slice';
 
 export type StoreState = Omit<AuthSlice, 'actions'> &
   Omit<FiltersSlice, 'actions'> &
   Omit<UISlice, 'actions'> &
-  Omit<ModalSlice, 'actions'> & {
-    actions: AuthSlice['actions'] & FiltersSlice['actions'] & UISlice['actions'] & ModalSlice['actions'];
+  Omit<ModalSlice, 'actions'> &
+  Omit<GlobalSlice, 'actions'> & {
+    actions: AuthSlice['actions'] & FiltersSlice['actions'] & UISlice['actions'] & ModalSlice['actions'] & GlobalSlice['actions'];
   };
 
 export const useStore = create<StoreState>()(
@@ -24,17 +26,20 @@ export const useStore = create<StoreState>()(
         const filtersSlice = createFiltersSlice(...a);
         const uiSlice = createUISlice(...a);
         const modalSlice = createModalSlice(...a);
+        const globalSlice = createGlobalSlice(...a);
         return {
           ...authSlice,
           ...filtersSlice,
           ...uiSlice,
           ...modalSlice,
+          ...globalSlice,
           // Merge actions from all slices
           actions: {
             ...authSlice.actions,
             ...filtersSlice.actions,
             ...uiSlice.actions,
-            ...modalSlice.actions
+            ...modalSlice.actions,
+            ...globalSlice.actions
           }
         };
       },
@@ -95,5 +100,23 @@ export const useModal = (id: string) => {
     open,
     close,
     update
+  };
+};
+
+// Global Hook
+export const useGlobal = () => {
+  const isLoading = useStore((state) => state.isLoading);
+  const isError = useStore((state) => state.isError);
+  const data = useStore((state) => state.data);
+  const actions = useStore((state) => state.actions);
+
+  return {
+    isLoading,
+    isError,
+    data,
+    setLoading: actions.setLoading,
+    setError: actions.setError,
+    setData: actions.setData,
+    loadInventoryData: actions.loadInventoryData
   };
 };

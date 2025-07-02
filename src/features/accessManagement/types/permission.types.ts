@@ -1,12 +1,14 @@
 import { Response } from '@/types';
 
 export interface Permission {
-  id: string;
+  id: number;
+  permissionID: string;
   title: string;
-  description: string;
-  code: string;
-  module: string;
-  isActive: boolean;
+  added_by: string;
+  approved_by: string | null;
+  status: number;
+  date_added: string;
+  description: string | null;
 }
 
 export interface PermissionStats {

@@ -1,16 +1,19 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { ChevronRight, FileCheck, Lock, Plus, Shield, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { DataTable } from '@/components/ui/custom/dataTable';
+import { CardGrid } from '@/components/ui/custom/staticCards';
+import { cn } from '@/lib/utils';
 
 import { useCreatePermission } from '../../api/mutations/permission.mutations';
 import { useGetPermissionList } from '../../api/queries/permission.queries';
 import { Permission } from '../../types';
 import { PermissionDialog } from './permissionDialog';
-import { PermissionTable } from './permissionTable';
 
 export default function PermissionsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -27,6 +30,42 @@ export default function PermissionsPage() {
     };
   }, [data?.data]);
 
+  const columns = useMemo((): ColumnDef<Permission>[] => {
+    return [
+      {
+        header: 'Permission Name',
+        accessorKey: 'title'
+      },
+      {
+        header: 'Description',
+        accessorKey: 'description'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }: { row: { original: Permission } }) => {
+          return (
+            <span
+              className={cn(
+                row.original.status === 1 ? 'text-green-900 bg-green-100' : 'text-red-900 bg-red-100',
+                'text-sm px-2 py-1 rounded-md'
+              )}
+            >
+              {row.original.status === 1 ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created On',
+        accessorKey: 'date_added',
+        cell: ({ row }: { row: { original: Permission } }) => {
+          return <span>{format(new Date(row.original.date_added), 'dd/MM/yyyy')}</span>;
+        }
+      }
+    ];
+  }, []);
+
   const { mutate: createPermission } = useCreatePermission();
   const handleAddPermissions = async (newPermissions: Permission[]) => {
     // Handle API call here
@@ -39,31 +78,31 @@ export default function PermissionsPage() {
     {
       title: 'Total Permissions',
       value: permissions.length,
-      icon: Shield,
+      Icon: Shield,
       description: 'Active permissions in system',
       trend: '+2.5%',
       trendUp: true
     },
     {
       title: 'User Groups',
-      value: '8',
-      icon: Users,
+      value: 8,
+      Icon: Users,
       description: 'Groups with permissions',
       trend: '+1.2%',
       trendUp: true
     },
     {
       title: 'Access Levels',
-      value: new Set(permissions.map((p) => p.module)).size,
-      icon: Lock,
+      value: new Set(permissions.map((p) => p.permissionID)).size,
+      Icon: Lock,
       description: 'Different access levels',
       trend: '+3.4%',
       trendUp: true
     },
     {
       title: 'Modules',
-      value: '12',
-      icon: FileCheck,
+      value: 12,
+      Icon: FileCheck,
       description: 'Protected modules',
       trend: '+1.8%',
       trendUp: true
@@ -109,36 +148,17 @@ export default function PermissionsPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <PermissionTable permissions={permissions} />
+        <DataTable
+          data={permissions}
+          columns={columns}
+          loading={isLoading}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
 
       <PermissionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddPermissions} />
