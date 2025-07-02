@@ -9,6 +9,7 @@ export interface CarModel {
   status: number;
   createdAt: string;
   spareParts: SparePart[];
+  carBrand: Brand;
 }
 
 export interface CreateCarModel {

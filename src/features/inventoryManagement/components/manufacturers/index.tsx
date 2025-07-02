@@ -41,14 +41,16 @@ export default function ManufacturersPage() {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
+          const isActive = row.original.status === 1;
           return (
             <span
               className={cn(
-                'px-2 py-1 rounded-md text-sm',
-                row.original.status === 1 ? 'bg-green-200 text-green-900' : 'bg-red-200 text-red-900'
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               )}
             >
-              {row.original.status === 1 ? 'Active' : 'Inactive'}
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
             </span>
           );
         }
