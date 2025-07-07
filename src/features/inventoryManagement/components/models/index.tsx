@@ -1,13 +1,15 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
-import { Calendar, Car, ChevronRight, Factory, Plus, Settings } from 'lucide-react';
+import { Calendar, Car, Factory, Plus, Settings } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { DataTable } from '@/components/ui/custom/dataTable';
+import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
-import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 import { useGlobal } from '@/stores';
 import { useStore } from '@/stores';
@@ -15,29 +17,43 @@ import { useStore } from '@/stores';
 import { useCreateModel } from '../../api/mutations/modelMutations';
 import { useCarModels } from '../../api/queries/modelsQueries';
 import { CarModel, CreateCarModel } from '../../types';
-import { ModelDialog } from './modelDialog';
+import { NewModels } from './newModels';
 
 export default function ModelsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createModelMutation = useCreateModel();
+  const addModelModal = useFormModal();
+
   const { data, isLoading, isError } = useCarModels();
-  const models = useMemo((): CarModel[] => {
+
+  const models = useMemo(() => {
     return data?.data || [];
   }, [data?.data]);
 
-  // function to handle add models
-  const { mutate: createModel } = useCreateModel();
-  const handleAddModels = async (newModels: CreateCarModel[]) => {
-    // Handle API call here
-    console.log(newModels);
-    createModel(newModels, {
-      onSuccess: () => {
-        setIsDialogOpen(false);
-        toastConfig.success('Model created successfully');
-      },
-      onError: () => {
-        setIsDialogOpen(false);
-        toastConfig.error('Failed to create model');
-      }
+  const handleSubmitModels = async (models: CreateCarModel[]) => {
+    setIsSubmitting(true);
+
+    try {
+      await createModelMutation.mutateAsync(models);
+
+      toast.success(`${models.length} model(s) created successfully`);
+
+      addModelModal.close();
+    } catch (error) {
+      console.error('Error creating models:', error);
+      toast.error('Failed to create models. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddModel = () => {
+    addModelModal.openForm({
+      title: 'Add Vehicle Models',
+      size: 'md',
+      showFooter: false,
+      children: <NewModels onSubmit={handleSubmitModels} loading={isSubmitting} />
     });
   };
 
@@ -156,7 +172,7 @@ export default function ModelsPage() {
     },
     {
       title: 'Latest Year',
-      value: models.length > 0 ? Math.max(...models.map((m) => m.yearOfMake)) : 0,
+      value: models.length > 0 ? Math.max(...models.map((m: CarModel) => m.yearOfMake)) : 0,
       Icon: Calendar,
       description: 'Most recent model year',
       trend: '+1.5%',
@@ -164,7 +180,7 @@ export default function ModelsPage() {
     },
     {
       title: 'Manufacturers',
-      value: new Set(models.map((m) => m.carBrand_ID)).size,
+      value: new Set(models.map((m: CarModel) => m.carBrand_ID)).size,
       Icon: Factory,
       description: 'Associated manufacturers',
       trend: '+2.8%',
@@ -194,29 +210,19 @@ export default function ModelsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/inventory" className="hover:text-[#4A36EC]">
-          Inventory
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Models</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Inventory', '/inventory', 'Models')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Vehicle Models</h1>
-          <p className="text-sm text-gray-600">Manage vehicle models and their specifications</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Model
-        </Button>
-      </motion.div>
+      <PageHeader
+        title="Vehicle Models"
+        description="Manage vehicle models and their specifications"
+        actions={
+          <Button onClick={handleAddModel} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Model
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />
@@ -226,13 +232,11 @@ export default function ModelsPage() {
         <DataTable
           columns={columns}
           data={models}
-          placeholder="Seach models..."
+          placeholder="Search models..."
           tableStyle="border rounded-lg bg-white"
           tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
-
-      <ModelDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddModels} />
     </div>
   );
 }

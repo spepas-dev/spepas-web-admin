@@ -7,7 +7,7 @@ import { Card, CardContent } from '../..';
 
 export interface StatsCardProps {
   title: string;
-  value: number;
+  value: number | string;
   description: string;
   trend: string;
   trendUp: boolean;

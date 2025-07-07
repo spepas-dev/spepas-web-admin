@@ -1,11 +1,15 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ChevronRight, CreditCard, MoreHorizontal, Plus, Search, Wallet as WalletIcon } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { CreditCard, MoreHorizontal, Plus, Search, Wallet as WalletIcon } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
+import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { DataTable } from '@/components/ui/custom/dataTable';
+import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import {
   DropdownMenu,
@@ -15,35 +19,61 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 
+import { useCreateWallet } from '../../api/mutations/walletMutations';
 import { useWallets } from '../../api/queries/walletQueries';
-import { WalletDialog } from './walletDialog';
-import { WalletSearchDialog } from './walletSearchDialog';
-
-export interface Wallet {
-  id: number;
-  walletID: string;
-  date_created: string;
-  status: number;
-  wallet_type: string;
-  User_ID: string | null;
-  WalletNumber: string;
-  balance: number;
-}
+import { CreateWalletDTO, Wallet } from '../../types';
+import { NewWallet } from './newWallet';
+import { WalletSearch } from './walletSearch';
 
 export default function WalletsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
-  const [wallets, setWallets] = useState<Wallet[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createWalletMutation = useCreateWallet();
+  const addWalletModal = useFormModal();
+  const searchWalletModal = useFormModal();
+
   const { data, isLoading, isError } = useWallets();
-  useEffect(() => {
-    if (data?.data) {
-      setWallets(data?.data as Wallet[]);
+
+  const wallets = useMemo(() => {
+    return data?.data || [];
+  }, [data?.data]);
+
+  const handleSubmitWallet = async (wallet: CreateWalletDTO) => {
+    setIsSubmitting(true);
+
+    try {
+      await createWalletMutation.mutateAsync(wallet);
+
+      toast.success('Wallet created successfully');
+
+      addWalletModal.close();
+    } catch (error) {
+      console.error('Error creating wallet:', error);
+      toast.error('Failed to create wallet. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
-    console.log(data);
-  }, [data]);
+  };
+
+  const handleAddWallet = () => {
+    addWalletModal.openForm({
+      title: 'Create New Wallet',
+      size: 'sm',
+      showFooter: false,
+      children: <NewWallet onSubmit={handleSubmitWallet} loading={isSubmitting} />
+    });
+  };
+
+  const handleSearchWallet = () => {
+    searchWalletModal.openForm({
+      title: 'Search Wallets',
+      size: 'md',
+      showFooter: false,
+      children: <WalletSearch wallets={wallets} loading={false} />
+    });
+  };
 
   const columns = useMemo((): ColumnDef<Wallet>[] => {
     return [
@@ -53,7 +83,8 @@ export default function WalletsPage() {
       },
       {
         header: 'Wallet Type',
-        accessorKey: 'wallet_type'
+        accessorKey: 'wallet_type',
+        cell: ({ row }) => <span className="capitalize text-gray-600">{row.original.wallet_type.toLowerCase()}</span>
       },
       {
         header: 'Balance',
@@ -64,20 +95,23 @@ export default function WalletsPage() {
       },
       {
         header: 'User ID',
-        accessorKey: 'User_ID'
+        accessorKey: 'User_ID',
+        cell: ({ row }) => <span className="text-gray-600">{row.original.User_ID || 'Not assigned'}</span>
       },
       {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
+          const isActive = row.original.status === 1;
           return (
             <span
               className={cn(
-                'px-2 py-1 rounded-md text-sm',
-                row.original.status === 1 ? 'text-green-900 bg-green-200' : 'text-red-900 bg-red-200'
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               )}
             >
-              {row.original.status === 1 ? 'Active' : 'Inactive'}
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
             </span>
           );
         }
@@ -86,14 +120,14 @@ export default function WalletsPage() {
         header: 'Created On',
         accessorKey: 'date_created',
         cell: ({ row }) => {
-          return <span>{format(new Date(row.original.date_created), 'yyyy/MM/dd HH:mm:a')}</span>;
+          return <span className="text-gray-600">{format(new Date(row.original.date_created), 'yyyy/MM/dd HH:mm:a')}</span>;
         }
       },
       {
         header: 'Actions',
         id: 'actions',
         accessorKey: 'actions',
-        cell: ({ row }) => {
+        cell: () => {
           return (
             <div className="flex justify-end">
               <DropdownMenu>
@@ -118,24 +152,6 @@ export default function WalletsPage() {
     ];
   }, []);
 
-  const handleAddWallet = async (walletData: { wallet_type: string }) => {
-    // In a real implementation, this would call an API
-    const newWallet: Wallet = {
-      id: wallets.length + 1,
-      walletID: crypto.randomUUID(),
-      date_created: new Date().toISOString(),
-      status: 1,
-      wallet_type: walletData.wallet_type,
-      User_ID: null,
-      WalletNumber: `S${String(wallets.length + 1).padStart(6, '0')}`,
-      balance: 0
-    };
-
-    setWallets([...wallets, newWallet]);
-    setIsDialogOpen(false);
-    toastConfig.success('Wallet created successfully');
-  };
-
   const stats = [
     {
       title: 'Total Wallets',
@@ -147,7 +163,9 @@ export default function WalletsPage() {
     },
     {
       title: 'Total Balance',
-      value: `$${wallets.reduce((sum, wallet) => sum + wallet.balance, 0).toFixed(2)}`,
+      value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'GHS' }).format(
+        wallets.reduce((sum: number, wallet: Wallet) => sum + wallet.balance, 0)
+      ),
       Icon: CreditCard,
       description: 'Combined wallet balance',
       trend: '+5.4%',
@@ -171,41 +189,45 @@ export default function WalletsPage() {
     }
   ];
 
+  if (isLoading) {
+    return (
+      <div className="p-8 space-y-8">
+        <PageLoader />
+      </div>
+    );
+  }
+  if (isError) {
+    return <div>Error loading wallets</div>;
+  }
+
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/finance" className="hover:text-[#4A36EC]">
-          Finance
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Wallets</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Finance', '/finance', 'Wallets')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Wallets</h1>
-          <p className="text-sm text-gray-600">Manage user wallets and balances</p>
-        </div>
-        <div className="flex space-x-2">
-          <Button onClick={() => setIsSearchDialogOpen(true)} className="bg-white hover:bg-gray-100 text-[#4A36EC] border border-[#4A36EC]">
-            <Search className="w-4 h-4 mr-2" />
-            Search
-          </Button>
-          <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Wallet
-          </Button>
-        </div>
-      </motion.div>
+      <PageHeader
+        title="Wallets"
+        description="Manage user wallets and balances"
+        actions={
+          <div className="flex space-x-2">
+            <Button
+              onClick={handleSearchWallet}
+              variant="outline"
+              className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
+            >
+              <Search className="w-4 h-4 mr-2" />
+              Search
+            </Button>
+            <Button onClick={handleAddWallet} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Wallet
+            </Button>
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
-
       <CardGrid cards={stats} />
 
       {/* Table */}
@@ -219,9 +241,6 @@ export default function WalletsPage() {
           tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
-
-      <WalletDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddWallet} />
-      <WalletSearchDialog open={isSearchDialogOpen} onOpenChange={setIsSearchDialogOpen} wallets={wallets} />
     </div>
   );
 }

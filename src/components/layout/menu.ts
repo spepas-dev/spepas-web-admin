@@ -46,13 +46,13 @@ export const menuGroups: MenuGroup[] = [
         name: 'Groups',
         icon: Users,
         path: '/access-management/groups'
-      },
-      {
-        id: 'menus',
-        name: 'Menus',
-        icon: Menu,
-        path: '/access-management/menus'
       }
+      // {
+      //   id: 'menus',
+      //   name: 'Menus',
+      //   icon: Menu,
+      //   path: '/access-management/menus'
+      // }
     ]
   },
   {

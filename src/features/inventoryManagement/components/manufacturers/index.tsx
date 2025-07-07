@@ -1,27 +1,56 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Car, ChevronRight, Factory, Globe, Plus, Settings } from 'lucide-react';
+import { Car, Factory, Globe, Plus, Settings } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { DataTable } from '@/components/ui/custom/dataTable';
 import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
-import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 
 import { useCreateManufacturer } from '../../api/mutations/manufacturerMutations';
 import { useManufactures } from '../../api/queries/manufacturesQueries';
 import { CreateManufacturerDTO, Manufacturer } from '../../types';
-import { ManufacturerDialog } from './manufacturerDialog';
+import { NewManufacturers } from './newManufacturers';
 
 export default function ManufacturersPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { data, isLoading, isError } = useManufactures();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { mutate: createManufacturer } = useCreateManufacturer();
+  const createManufacturerMutation = useCreateManufacturer();
+  const addManufacturerModal = useFormModal();
+
+  const handleSubmitManufacturers = async (manufacturers: CreateManufacturerDTO[]) => {
+    setIsSubmitting(true);
+
+    try {
+      await createManufacturerMutation.mutateAsync(manufacturers);
+
+      toast.success(`${manufacturers.length} manufacturer(s) created successfully`);
+
+      addManufacturerModal.close();
+    } catch (error) {
+      console.error('Error creating manufacturers:', error);
+      toast.error('Failed to create manufacturers. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddManufacturer = () => {
+    addManufacturerModal.openForm({
+      title: 'Add Manufacturer',
+      size: 'md',
+      showFooter: false,
+      children: <NewManufacturers onSubmit={handleSubmitManufacturers} loading={isSubmitting} />
+    });
+  };
+
+  const { data, isLoading, isError } = useManufactures();
 
   const manufacturers = useMemo(() => {
     return data?.data || [];
@@ -64,37 +93,6 @@ export default function ManufacturersPage() {
       }
     ];
   }, []);
-
-  const handleAddManufacturers = (newManufacturers: CreateManufacturerDTO[]) => {
-    // Handle API call here
-    console.log(newManufacturers);
-    createManufacturer(newManufacturers, {
-      onSuccess: () => {
-        setIsDialogOpen(false);
-        toastConfig.success('Manufacturer created successfully');
-      },
-      onError: () => {
-        toastConfig.error('Failed to create manufacturer');
-      }
-    });
-  };
-
-  const addManufacturerModal = useFormModal();
-
-  const handleAddManufacturer = () => {
-    addManufacturerModal.openForm({
-      title: 'Add Manufacturer',
-      size: 'md',
-      children: (
-        <>
-          <p>Add a new manufacturer to the system</p>
-        </>
-      ),
-      onSubmit: () => {
-        console.log('yes');
-      }
-    });
-  };
 
   const stats = [
     {
@@ -145,29 +143,19 @@ export default function ManufacturersPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/inventory" className="hover:text-[#4A36EC]">
-          Inventory
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Manufacturers</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Inventory', '/inventory', 'Manufacturers')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Manufacturers</h1>
-          <p className="text-sm text-gray-600">Manage car manufacturers in the system</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Manufacturer
-        </Button>
-      </motion.div>
+      <PageHeader
+        title="Manufacturers"
+        description="Manage car manufacturers in the system"
+        actions={
+          <Button onClick={handleAddManufacturer} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Manufacturer
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />
@@ -182,8 +170,6 @@ export default function ManufacturersPage() {
           tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
-
-      <ManufacturerDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddManufacturers} />
     </div>
   );
 }
