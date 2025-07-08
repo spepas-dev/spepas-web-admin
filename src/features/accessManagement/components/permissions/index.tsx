@@ -1,23 +1,29 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ChevronRight, FileCheck, Lock, Plus, Shield, Users } from 'lucide-react';
+import { FileCheck, Lock, Plus, Shield, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbPatterns } from '@/components/ui/custom/breadcrumb';
 import { DataTable } from '@/components/ui/custom/dataTable';
+import { useFormModal } from '@/components/ui/custom/modals';
+import { PageHeader } from '@/components/ui/custom/pageHeader';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { cn } from '@/lib/utils';
 
 import { useCreatePermission } from '../../api/mutations/permission.mutations';
 import { useGetPermissionList } from '../../api/queries/permission.queries';
 import { Permission } from '../../types';
-import { PermissionDialog } from './permissionDialog';
+import { NewPermission } from './newPermission';
 
 export default function PermissionsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [permissions, setPermissions] = useState<Permission[]>([]);
+
+  const createPermissionMutation = useCreatePermission();
+  const addPermissionModal = useFormModal();
   const { data, isError, isLoading } = useGetPermissionList();
 
   useEffect(() => {
@@ -44,14 +50,16 @@ export default function PermissionsPage() {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }: { row: { original: Permission } }) => {
+          const isActive = row.original.status === 1;
           return (
             <span
               className={cn(
-                row.original.status === 1 ? 'text-green-900 bg-green-100' : 'text-red-900 bg-red-100',
-                'text-sm px-2 py-1 rounded-md'
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               )}
             >
-              {row.original.status === 1 ? 'Active' : 'Inactive'}
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
             </span>
           );
         }
@@ -60,18 +68,36 @@ export default function PermissionsPage() {
         header: 'Created On',
         accessorKey: 'date_added',
         cell: ({ row }: { row: { original: Permission } }) => {
-          return <span>{format(new Date(row.original.date_added), 'dd/MM/yyyy')}</span>;
+          return <span className="text-gray-600">{format(new Date(row.original.date_added), 'dd/MM/yyyy')}</span>;
         }
       }
     ];
   }, []);
 
-  const { mutate: createPermission } = useCreatePermission();
-  const handleAddPermissions = async (newPermissions: Permission[]) => {
-    // Handle API call here
-    console.log(newPermissions);
-    setPermissions([...permissions, ...newPermissions]);
-    setIsDialogOpen(false);
+  const handleSubmitPermission = async (permissionData: Permission[]) => {
+    try {
+      // Handle multiple permissions creation
+      for (const permission of permissionData) {
+        await createPermissionMutation.mutateAsync(permission);
+      }
+
+      toast.success('Permission(s) created successfully');
+      // Refresh data instead of manual state update
+      // The API response should provide the complete permission data
+      addPermissionModal.close();
+    } catch (error) {
+      console.error('Error creating permission:', error);
+      toast.error('Failed to create permission. Please try again.');
+    }
+  };
+
+  const handleAddPermission = () => {
+    addPermissionModal.openForm({
+      title: 'Create New Permission',
+      size: 'md',
+      showFooter: false,
+      children: <NewPermission onSubmit={handleSubmitPermission} />
+    });
   };
 
   const stats = [
@@ -123,29 +149,19 @@ export default function PermissionsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/access-control" className="hover:text-[#4A36EC]">
-          Access Control
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Permissions</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Control', '/access-control', 'Permissions')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Permissions</h1>
-          <p className="text-sm text-gray-600">Manage system permissions and access controls</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Permission
-        </Button>
-      </motion.div>
+      <PageHeader
+        title="Permissions"
+        description="Manage system permissions and access controls"
+        actions={
+          <Button onClick={handleAddPermission} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Permission
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />
@@ -160,8 +176,6 @@ export default function PermissionsPage() {
           tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
-
-      <PermissionDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddPermissions} />
     </div>
   );
 }
