@@ -6,8 +6,7 @@ initApm({
   serverUrl: import.meta.env.VITE_ELASTIC_APM_SERVER,
   serviceVersion: '0.0.1',
   active: true,
-  breakdownMetrics: true,
-  distributedTracingOrigins: ['*']
+  breakdownMetrics: true
 });
 
 // OPTIONAL: force it just in case
