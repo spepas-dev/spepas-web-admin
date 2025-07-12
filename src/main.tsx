@@ -1,39 +1,41 @@
-import './index.css';
-
 import { init as initApm } from '@elastic/apm-rum';
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-
-import App from './App.tsx';
 
 async function getClientIP() {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
-    console.log('Response From Client=================================, ', res);
     const data = await res.json();
-    return data.ip; // e.g., "203.0.113.42"
+    return data.ip;
   } catch {
+    console.log('Error fetching public ip address=============================');
     return null;
   }
 }
 
-getClientIP().then((ip) => {
-  console.log('Client Side IP Address=============================, ', ip);
+(async () => {
+  const ip = await getClientIP();
+  console.log('Client IP======================================:', ip);
+
   const apm = initApm({
     serviceName: 'Spepas Web Admin',
     serverUrl: import.meta.env.VITE_ELASTIC_APM_SERVER,
     serviceVersion: '0.0.1',
-    active: true
+    active: true,
+    breakdownMetrics: true,
+    distributedTracingOrigins: ['*'],
+    pageLoadTransactionName: 'Spepas Initial Load'
   });
 
   if (ip) {
-    apm.setCustomContext({
-      client: {
-        ip
-      }
-    });
+    apm.setCustomContext({ client: { ip } });
   }
-});
+})();
+
+import './index.css';
+
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+
+import App from './App.tsx';
 
 // initApm({
 //   serviceName: 'Spepas Web Admin',
