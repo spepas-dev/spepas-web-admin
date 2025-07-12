@@ -17,6 +17,7 @@ async function getClientIP() {
 }
 
 getClientIP().then((ip) => {
+  console.log('Client Side IP Address=============================, ', ip);
   const apm = initApm({
     serviceName: 'Spepas Web Admin',
     serverUrl: import.meta.env.VITE_ELASTIC_APM_SERVER,
