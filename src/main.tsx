@@ -1,19 +1,17 @@
 import { init as initApm } from '@elastic/apm-rum';
 
-async function getClientIP() {
+async function getClientIP(): Promise<string | null> {
   try {
     const res = await fetch('https://api.ipify.org?format=json');
     const data = await res.json();
     return data.ip;
   } catch {
-    console.log('Error fetching public ip address=============================');
     return null;
   }
 }
 
 (async () => {
   const ip = await getClientIP();
-  console.log('Client IP======================================:', ip);
 
   const apm = initApm({
     serviceName: 'Spepas Web Admin',
@@ -25,9 +23,21 @@ async function getClientIP() {
     pageLoadTransactionName: 'Spepas Initial Load'
   });
 
-  if (ip) {
-    apm.setCustomContext({ client: { ip } });
-  }
+  // Attach IP as soon as the initial transaction starts
+  // Wait for APM initialization to complete
+  const checkAndLabel = () => {
+    const txn = apm.getCurrentTransaction();
+    if (txn && ip) {
+      txn.addLabels({ 'client.ip': ip });
+      console.log('🚀 IP Address=================:', ip);
+      console.log('🚀 Label applied to transaction:', txn);
+    } else {
+      console.log('⚠️ No transaction available yet, retrying...');
+      setTimeout(checkAndLabel, 100); // retry until available
+    }
+  };
+
+  checkAndLabel();
 })();
 
 import './index.css';
