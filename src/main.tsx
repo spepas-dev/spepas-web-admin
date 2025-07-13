@@ -28,25 +28,25 @@ async function getClientIP(): Promise<string | null> {
 
   // Attach IP as soon as the initial transaction starts
   // Wait for APM initialization to complete
-  // const checkAndLabel = () => {
-  //   const txn = apm.getCurrentTransaction();
-  //   if (txn && ip) {
-  //     txn.addLabels({ 'client.ip': ip });
-  //     console.log('🚀 IP Address=================:', ip);
-  //     console.log('🚀 Label applied to transaction:', txn);
-  //   } else {
-  //     console.log('⚠️ No transaction available yet, retrying...');
-  //     setTimeout(checkAndLabel, 100); // retry until available
-  //   }
-  // };
-
-  // checkAndLabel();
-  apm.observe('transaction:start', function (transaction) {
-    if (ip) {
+  const checkAndLabel = () => {
+    const txn = apm.getCurrentTransaction();
+    if (txn && ip) {
+      txn.addLabels({ 'client.ip': ip });
       console.log('🚀 IP Address=================:', ip);
-      transaction.addLabels({ 'client.ip': ip });
+      console.log('🚀 Label applied to transaction:', txn);
+    } else {
+      console.log('⚠️ No transaction available yet, retrying...');
+      setTimeout(checkAndLabel, 100); // retry until available
     }
-  });
+  };
+
+  checkAndLabel();
+  // apm.observe('transaction:start', function (transaction) {
+  //   if (ip) {
+  //     console.log('🚀 IP Address=================:', ip);
+  //     transaction.addLabels({ 'client.ip': ip });
+  //   }
+  // });
 })();
 
 import './index.css';
