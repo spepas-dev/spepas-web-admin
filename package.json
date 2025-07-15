@@ -13,6 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@avto-dev/vehicle-logotypes": "^2.10.0",
     "@elastic/apm-rum": "^5.17.0",
     "@googleapis/calendar": "^9.7.9",
     "@hookform/resolvers": "^4.1.0",

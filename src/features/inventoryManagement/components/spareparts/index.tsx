@@ -1,24 +1,60 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Car, ChevronRight, ClipboardList, Package, Plus, Wrench } from 'lucide-react';
+import { Car, ClipboardList, Package, Plus, Wrench } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
 import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { DataTable } from '@/components/ui/custom/dataTable';
+import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
-import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 
 import { useCreateSparePart } from '../../api/mutations/sparepartMutations';
 import { useSpareParts } from '../../api/queries/sparepartsQueries';
 import { CreateSparePartDTO, SparePart } from '../../types';
-import { SparePartDialog } from './sparePartDialog';
+import { NewSpareParts } from './newSpareParts';
 
 export default function SparePartsPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createSparePartMutation = useCreateSparePart();
+  const addSparePartModal = useFormModal();
+
   const { data, isLoading, isError } = useSpareParts();
+
+  const spareParts = useMemo(() => {
+    return data?.data || [];
+  }, [data?.data]);
+
+  const handleSubmitSpareParts = async (spareParts: CreateSparePartDTO[]) => {
+    setIsSubmitting(true);
+
+    try {
+      await createSparePartMutation.mutateAsync(spareParts);
+
+      toast.success(`${spareParts.length} spare part(s) created successfully`);
+
+      addSparePartModal.close();
+    } catch (error) {
+      console.error('Error creating spare parts:', error);
+      toast.error('Failed to create spare parts. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddSparePart = () => {
+    addSparePartModal.openForm({
+      title: 'Add Spare Parts',
+      size: 'md',
+      showFooter: false,
+      children: <NewSpareParts onSubmit={handleSubmitSpareParts} loading={isSubmitting} />
+    });
+  };
 
   const columns: ColumnDef<SparePart>[] = useMemo(() => {
     return [
@@ -34,14 +70,16 @@ export default function SparePartsPage() {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
+          const isActive = row.original.status === 1;
           return (
             <span
               className={cn(
-                'text-sm font-medium py-1 px-2 rounded-md',
-                `${row.original.status ? 'bg-green-100 text-green-900' : 'bg-red-100 text-red-900'}`
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
               )}
             >
-              {row.original.status ? 'Active' : 'Inactive'}
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
             </span>
           );
         }
@@ -62,26 +100,6 @@ export default function SparePartsPage() {
       }
     ];
   }, []);
-  const spareParts = useMemo(() => {
-    return data?.data || [];
-  }, [data?.data]);
-
-  // function to handle add spare parts
-  const { mutate: createSparePart } = useCreateSparePart();
-  const handleAddSpareParts = (newSpareParts: CreateSparePartDTO[]) => {
-    // Handle API call here
-    console.log(newSpareParts);
-    createSparePart(newSpareParts, {
-      onSuccess: () => {
-        setIsDialogOpen(false);
-        toastConfig.success('Spare part created successfully');
-      },
-      onError: () => {
-        setIsDialogOpen(false);
-        toastConfig.error('Failed to create spare part');
-      }
-    });
-  };
 
   const stats = [
     {
@@ -93,10 +111,10 @@ export default function SparePartsPage() {
       trendUp: true
     },
     {
-      title: 'Car Brands',
-      value: new Set(spareParts.map((p) => p.carModel_ID)).size,
+      title: 'Car Models',
+      value: new Set(spareParts.map((p: SparePart) => p.carModel_ID)).size,
       Icon: Car,
-      description: 'Compatible car brands',
+      description: 'Compatible car models',
       trend: '+2.7%',
       trendUp: true
     },
@@ -110,7 +128,7 @@ export default function SparePartsPage() {
     },
     {
       title: 'In Stock',
-      value: new Intl.NumberFormat('en-US').format(spareParts.length),
+      value: spareParts.length,
       Icon: Package,
       description: 'Available inventory',
       trend: '-0.8%',
@@ -132,29 +150,19 @@ export default function SparePartsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/inventory" className="hover:text-[#4A36EC]">
-          Inventory
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Spare Parts</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Inventory', '/inventory', 'Spare Parts')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Spare Parts</h1>
-          <p className="text-sm text-gray-600">Manage spare parts and their specifications</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Spare Part
-        </Button>
-      </motion.div>
+      <PageHeader
+        title="Spare Parts"
+        description="Manage spare parts and their specifications"
+        actions={
+          <Button onClick={handleAddSparePart} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Spare Part
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />
@@ -169,8 +177,6 @@ export default function SparePartsPage() {
           tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
-
-      <SparePartDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddSpareParts} />
     </div>
   );
 }
