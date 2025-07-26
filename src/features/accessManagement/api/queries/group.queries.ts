@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { GroupService } from '../../services/group.services';
+import { GroupService } from '../../services/group.service';
 
 export const groupQueryKeys = {
   all: ['group'] as const,

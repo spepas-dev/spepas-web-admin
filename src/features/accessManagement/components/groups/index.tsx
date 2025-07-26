@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { FolderTree, Menu, Plus, Shield, Users } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -11,22 +11,16 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { PageHeader } from '@/components/ui/custom/pageHeader';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 
+import { useCreateGroup } from '../../api/mutations/group.mutations';
 import { useGetGroupList } from '../../api/queries/group.queries';
-import { Group } from '../../types/group.types';
+import { CreateGroupDto, Group } from '../../types/group.types';
 import { NewGroup } from './newGroup';
 
 export default function GroupsPage() {
-  const [groups, setGroups] = useState<Group[]>([]);
-
   const addGroupModal = useFormModal();
   const { data, isLoading } = useGetGroupList();
 
-  useEffect(() => {
-    if (data) {
-      console.log(data.data);
-      // setGroups(data?.data);
-    }
-  }, [data]);
+  const groups = useMemo(() => data?.data || [], [data?.data]);
 
   const columns = useMemo((): ColumnDef<Group>[] => {
     return [
@@ -63,13 +57,12 @@ export default function GroupsPage() {
     ];
   }, []);
 
-  const handleSubmitGroup = async (groupData: Group) => {
-    try {
-      // Handle group creation
-      console.log('Creating group:', groupData);
+  const createGroupMutation = useCreateGroup();
 
+  const handleSubmitGroup = async (groupData: CreateGroupDto) => {
+    try {
+      await createGroupMutation.mutateAsync(groupData);
       toast.success('Group created successfully');
-      setGroups([...groups, groupData]);
       addGroupModal.close();
     } catch (error) {
       console.error('Error creating group:', error);
@@ -97,7 +90,8 @@ export default function GroupsPage() {
     },
     {
       title: 'Menu Access',
-      value: new Set(groups.flatMap((g) => [...g.menuGroups.map((mg) => mg.id), ...g.menuItems.map((mi) => mi.id)])).size,
+      // value: new Set(groups.flatMap((g) => [...g.menuGroups.map((mg) => mg.id), ...g.menuItems.map((mi) => mi.id)])).size,
+      value: 0,
       Icon: Menu,
       description: 'Assigned menus',
       trend: '+1.8%',
@@ -105,7 +99,8 @@ export default function GroupsPage() {
     },
     {
       title: 'Permissions',
-      value: new Set(groups.flatMap((g) => g.permissions.map((p) => p.id))).size,
+      // value: new Set(groups.flatMap((g) => g.permissions.map((p) => p.id))).size,
+      value: 0,
       Icon: Shield,
       description: 'Total permissions',
       trend: '+3.2%',
@@ -113,7 +108,8 @@ export default function GroupsPage() {
     },
     {
       title: 'Menu Groups',
-      value: new Set(groups.flatMap((g) => g.menuGroups.map((mg) => mg.id))).size,
+      // value: new Set(groups.flatMap((g) => g.menuGroups.map((mg) => mg.id))).size,
+      value: 0,
       Icon: FolderTree,
       description: 'Assigned groups',
       trend: '+1.5%',

@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { toastConfig } from '@/lib/toast';
 
-import { PermissionService } from '../../services/permission.services';
+import { PermissionService } from '../../services/permission.service';
 import { CreatePermissionDto, Permission, UpdatePermissionDto } from '../../types/permission.types';
 import { permissionQueryKeys } from '../queries/permission.queries';
 

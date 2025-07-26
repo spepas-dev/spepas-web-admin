@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { GroupService } from '../../services/group.services';
+import { GroupService } from '../../services/group.service';
 import { CreateGroupDto, Group, UpdateGroupDto } from '../../types/group.types';
 import { groupQueryKeys } from '../queries/group.queries';
 

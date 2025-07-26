@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { MenuService } from '../../services/menu.services';
+import { MenuService } from '../../services/menu.service';
 import { CreateMenuItemDto, UpdateMenuItemDto } from '../../types/menu.types';
 import { menuQueryKeys } from '../queries/menu.queries';
 

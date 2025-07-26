@@ -12,8 +12,8 @@ export const API_ROUTES = {
     APPLICATION: {
       BASE: '/auth/applications',
       DETAIL: (id: string) => `/auth/applications/${id}`,
-      CREATE: '/auth/create-applications',
-      UPDATE: '/auth/update-applications'
+      CREATE: '/auth/create-application',
+      UPDATE: (id: string) => `/auth/update-application/${id}`
     },
     MENU_GROUP: {
       BASE: '/auth/menu-groups',

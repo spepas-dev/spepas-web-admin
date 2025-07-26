@@ -26,10 +26,10 @@ export class ApplicationService {
   }
 
   static async createApplication(data: CreateApplicationDto) {
-    return ApiService.post<Application>(API_URL.CREATE, data);
+    return ApiService.post<ApplicationResponse>(API_URL.CREATE, data);
   }
 
   static async updateApplication(id: string, data: UpdateApplicationDto) {
-    return ApiService.put<Application>(API_URL.UPDATE, data);
+    return ApiService.put<Application>(API_URL.UPDATE(id), data);
   }
 }
