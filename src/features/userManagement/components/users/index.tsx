@@ -18,7 +18,6 @@ export default function UsersPage() {
   const { data, isLoading } = useGetUserList();
   const users = useMemo(() => data?.data || [], [data?.data]);
 
-  const formModal = useFormModal();
   const { mutateAsync: createUserAsync } = useCreateUser();
 
   const columns = useMemo(
@@ -65,19 +64,19 @@ export default function UsersPage() {
     []
   );
 
+  const formModal = useFormModal();
   const handleAddUser = () => {
     formModal.openForm({
       title: 'Add New User',
       children: <NewUsers onSubmit={handleSubmitUser} loading={false} />,
-      onSubmit: () => {
-        // This will be handled by the NewUsers component
-      }
+      showFooter: false
     });
   };
 
   const handleSubmitUser = async (userData: CreateUserDTO) => {
     try {
-      await createUserAsync(userData);
+      const { password, ...userDataWithoutPassword } = userData;
+      await createUserAsync(userDataWithoutPassword);
       toast.success('User created successfully');
       formModal.close();
     } catch {

@@ -72,6 +72,12 @@ export const menuGroups: MenuGroup[] = [
         path: '/user-management/sellers'
       },
       {
+        id: 'buyers',
+        name: 'Buyers',
+        icon: Users,
+        path: '/user-management/buyers'
+      },
+      {
         id: 'riders',
         name: 'Riders',
         icon: Bike,

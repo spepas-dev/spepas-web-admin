@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion';
-import { Activity, ArrowRight, Bike, Car, Package, UserCheck, Users, Wallet } from 'lucide-react';
+import { Activity, ArrowRight, Bike, Car, UserCheck, Users, Wallet } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useStore } from '@/stores';
 
 import { CardGrid } from '../ui/custom/staticCards';
 
@@ -105,12 +106,13 @@ const activityItems = [
 
 export default function WelcomePage() {
   //   const navigate = useNavigate()
+  const { user } = useStore((state) => state.user);
 
   return (
     <div className="p-8 space-y-8">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="space-y-4">
-        <h1 className="text-4xl font-bold text-[#4A36EC]">Welcome Back, Stephen!</h1>
+        <h1 className="text-4xl font-bold text-[#4A36EC]">Welcome Back, {user?.name}!</h1>
         <p className="text-gray-600">Here's what's happening with your platform today.</p>
       </motion.div>
 

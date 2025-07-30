@@ -1,8 +1,9 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import type { CreateRiderDTO, RegisterRiderResponse, Rider, RiderListResponse, RiderStats } from '../types';
 
-const RIDER_ENDPOINT = '/riders';
+const RIDER_ENDPOINT = API_ROUTES.USER_MANAGEMENT.RIDER;
 
 export interface RiderQueryParams {
   search?: string;
@@ -19,7 +20,7 @@ export class RidersService {
   }
 
   static async getRider(id: string): Promise<Rider> {
-    return ApiService.get<Rider>(`${RIDER_ENDPOINT}/${id}`);
+    return ApiService.get<Rider>(`${RIDER_ENDPOINT.DETAIL}/${id}`);
   }
 
   static async updateRider(id: string, data: Partial<Rider>): Promise<Rider> {
@@ -35,6 +36,6 @@ export class RidersService {
   }
 
   static async getRiderList(params?: RiderQueryParams): Promise<RiderListResponse> {
-    return ApiService.get<RiderListResponse>(`${RIDER_ENDPOINT}`, { params });
+    return ApiService.get<RiderListResponse>(`${RIDER_ENDPOINT.BASE}`, { params });
   }
 }

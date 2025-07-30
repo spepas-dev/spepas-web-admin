@@ -43,7 +43,7 @@ export const API_ROUTES = {
     },
     USER: {
       BASE: '/auth/admin-users-all',
-      CREATE: '/gateway/v1/auth/admin-signup',
+      CREATE: '/auth/admin-signup',
       DETAIL: (id: string) => `/users/${id}`
     }
   },
@@ -88,15 +88,15 @@ export const API_ROUTES = {
       STATS: (id: string) => `/user/buyers/${id}/stats`
     },
     RIDER: {
-      BASE: '/gateway/v1/riders',
-      DETAIL: (id: string) => `/gateway/v1/riders/${id}`,
+      BASE: '/user/riders-all',
+      DETAIL: (id: string) => `/user/riders/${id}`,
       VEHICLES: {
-        BASE: '/gateway/v1/riders/vehicles',
+        BASE: '/user/riders/vehicles',
         DETAIL: (id: string) => `/gateway/v1/riders/vehicles/${id}`
       }
     },
     MEPA: {
-      BASE: '/user/mepa-all',
+      BASE: '/user/mepas-all',
       DETAIL: (id: string) => `/user/mepa/${id}`,
       SERVICES: (id: string) => `/user/mepa/${id}/services`
     },

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { PaymentsService } from '../../services/payments.services';
+import { PaymentsService } from '../../services/payments.service';
 import type { CreatePaymentDTO, PaymentAccount } from '../../types/payments.types';
 import { paymentQueryKeys } from '../queries/payments.queries';
 

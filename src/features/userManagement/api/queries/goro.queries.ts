@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { GoroService } from '../../services/goro.services';
+import { GoroService } from '../../services/goro.service';
 
 export const goroQueryKeys = {
   all: ['goro'] as const,

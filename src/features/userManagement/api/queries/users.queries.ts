@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { UsersService } from '../../services/users.services';
+import { UsersService } from '../../services/users.service';
 
 export const userQueryKeys = {
   all: ['users'] as const,

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { VehiclesService } from '../../services/vehicles.services';
+import { VehiclesService } from '../../services/vehicles.service';
 import type { CreateVehicleDTO, Vehicle } from '../../types/vehicles.types';
 import { vehicleQueryKeys } from '../queries/vehicles.queries';
 

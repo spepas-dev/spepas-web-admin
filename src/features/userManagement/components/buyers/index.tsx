@@ -1,4 +1,4 @@
-import { Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { MapPin, Plus, ShoppingBag, Store, Users } from 'lucide-react';
@@ -11,15 +11,19 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { cn } from '@/lib/utils';
 
-import { useGetSellerList } from '../../api/queries/sellers.queries';
-import { CreateSellerDTO, Seller } from '../../types/sellers.types';
-import { NewSellers } from './newSellers';
+import { useGetBuyerList } from '../../api/queries/buyer.queries';
+import { Buyer, CreateBuyerDTO } from '../../types/buyer.types';
+import { Mepa } from '../../types/mechanics.types';
+import { NewBuyers } from './newBuyers';
 
-export default function SellersPage() {
-  const { data, isLoading } = useGetSellerList();
-  const sellers = useMemo(() => data?.data || [], [data?.data]);
+export default function BuyersPage() {
+  const { data, isLoading } = useGetBuyerList();
+  const buyers = useMemo(() => data?.data || [], [data?.data]);
+
+  const formModal = useFormModal();
+
   const columns = useMemo(
-    () => [
+    (): ColumnDef<Buyer>[] => [
       {
         header: 'Name',
         accessorKey: 'name'
@@ -49,49 +53,47 @@ export default function SellersPage() {
             </span>
           );
         }
+      },
+      {
+        header: 'Date Added',
+        accessorKey: 'createdAt',
+        cell: ({ row }: { row: Row<Buyer> }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
       }
-
-      // {
-      //   header: 'Date Added',
-      //   accessorKey: 'date_added',
-      //   cell: ({ row }: { row: Row<Seller> }) => <div>{format(row.original.date_added, 'dd/MM/yyyy HH:mm:ss a')}</div>
-      // }
     ],
     []
   );
 
-  const formModal = useFormModal();
-  const handleAddSeller = () => {
+  const handleAddBuyer = () => {
     formModal.openForm({
-      title: 'Add New Seller',
-      children: <NewSellers onSubmit={handleSubmitSeller} loading={false} />,
+      title: 'Add New Buyer',
+      children: <NewBuyers onSubmit={handleSubmitBuyer} loading={false} />,
       showFooter: false
     });
   };
 
-  const handleSubmitSeller = async (sellerData: CreateSellerDTO) => {
+  const handleSubmitBuyer = async (buyerData: CreateBuyerDTO) => {
     try {
       // Handle API call here
-      console.log(sellerData);
-      toast.success('Seller created successfully');
+      console.log(buyerData);
+      toast.success('Buyer created successfully');
       formModal.close();
     } catch {
-      toast.error('Failed to create seller');
+      toast.error('Failed to create buyer');
     }
   };
 
   const stats = [
     {
-      title: 'Total Sellers',
-      value: sellers.length,
+      title: 'Total Buyers',
+      value: buyers.length,
       Icon: Store,
-      description: 'Registered sellers',
+      description: 'Registered buyers',
       trend: '+3.2%',
       trendUp: true
     },
     {
       title: 'Active Locations',
-      value: sellers.length,
+      value: buyers.length,
       Icon: MapPin,
       description: 'Service locations',
       trend: '+2.1%',
@@ -99,7 +101,7 @@ export default function SellersPage() {
     },
     {
       title: 'Assigned Gopos',
-      value: new Set(sellers.map((s) => s.Gopa_ID)).size,
+      value: new Set(buyers.map((b) => b.Gopa_ID)).size,
       Icon: Users,
       description: 'Active Gopos',
       trend: '+1.5%',
@@ -118,16 +120,16 @@ export default function SellersPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <Breadcrumb items={BreadcrumbPatterns.threeTier('User Management', '/user-management', 'Sellers')} />
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('User Management', '/user-management', 'Buyers')} />
 
       {/* Header */}
       <PageHeader
-        title="Sellers"
-        description="Manage sellers and their locations"
+        title="Buyers"
+        description="Manage buyers and their locations"
         actions={
-          <Button onClick={handleAddSeller} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+          <Button onClick={handleAddBuyer} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
             <Plus className="w-4 h-4 mr-2" />
-            Add Seller
+            Add Buyer
           </Button>
         }
       />
@@ -135,23 +137,16 @@ export default function SellersPage() {
       {/* Stats Cards */}
       <CardGrid cards={stats} />
 
-      {/* Map and Table Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
-        {/* Map */}
-        {/* <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="lg:col-span-2 h-[400px] rounded-lg overflow-hidden border"
-        >
-          <SellerMap sellers={sellers} selectedLocation={selectedLocation} onLocationSelect={setSelectedLocation} />
-        </motion.div> */}
-
-        {/* Table */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-4">
-          <DataTable data={sellers} columns={columns} loading={isLoading} />
-        </motion.div>
-      </div>
+      {/* Table */}
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+        <DataTable
+          data={buyers}
+          columns={columns}
+          loading={isLoading}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
+      </motion.div>
     </div>
   );
 }

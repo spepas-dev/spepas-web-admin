@@ -49,6 +49,11 @@ export const ROUTE_PATHS = {
       CREATE: '/sellers/create',
       DETAIL: (id: string) => `/sellers/${id}`
     },
+    BUYERS: {
+      BASE: 'buyers',
+      CREATE: '/buyers/create',
+      DETAIL: (id: string) => `/buyers/${id}`
+    },
     RIDER: {
       BASE: 'riders',
       VEHICLES: {

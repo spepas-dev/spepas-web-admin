@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { RidersService } from '../../services/riders.services';
+import { RidersService } from '../../services/riders.service';
 import type { CreateRiderDTO, Rider } from '../../types/riders.types';
 import { riderQueryKeys } from '../queries/riders.queries';
 

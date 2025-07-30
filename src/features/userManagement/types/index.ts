@@ -1,3 +1,4 @@
+export * from './buyer.types';
 export * from './goro.types';
 export * from './mechanics.types';
 export * from './payments.types';
