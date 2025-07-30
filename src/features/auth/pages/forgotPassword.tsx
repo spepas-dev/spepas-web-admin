@@ -1,13 +1,17 @@
 import { motion } from 'framer-motion';
 
 import Logo from '@/assets/logo.svg?react';
+import { toastConfig } from '@/lib/toast';
 
+import { useForgotPassword } from '../api/mutations/auth.mutations';
 import { ForgotPasswordForm, ForgotPasswordFormValues } from '../components/forgotPasswordForm';
 
 export default function ForgotPasswordPage() {
+  const { mutateAsync: forgotPasswordAsync } = useForgotPassword();
+
   const handleSubmit = async (values: ForgotPasswordFormValues) => {
-    // Handle password reset logic here
-    console.log(values);
+    await forgotPasswordAsync(values.email);
+    toastConfig.success('Password reset email sent');
   };
 
   return (

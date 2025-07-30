@@ -15,9 +15,7 @@ const CardGrid: React.FC<CardGridProps> = ({ cards }) => {
       transition={{ delay: 0.1 }}
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
     >
-      {cards.map((card) => (
-        <StatsCard key={card.title} {...card} />
-      ))}
+      {cards?.map((card) => <StatsCard key={card.title} {...card} />)}
     </motion.div>
   );
 };

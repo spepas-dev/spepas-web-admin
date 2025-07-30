@@ -1,21 +1,12 @@
 import { Response } from '@/types';
 
-import { MenuItem } from './menu.types';
-import { MenuGroup } from './menugroup.types';
-import { Permission } from './permission.types';
-import { User } from './usergroups.types';
-
 export interface Group {
   id: string;
-  name: string;
-  description: string;
-  users: User[];
-  menuGroups: MenuGroup[];
-  menuItems: MenuItem[];
-  permissions: Permission[];
+  title: string;
+  group_applications: string[];
   createdAt: string;
   updatedAt: string;
-  isActive: boolean;
+  // isActive: boolean;
   metadata?: {
     userCount: number;
     permissionCount: number;

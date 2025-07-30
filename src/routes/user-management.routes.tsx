@@ -5,6 +5,7 @@ import { ROUTE_PATHS } from '@/config/routes.config';
 
 const UsersPage = lazy(() => import('@/features/userManagement/components/users'));
 const SellersPage = lazy(() => import('@/features/userManagement/components/sellers'));
+const BuyersPage = lazy(() => import('@/features/userManagement/components/buyers'));
 const RidersPage = lazy(() => import('@/features/userManagement/components/riders'));
 const MechanicsPage = lazy(() => import('@/features/userManagement/components/mechanics'));
 const GorosPage = lazy(() => import('@/features/userManagement/components/goros'));
@@ -27,6 +28,7 @@ export const userManagementRoutes: RouteObject[] = [
           { path: ROUTE_PATHS.USER_MANAGEMENT.RIDER.VEHICLES.BASE, children: [{ index: true, element: <VehiclesPage /> }] }
         ]
       },
+      { path: ROUTE_PATHS.USER_MANAGEMENT.BUYERS.BASE, children: [{ index: true, element: <BuyersPage /> }] },
       { path: ROUTE_PATHS.USER_MANAGEMENT.MECHANIC.BASE, children: [{ index: true, element: <MechanicsPage /> }] },
       { path: ROUTE_PATHS.USER_MANAGEMENT.GORO.BASE, children: [{ index: true, element: <GorosPage /> }] },
       { path: ROUTE_PATHS.USER_MANAGEMENT.PAYMENT_ACCOUNT.BASE, children: [{ index: true, element: <PaymentAccountsPage /> }] }

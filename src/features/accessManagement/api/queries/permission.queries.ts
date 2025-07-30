@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { PermissionService } from '../../services/permission.services';
+import { PermissionService } from '../../services/permission.service';
 
 export const permissionQueryKeys = {
   all: ['permission'] as const,

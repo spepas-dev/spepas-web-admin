@@ -1,27 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { MechanicsService } from '../../services/mechanics.services';
+import { MepasService } from '../../services/mepas.service';
 import type { CreateMepaDTO, Mepa } from '../../types/mechanics.types';
-import { mechanicQueryKeys } from '../queries/mechanics.queries';
+import { mepasQueryKeys } from '../queries/mepas.queries';
 
-export const useCreateMechanic = () => {
+export const useCreateMepa = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateMepaDTO) => MechanicsService.registerMechanic(data),
+    mutationFn: (data: CreateMepaDTO) => MepasService.registerMepa(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: mechanicQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: mepasQueryKeys.all });
     }
   });
 };
 
-export const useUpdateMechanic = (id: string) => {
+export const useUpdateMepa = (id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Partial<Mepa>) => MechanicsService.updateMechanic(id, data),
+    mutationFn: (data: Partial<Mepa>) => MepasService.updateMepa(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: mechanicQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: mepasQueryKeys.all });
     }
   });
 };

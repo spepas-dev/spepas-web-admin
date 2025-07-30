@@ -77,9 +77,8 @@ export default function PermissionsPage() {
   const handleSubmitPermission = async (permissionData: Permission[]) => {
     try {
       // Handle multiple permissions creation
-      for (const permission of permissionData) {
-        await createPermissionMutation.mutateAsync(permission);
-      }
+
+      await createPermissionMutation.mutateAsync(permissionData);
 
       toast.success('Permission(s) created successfully');
       // Refresh data instead of manual state update

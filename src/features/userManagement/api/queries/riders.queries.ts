@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { RidersService } from '../../services/riders.services';
+import { RidersService } from '../../services/riders.service';
 
 export const riderQueryKeys = {
   all: ['riders'] as const,

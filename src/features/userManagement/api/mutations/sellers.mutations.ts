@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { SellersService } from '../../services/sellers.services';
+import { SellersService } from '../../services/sellers.service';
 import type { CreateSellerDTO, Seller } from '../../types/sellers.types';
 import { sellerQueryKeys } from '../queries/sellers.queries';
 

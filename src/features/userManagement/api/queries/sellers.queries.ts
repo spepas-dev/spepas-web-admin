@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { SellersService } from '../../services/sellers.services';
+import { SellersService } from '../../services/sellers.service';
 
 export const sellerQueryKeys = {
   all: ['sellers'] as const,

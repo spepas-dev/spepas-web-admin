@@ -1,38 +1,82 @@
+import { Row } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ChevronRight, MapPin, Plus, ShoppingBag, Store, Users } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Plus, ShoppingBag, Store, Users } from 'lucide-react';
+import { useMemo } from 'react';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, DataTable, PageHeader } from '@/components/ui/custom';
+import { useFormModal } from '@/components/ui/custom/modals';
+import { CardGrid } from '@/components/ui/custom/staticCards';
+import { cn } from '@/lib/utils';
 
-import { SellerDialog } from './sellerDialog';
-import { SellerMap } from './sellerMap';
-import { SellerTable } from './sellerTable';
-
-export interface Seller {
-  storeName: string;
-  Gopa_ID: string;
-  longitude: number;
-  latitude: number;
-  User_ID: string;
-}
+import { useGetSellerList } from '../../api/queries/sellers.queries';
+import { CreateSellerDTO, Seller } from '../../types/sellers.types';
+import { NewSellers } from './newSellers';
 
 export default function SellersPage() {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [sellers, setSellers] = useState<Seller[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading } = useGetSellerList();
+  const sellers = useMemo(() => data?.data || [], [data?.data]);
+  const columns = useMemo(
+    () => [
+      {
+        header: 'Name',
+        accessorKey: 'name'
+      },
+      {
+        header: 'Email',
+        accessorKey: 'email'
+      },
+      {
+        header: 'Phone',
+        accessorKey: 'phoneNumber'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          const isActive = row.original.status === 1;
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      }
 
-  const handleAddSellers = async (newSellers: Seller[]) => {
+      // {
+      //   header: 'Date Added',
+      //   accessorKey: 'date_added',
+      //   cell: ({ row }: { row: Row<Seller> }) => <div>{format(row.original.date_added, 'dd/MM/yyyy HH:mm:ss a')}</div>
+      // }
+    ],
+    []
+  );
+
+  const formModal = useFormModal();
+  const handleAddSeller = () => {
+    formModal.openForm({
+      title: 'Add New Seller',
+      children: <NewSellers onSubmit={handleSubmitSeller} loading={false} />,
+      showFooter: false
+    });
+  };
+
+  const handleSubmitSeller = async (sellerData: CreateSellerDTO) => {
     try {
       // Handle API call here
-      console.log(newSellers);
-      setSellers([...sellers, ...newSellers]);
-      setIsDialogOpen(false);
-      setError(null);
-    } catch (err) {
-      setError('Failed to add sellers');
-      console.error(err);
+      console.log(sellerData);
+      toast.success('Seller created successfully');
+      formModal.close();
+    } catch {
+      toast.error('Failed to create seller');
     }
   };
 
@@ -40,7 +84,7 @@ export default function SellersPage() {
     {
       title: 'Total Sellers',
       value: sellers.length,
-      icon: Store,
+      Icon: Store,
       description: 'Registered sellers',
       trend: '+3.2%',
       trendUp: true
@@ -48,7 +92,7 @@ export default function SellersPage() {
     {
       title: 'Active Locations',
       value: sellers.length,
-      icon: MapPin,
+      Icon: MapPin,
       description: 'Service locations',
       trend: '+2.1%',
       trendUp: true
@@ -56,15 +100,15 @@ export default function SellersPage() {
     {
       title: 'Assigned Gopos',
       value: new Set(sellers.map((s) => s.Gopa_ID)).size,
-      icon: Users,
+      Icon: Users,
       description: 'Active Gopos',
       trend: '+1.5%',
       trendUp: true
     },
     {
       title: 'Total Products',
-      value: '156',
-      icon: ShoppingBag,
+      value: 156,
+      Icon: ShoppingBag,
       description: 'Listed products',
       trend: '+4.3%',
       trendUp: true
@@ -74,80 +118,40 @@ export default function SellersPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/user-management" className="hover:text-[#4A36EC]">
-          User Management
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Sellers</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('User Management', '/user-management', 'Sellers')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Seller Stores</h1>
-          <p className="text-sm text-gray-600">Manage seller stores and their locations</p>
-        </div>
-        <Button onClick={() => setIsDialogOpen(true)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Seller Store
-        </Button>
-      </motion.div>
+      <PageHeader
+        title="Sellers"
+        description="Manage sellers and their locations"
+        actions={
+          <Button onClick={handleAddSeller} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Seller
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Map and Table Container */}
       <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
         {/* Map */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           className="lg:col-span-2 h-[400px] rounded-lg overflow-hidden border"
         >
           <SellerMap sellers={sellers} selectedLocation={selectedLocation} onLocationSelect={setSelectedLocation} />
-        </motion.div>
+        </motion.div> */}
 
         {/* Table */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-4">
-          <SellerTable sellers={sellers} onLocationSelect={setSelectedLocation} />
+          <DataTable data={sellers} columns={columns} loading={isLoading} />
         </motion.div>
       </div>
-
-      {/* Show error if exists */}
-      {error && <div className="text-red-600 text-sm">{error}</div>}
-
-      <SellerDialog open={isDialogOpen} onOpenChange={setIsDialogOpen} onSubmit={handleAddSellers} selectedLocation={selectedLocation} />
     </div>
   );
 }

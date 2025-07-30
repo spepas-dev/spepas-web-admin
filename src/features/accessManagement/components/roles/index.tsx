@@ -1,16 +1,19 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Lock, Plus, Shield, UserCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
+import { Badge } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbPatterns } from '@/components/ui/custom/breadcrumb';
 import { DataTable } from '@/components/ui/custom/dataTable';
 import { useFormModal } from '@/components/ui/custom/modals';
 import { PageHeader } from '@/components/ui/custom/pageHeader';
 import { CardGrid } from '@/components/ui/custom/staticCards';
+import { cn } from '@/lib/utils';
 
 import { useCreateRole } from '../../api/mutations/role.mutations';
 import { useGetRoleList } from '../../api/queries/role.queries';
@@ -38,21 +41,59 @@ export default function RolesPage() {
     return [
       {
         header: 'Role Name',
-        accessorKey: 'name'
+        accessorKey: 'role_name'
+      },
+      {
+        header: 'Description',
+        accessorKey: 'description'
+      },
+      {
+        header: 'Permissions',
+        accessorKey: 'rolePermissions',
+        cell: ({ row }) => {
+          const permissions = row.original.permissions;
+          return (
+            <div className="flex flex-wrap gap-2">
+              {permissions.map((permission) => (
+                <Badge key={permission.permissionID}>{permission.permissionID}</Badge>
+              ))}
+            </div>
+          );
+        }
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          const isActive = row.original.status === 1;
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created On',
+        accessorKey: 'date_added',
+        cell: ({ row }) => {
+          return <span>{format(row.original.date_added, 'dd/MM/yyyy HH:mm:ss a')}</span>;
+        }
       }
     ];
   }, []);
 
-  const handleSubmitRole = async (roleData: CreateUserRoleDto[]) => {
+  const handleSubmitRole = async (roleData: CreateUserRoleDto) => {
     try {
-      // Handle multiple roles creation
-      for (const role of roleData) {
-        await createRoleMutation.mutateAsync(role);
-      }
-
-      toast.success('Role(s) created successfully');
-      // Refresh data instead of manual state update
-      // The API response should provide the complete role data
+      const { description, ...rest } = roleData;
+      await createRoleMutation.mutateAsync(rest);
+      toast.success('Role created successfully');
       addRoleModal.close();
     } catch (error) {
       console.error('Error creating role:', error);

@@ -1,8 +1,9 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import type { CreateSellerDTO, RegisterSellerResponse, Seller, SellerListResponse, SellerStats } from '../types';
 
-const SELLER_ENDPOINT = '/sellers';
+const SELLER_ENDPOINT = API_ROUTES.USER_MANAGEMENT.SELLER;
 
 export interface SellerQueryParams {
   search?: string;
@@ -33,6 +34,6 @@ export class SellersService {
   }
 
   static async getSellerList(params?: SellerQueryParams): Promise<SellerListResponse> {
-    return ApiService.get<SellerListResponse>(`${SELLER_ENDPOINT}`, { params });
+    return ApiService.get<SellerListResponse>(`${SELLER_ENDPOINT.BASE}`, { params });
   }
 }

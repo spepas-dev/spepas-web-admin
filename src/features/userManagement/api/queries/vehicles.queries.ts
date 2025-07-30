@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { VehiclesService } from '../../services/vehicles.services';
+import { VehiclesService } from '../../services/vehicles.service';
 
 export const vehicleQueryKeys = {
   all: ['vehicles'] as const,

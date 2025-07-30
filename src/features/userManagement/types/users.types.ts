@@ -32,7 +32,7 @@ export interface Identification {
   user: User;
 }
 
-export type CreateUserDTO = Pick<User, 'email' | 'name' | 'phoneNumber' | 'user_type'> & { password: string };
+export type CreateUserDTO = Pick<User, 'email' | 'name' | 'phoneNumber' | 'user_type'> & { password?: string };
 
 export type RegisterUserResponse = Response<User>;
 

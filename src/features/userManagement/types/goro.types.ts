@@ -6,7 +6,7 @@ export interface Goro {
   specialties: string[];
   User_ID: string;
   status: number;
-  date_added: string;
+  createdAt: string;
 }
 
 export type GoroStats = {

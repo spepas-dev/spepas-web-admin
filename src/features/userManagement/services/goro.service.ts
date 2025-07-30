@@ -1,8 +1,9 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import type { Goro, GoroListResponse, GoroStats, RegisterGoroDTO, RegisterGoroResponse } from '../types';
 
-const GORO_ENDPOINT = '/goro';
+const GORO_ENDPOINT = API_ROUTES.USER_MANAGEMENT.GORO;
 
 export interface GoroQueryParams {
   search?: string;
@@ -34,6 +35,6 @@ export class GoroService {
   }
 
   static async getGoroList(params?: GoroQueryParams): Promise<GoroListResponse> {
-    return ApiService.get<GoroListResponse>(`${GORO_ENDPOINT}`, { params });
+    return ApiService.get<GoroListResponse>(`${GORO_ENDPOINT.BASE}`, { params });
   }
 }

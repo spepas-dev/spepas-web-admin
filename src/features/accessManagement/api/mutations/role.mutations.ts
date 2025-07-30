@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { RoleService } from '../../services/role.services';
+import { RoleService } from '../../services/role.service';
 import { CreateUserRoleDto, UpdateUserRoleDto } from '../../types/role.types';
 import { roleQueryKeys } from '../queries/role.queries';
 

@@ -4,6 +4,7 @@ export interface Application {
   id: number;
   application_id: string;
   name: string;
+  description?: string;
   status: number;
   dateAdded: string;
   added_by: string;
@@ -16,7 +17,7 @@ export interface ApplicationStats {
   rejectedApplications: number;
 }
 
-export type CreateApplicationDto = Omit<Application, 'id' | 'dateAdded' | 'added_by' | 'status'>;
+export type CreateApplicationDto = Omit<Application, 'id' | 'application_id' | 'dateAdded' | 'added_by' | 'status'>;
 
 export type UpdateApplicationDto = Partial<CreateApplicationDto>;
 

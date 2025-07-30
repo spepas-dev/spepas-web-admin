@@ -17,7 +17,7 @@ export interface PermissionStats {
   inactivePermissions: number;
 }
 
-export type CreatePermissionDto = Omit<Permission, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>;
+export type CreatePermissionDto = Omit<Permission, 'id' | 'createdAt' | 'updatedAt' | 'metadata' | 'permissionID'>[];
 
 export type UpdatePermissionDto = Partial<CreatePermissionDto>;
 
