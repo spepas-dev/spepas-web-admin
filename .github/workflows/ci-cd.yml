@@ -51,6 +51,9 @@ jobs:
           echo VITE_ELASTIC_APM_SERVER_TOKEN='' >> .env.production
           cat .env.production
 
+      - name: Install pnpm
+        run: npm install -g pnpm
+
       - name: Install Dependencies
         run: pnpm install
 
