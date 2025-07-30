@@ -1,6 +1,6 @@
 export const API_ROUTES = {
   AUTH: {
-    LOGIN: '/auth/signin',
+    LOGIN: '/auth/admin-signin',
     LOGOUT: '/auth/signout',
     REFRESH_TOKEN: '/auth/refresh',
     FORGOT_PASSWORD: '/auth/forgot-password',
@@ -42,7 +42,8 @@ export const API_ROUTES = {
       CREATE: '/auth/add-roles'
     },
     USER: {
-      BASE: '/auth/users',
+      BASE: '/auth/admin-users-all',
+      CREATE: '/gateway/v1/auth/admin-signup',
       DETAIL: (id: string) => `/users/${id}`
     }
   },
@@ -71,10 +72,20 @@ export const API_ROUTES = {
     }
   },
   USER_MANAGEMENT: {
+    ADMIN: {
+      BASE: '/user/admin-users-all',
+      DETAIL: (id: string) => `/user/admins/${id}`,
+      STATS: (id: string) => `/user/admins/${id}/stats`
+    },
     SELLER: {
-      BASE: '/gateway/v1/sellers',
-      DETAIL: (id: string) => `/gateway/v1/sellers/${id}`,
-      STATS: (id: string) => `/gateway/v1/sellers/${id}/stats`
+      BASE: '/user/sellers-all',
+      DETAIL: (id: string) => `/user/sellers/${id}`,
+      STATS: (id: string) => `/user/sellers/${id}/stats`
+    },
+    BUYER: {
+      BASE: '/user/buyers-all',
+      DETAIL: (id: string) => `/user/buyers/${id}`,
+      STATS: (id: string) => `/user/buyers/${id}/stats`
     },
     RIDER: {
       BASE: '/gateway/v1/riders',
@@ -84,19 +95,19 @@ export const API_ROUTES = {
         DETAIL: (id: string) => `/gateway/v1/riders/vehicles/${id}`
       }
     },
-    MECHANIC: {
-      BASE: '/gateway/v1/mechanics',
-      DETAIL: (id: string) => `/gateway/v1/mechanics/${id}`,
-      SERVICES: (id: string) => `/gateway/v1/mechanics/${id}/services`
+    MEPA: {
+      BASE: '/user/mepa-all',
+      DETAIL: (id: string) => `/user/mepa/${id}`,
+      SERVICES: (id: string) => `/user/mepa/${id}/services`
     },
     GORO: {
-      BASE: '/goros',
-      DETAIL: (id: string) => `/gateway/v1/goros/${id}`
+      BASE: '/user/gopas-all',
+      DETAIL: (id: string) => `/user/gopa/${id}`
     },
     PAYMENT_ACCOUNT: {
-      BASE: '/gateway/v1/payment-accounts',
-      DETAIL: (id: string) => `/gateway/v1/payment-accounts/${id}`,
-      VERIFY: (id: string) => `/gateway/v1/payment-accounts/${id}/verify`
+      BASE: '/payment-accounts',
+      DETAIL: (id: string) => `/payment-accounts/${id}`,
+      VERIFY: (id: string) => `/payment-accounts/${id}/verify`
     }
   },
   REQUESTS: {

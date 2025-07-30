@@ -6,6 +6,9 @@ export const ROUTE_PATHS = {
     RESET_PASSWORD: 'reset-password',
     CHANGE_PASSWORD: 'change-password'
   },
+  SETTINGS: {
+    BASE: 'settings'
+  },
   ACCESS_MANAGEMENT: {
     BASE: 'access-management',
     MENU_GROUP: {

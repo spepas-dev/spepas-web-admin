@@ -14,7 +14,7 @@ export default function LoginPage() {
   const handleSubmit = async (values: LoginFormValues) => {
     try {
       await login(values.email, values.password);
-      navigate(location.state?.from || '/');
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Login failed:', error);
     }

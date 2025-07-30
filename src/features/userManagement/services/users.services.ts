@@ -1,9 +1,10 @@
+import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
 import type { CreateUserDTO, RegisterUserResponse, User, UserListResponse, UserStats } from '../types';
 
-const USER_ENDPOINT = '/users';
-const USER_REGISTRATION_ENDPOINT = '/auth/signup';
+const USER_ENDPOINT = API_ROUTES.ACCESS_MANAGEMENT;
+const ADMIN_ENDPOINT = API_ROUTES.USER_MANAGEMENT.ADMIN;
 
 export interface UserQueryParams {
   search?: string;
@@ -14,7 +15,7 @@ export interface UserQueryParams {
 
 export class UsersService {
   static async registerUser(data: CreateUserDTO): Promise<RegisterUserResponse> {
-    return ApiService.post<RegisterUserResponse>(`${USER_REGISTRATION_ENDPOINT}`, data);
+    return ApiService.post<RegisterUserResponse>(`${USER_ENDPOINT.USER.CREATE}`, data);
   }
 
   static async getUser(id: string): Promise<User> {
@@ -34,6 +35,6 @@ export class UsersService {
   }
 
   static async getUserList(params?: UserQueryParams): Promise<UserListResponse> {
-    return ApiService.get<UserListResponse>(`${USER_ENDPOINT}`, { params });
+    return ApiService.get<UserListResponse>(`${ADMIN_ENDPOINT.BASE}`, { params });
   }
 }

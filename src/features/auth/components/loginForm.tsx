@@ -2,11 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import * as z from 'zod';
 
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ROUTE_PATHS } from '@/config/routes.config';
 import { useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
@@ -57,7 +59,7 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="relative">
                 <FormLabel className="text-foreground">Password</FormLabel>
                 <FormControl>
                   <Input
@@ -68,6 +70,12 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
                   />
                 </FormControl>
                 <FormMessage className="text-destructive" />
+                <Link
+                  to={`/${ROUTE_PATHS.AUTH.BASE}/${ROUTE_PATHS.AUTH.FORGOT_PASSWORD}`}
+                  className="text-muted-foreground absolute top-0 right-0 text-sm font-medium hover:opacity-75 transition-opacity"
+                >
+                  Forgot password?
+                </Link>
               </FormItem>
             )}
           />

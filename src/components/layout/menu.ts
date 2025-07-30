@@ -2,11 +2,11 @@ import {
   Bike,
   Bolt,
   Car,
+  Cog,
   Factory,
   Handshake,
   Key,
   LayoutDashboard,
-  Menu,
   Shield,
   ShoppingCart,
   Store,
@@ -160,6 +160,18 @@ export const menuGroups: MenuGroup[] = [
         name: 'Spare Parts',
         icon: Bolt,
         path: '/inventory-management/cars/spare-parts'
+      }
+    ]
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    items: [
+      {
+        id: 'user-settings',
+        name: 'Settings',
+        icon: Cog,
+        path: '/settings'
       }
     ]
   }
