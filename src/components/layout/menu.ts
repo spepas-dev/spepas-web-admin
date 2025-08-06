@@ -7,6 +7,7 @@ import {
   Handshake,
   Key,
   LayoutDashboard,
+  Menu,
   Shield,
   ShoppingCart,
   Store,
@@ -42,17 +43,17 @@ export const menuGroups: MenuGroup[] = [
         path: '/access-management/applications'
       },
       {
+        id: 'menus',
+        name: 'Menus',
+        icon: Menu,
+        path: '/access-management/menus'
+      },
+      {
         id: 'groups',
         name: 'Groups',
         icon: Users,
         path: '/access-management/groups'
       }
-      // {
-      //   id: 'menus',
-      //   name: 'Menus',
-      //   icon: Menu,
-      //   path: '/access-management/menus'
-      // }
     ]
   },
   {

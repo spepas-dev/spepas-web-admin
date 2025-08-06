@@ -17,6 +17,7 @@ export const ROUTE_PATHS = {
       DETAIL: (id: string) => `/menu-groups/${id}`
     },
     MENU: {
+      BASE: 'menus',
       CREATE: 'add-menu',
       UPDATE: 'update-menu'
     },

@@ -100,10 +100,10 @@ export default function BuyersPage() {
       trendUp: true
     },
     {
-      title: 'Assigned Gopos',
+      title: 'Assigned Gopas',
       value: new Set(buyers.map((b) => b.Gopa_ID)).size,
       Icon: Users,
-      description: 'Active Gopos',
+      description: 'Active Gopas',
       trend: '+1.5%',
       trendUp: true
     },

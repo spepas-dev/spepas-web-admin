@@ -8,10 +8,12 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { useFormModal } from '@/components/ui/custom/modals';
+import { queryClient } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 
-import { useGetGoroList } from '../../api/queries/goro.queries';
-import { Goro, RegisterGoroDTO } from '../../types/goro.types';
+import { useCreateGoro } from '../../api/mutations/goro.mutations';
+import { useGetGoroList } from '../../api/queries/gopa.queries';
+import { Goro, RegisterGoroDTO } from '../../types/gopa.types';
 import { NewGoros } from './newGoros';
 
 export default function GorosPage() {
@@ -88,14 +90,15 @@ export default function GorosPage() {
     });
   };
 
+  const { mutateAsync: createGoro } = useCreateGoro();
   const handleSubmitGoro = async (goroData: RegisterGoroDTO) => {
     try {
-      // Handle API call here
-      console.log(goroData);
+      await createGoro(goroData);
       toast.success('Goro created successfully');
-      formModal.close();
     } catch {
       toast.error('Failed to create goro');
+    } finally {
+      formModal.close();
     }
   };
 

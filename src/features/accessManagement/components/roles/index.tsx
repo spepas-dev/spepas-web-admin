@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Lock, Plus, Shield, UserCircle } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 
 import PageLoader from '@/components/loaders/pageLoader';
@@ -21,22 +21,13 @@ import { CreateUserRoleDto, UserRole } from '../../types';
 import { NewRole } from './newRole';
 
 export default function RolesPage() {
-  const [roles, setRoles] = useState<UserRole[]>([]);
-
   const createRoleMutation = useCreateRole();
   const addRoleModal = useFormModal();
   const { data, isError, isLoading } = useGetRoleList();
 
-  useEffect(() => {
-    if (data) {
-      setRoles(data.data);
-    }
-
-    return () => {
-      setRoles([]);
-    };
+  const roles = useMemo(() => {
+    return data?.data || [];
   }, [data?.data]);
-
   const columns = useMemo((): ColumnDef<UserRole>[] => {
     return [
       {
@@ -55,7 +46,7 @@ export default function RolesPage() {
           return (
             <div className="flex flex-wrap gap-2">
               {permissions.map((permission) => (
-                <Badge key={permission.permissionID}>{permission.permissionID}</Badge>
+                <Badge key={permission.permissionID}>{permission.title}</Badge>
               ))}
             </div>
           );
