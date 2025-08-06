@@ -8,16 +8,15 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { useFormModal } from '@/components/ui/custom/modals';
-import { queryClient } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 
 import { useCreateGoro } from '../../api/mutations/goro.mutations';
-import { useGetGoroList } from '../../api/queries/gopa.queries';
-import { Goro, RegisterGoroDTO } from '../../types/gopa.types';
+import { useGetGopaList } from '../../api/queries/gopa.queries';
+import { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
 import { NewGoros } from './newGoros';
 
 export default function GorosPage() {
-  const { data, isLoading } = useGetGoroList();
+  const { data, isLoading } = useGetGopaList();
   const goros = useMemo(() => data?.data || [], [data?.data]);
   const columns = useMemo(
     () => [
@@ -32,7 +31,7 @@ export default function GorosPage() {
       {
         header: 'Specialties',
         accessorKey: 'specialties',
-        cell: ({ row }: { row: Row<Goro> }) => (
+        cell: ({ row }: { row: Row<Gopa> }) => (
           <div className="flex flex-wrap gap-1">
             {row.original.specialties?.map((specialty, index) => (
               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
@@ -45,7 +44,7 @@ export default function GorosPage() {
       {
         header: 'Status',
         accessorKey: 'status',
-        cell: ({ row }: { row: Row<Goro> }) => {
+        cell: ({ row }: { row: Row<Gopa> }) => {
           const isActive = row.original.status === 1;
           return (
             <span
@@ -63,7 +62,7 @@ export default function GorosPage() {
       {
         header: 'Date Added',
         accessorKey: 'createdAt',
-        cell: ({ row }: { row: Row<Goro> }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
+        cell: ({ row }: { row: Row<Gopa> }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
       },
       {
         header: 'Actions',
@@ -91,7 +90,7 @@ export default function GorosPage() {
   };
 
   const { mutateAsync: createGoro } = useCreateGoro();
-  const handleSubmitGoro = async (goroData: RegisterGoroDTO) => {
+  const handleSubmitGoro = async (goroData: RegisterGopaDTO) => {
     try {
       await createGoro(goroData);
       toast.success('Goro created successfully');
