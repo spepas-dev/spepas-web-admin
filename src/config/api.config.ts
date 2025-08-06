@@ -100,9 +100,10 @@ export const API_ROUTES = {
       DETAIL: (id: string) => `/user/mepa/${id}`,
       SERVICES: (id: string) => `/user/mepa/${id}/services`
     },
-    GORO: {
+    GOPA: {
       BASE: '/user/gopas-all',
-      DETAIL: (id: string) => `/user/gopa/${id}`
+      DETAIL: (id: string) => `/user/gopa/${id}`,
+      CREATE: '/user/gopa-registration-admin'
     },
     PAYMENT_ACCOUNT: {
       BASE: '/payment-accounts',

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Wrench } from 'lucide-react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -7,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { MultiSelect } from '@/components/ui/multi-select';
 
-import { RegisterGoroDTO } from '../../types/goro.types';
+import { useGetUserList } from '../../api/queries/users.queries';
+import { RegisterGoroDTO } from '../../types/gopa.types';
 
 const goroSchema = z.object({
   User_ID: z.string().min(1, 'Please select a user'),
@@ -21,32 +23,28 @@ interface NewGorosProps {
   loading?: boolean;
 }
 
-// Mock data - replace with actual data from your API
-const availableUsers = [
-  {
-    value: 'user1',
-    label: 'John Doe',
-    icon: Wrench
-  },
-  {
-    value: 'user2',
-    label: 'Jane Smith',
-    icon: Wrench
-  }
-];
-
 const availableSpecialties = [
-  { value: 'TYRES', label: 'Tyres', icon: Wrench },
-  { value: 'FAN_BELT', label: 'Fan Belt', icon: Wrench },
-  { value: 'ENGINE', label: 'Engine', icon: Wrench },
-  { value: 'BRAKES', label: 'Brakes', icon: Wrench },
-  { value: 'TRANSMISSION', label: 'Transmission', icon: Wrench },
-  { value: 'ELECTRICAL', label: 'Electrical', icon: Wrench },
-  { value: 'AC_SYSTEM', label: 'AC System', icon: Wrench },
-  { value: 'SUSPENSION', label: 'Suspension', icon: Wrench }
+  { value: 'TYRES', label: 'Tyres' },
+  { value: 'FAN_BELT', label: 'Fan Belt' },
+  { value: 'ENGINE', label: 'Engine' },
+  { value: 'BRAKES', label: 'Brakes' },
+  { value: 'TRANSMISSION', label: 'Transmission' },
+  { value: 'ELECTRICAL', label: 'Electrical' },
+  { value: 'AC_SYSTEM', label: 'AC System' },
+  { value: 'SUSPENSION', label: 'Suspension' }
 ];
 
 export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
+  const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUserList();
+  const availableUsers = useMemo(() => {
+    return (
+      users?.data?.map((user) => ({
+        value: user.User_ID,
+        label: user.name
+      })) || []
+    );
+  }, [users?.data]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(goroSchema),
     defaultValues: {
@@ -126,4 +124,4 @@ export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
   );
 }
 
-export default NewGoros; 
+export default NewGoros;

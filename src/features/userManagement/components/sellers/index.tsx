@@ -98,10 +98,10 @@ export default function SellersPage() {
       trendUp: true
     },
     {
-      title: 'Assigned Gopos',
+      title: 'Assigned Gopas',
       value: new Set(sellers.map((s) => s.Gopa_ID)).size,
       Icon: Users,
-      description: 'Active Gopos',
+      description: 'Active Gopas',
       trend: '+1.5%',
       trendUp: true
     },

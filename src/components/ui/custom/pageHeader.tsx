@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export interface PageHeaderProps {
   /** The main title of the page */
-  title: string;
+  title: React.ReactNode;
   /** Optional description text below the title */
   description?: string;
   /** Optional content to display on the right side (buttons, actions, etc.) */

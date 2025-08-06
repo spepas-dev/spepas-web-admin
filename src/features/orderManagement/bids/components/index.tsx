@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Input } from '@/components/ui/input';
 import { useSpareParts } from '@/features/inventoryManagement/api/queries/sparepartsQueries';
@@ -133,40 +134,30 @@ export default function BidsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/dashboard" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        {/* <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/orders" className="hover:text-[#4A36EC]">
-          Orders
-        </a> */}
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Orders</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Order Management', '/order-management/orders', 'Orders')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Spare Parts Orders</h1>
-          <p className="text-sm text-gray-600">View and manage spare parts available for bidding</p>
-        </div>
-        <div className="flex space-x-2">
-          <div className="relative w-72">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search spare parts..."
-              className="pl-8"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      <PageHeader
+        title="Spare Parts Orders"
+        description="View and manage spare parts available for bidding"
+        actions={
+          <div className="flex space-x-2">
+            <div className="relative w-72">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search spare parts..."
+                className="pl-8"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Button className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Part
+            </Button>
           </div>
-          <Button className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Part
-          </Button>
-        </div>
-      </motion.div>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />

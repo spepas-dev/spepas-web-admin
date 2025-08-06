@@ -50,7 +50,12 @@ export function NewGroup({ onSubmit, loading = false }: NewGroupProps) {
   });
 
   const handleSubmit = (values: z.infer<typeof formSchema>) => {
-    onSubmit(values);
+    onSubmit({
+      title: values.title,
+      group_applications: values.group_applications.map((application) => ({
+        application_id: application
+      }))
+    });
     form.reset();
   };
 

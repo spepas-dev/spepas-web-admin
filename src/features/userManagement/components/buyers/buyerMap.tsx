@@ -62,7 +62,7 @@ export function SellerMap({ sellers, selectedLocation, onLocationSelect }: Selle
         <InfoWindow position={{ lat: selectedMarker.latitude, lng: selectedMarker.longitude }} onCloseClick={() => setSelectedMarker(null)}>
           <div className="p-2">
             <h3 className="font-medium text-gray-900">{selectedMarker.storeName}</h3>
-            <p className="text-sm text-gray-600">Gopo ID: {selectedMarker.Gopa_ID}</p>
+            <p className="text-sm text-gray-600">Gopa ID: {selectedMarker.Gopa_ID}</p>
           </div>
         </InfoWindow>
       )}

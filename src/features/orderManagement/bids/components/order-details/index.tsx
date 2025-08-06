@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toastConfig } from '@/lib/toast';
 
@@ -187,49 +188,41 @@ export default function OrderDetailsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/dashboard" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/order-management/orders" className="hover:text-[#4A36EC]">
-          Orders
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Order #{order.id}</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Order Management', '/order-management/orders', `Order #${order.id}`)} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
+      <PageHeader
+        title={
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-[#4A36EC]">Order #{order.id}</h1>
             <Badge className={`${statusMap[order.status as OrderStatus].color} text-white`}>
               {statusMap[order.status as OrderStatus].label}
             </Badge>
           </div>
-          <p className="text-sm text-gray-600">Order details and tracking information</p>
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            onClick={() => navigate('/order-management/orders')}
-            className="bg-white hover:bg-gray-100 text-[#4A36EC] border border-[#4A36EC]"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Orders
-          </Button>
-          {order.status === 0 && (
-            <Button onClick={() => handleStatusChange(1)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-              Accept Order
+        }
+        description="Order details and tracking information"
+        actions={
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => navigate('/order-management/orders')}
+              className="bg-white hover:bg-gray-100 text-[#4A36EC] border border-[#4A36EC]"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Orders
             </Button>
-          )}
-          {order.status === 1 && (
-            <Button onClick={() => handleStatusChange(3)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-              Mark as Completed
-            </Button>
-          )}
-        </div>
-      </motion.div>
+            {order.status === 0 && (
+              <Button onClick={() => handleStatusChange(1)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+                Accept Order
+              </Button>
+            )}
+            {order.status === 1 && (
+              <Button onClick={() => handleStatusChange(3)} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+                Mark as Completed
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       {/* Tabs */}
       <Tabs defaultValue="details" className="w-full">

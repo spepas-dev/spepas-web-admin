@@ -15,7 +15,7 @@ export const accessManagementRoutes: RouteObject[] = [
     children: [
       { path: ROUTE_PATHS.ACCESS_MANAGEMENT.PERMISSION.BASE, element: <PermissionsPage /> },
       { path: ROUTE_PATHS.ACCESS_MANAGEMENT.ROLE.BASE, element: <RolesPage /> },
-      { path: ROUTE_PATHS.ACCESS_MANAGEMENT.MENU_GROUP.BASE, element: <MenusPage /> },
+      { path: ROUTE_PATHS.ACCESS_MANAGEMENT.MENU.BASE, element: <MenusPage /> },
       { path: ROUTE_PATHS.ACCESS_MANAGEMENT.GROUP.BASE, element: <GroupsPage /> },
       { path: ROUTE_PATHS.ACCESS_MANAGEMENT.APPLICATION.BASE, element: <ApplicationsPage /> }
     ]

@@ -16,7 +16,7 @@ const buyerSchema = z.object({
   storeName: z.string().min(1, 'Store name is required'),
   longitude: z.number(),
   latitude: z.number(),
-  Gopa_ID: z.string().min(1, 'Please select a Gopo'),
+  Gopa_ID: z.string().min(1, 'Please select a Gopa'),
   User_ID: z.string().min(1, 'Please select a user')
 });
 
@@ -29,7 +29,7 @@ interface NewBuyersProps {
 }
 
 // Mock data - replace with actual API data
-const availableGopos = [
+const availableGopas = [
   {
     value: '528008c6-d9fd-4590-ad84-6b9a42b84197',
     label: 'John Doe',
@@ -95,13 +95,13 @@ export function NewBuyers({ onSubmit, loading = false, selectedLocation }: NewBu
                 name="Gopa_ID"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Select Gopo</FormLabel>
+                    <FormLabel className="text-gray-700">Select Gopa</FormLabel>
                     <FormControl>
                       <MultiSelect
-                        options={availableGopos}
+                        options={availableGopas}
                         value={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
-                        placeholder="Select a Gopo"
+                        placeholder="Select a Gopa"
                         maxCount={1}
                         disabled={loading}
                       />
@@ -164,4 +164,4 @@ export function NewBuyers({ onSubmit, loading = false, selectedLocation }: NewBu
   );
 }
 
-export default NewBuyers; 
+export default NewBuyers;

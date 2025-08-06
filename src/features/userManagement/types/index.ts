@@ -1,5 +1,5 @@
 export * from './buyer.types';
-export * from './goro.types';
+export * from './gopa.types';
 export * from './mechanics.types';
 export * from './payments.types';
 export * from './riders.types';

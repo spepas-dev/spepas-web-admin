@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { GoroService } from '../../services/goro.service';
-import type { Goro, RegisterGoroDTO, RegisterGoroResponse } from '../../types/goro.types';
-import { goroQueryKeys } from '../queries/goro.queries';
+import { GoroService } from '../../services/gopa.service';
+import type { Goro, RegisterGoroDTO, RegisterGoroResponse } from '../../types/gopa.types';
+import { goroQueryKeys } from '../queries/gopa.queries';
 
 export const useCreateGoro = () => {
   const queryClient = useQueryClient();

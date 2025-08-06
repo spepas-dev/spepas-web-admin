@@ -1,4 +1,5 @@
 import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { FolderTree, Menu, Plus, Shield, Users } from 'lucide-react';
 import { useMemo } from 'react';
@@ -10,6 +11,7 @@ import { DataTable } from '@/components/ui/custom/dataTable';
 import { useFormModal } from '@/components/ui/custom/modals';
 import { PageHeader } from '@/components/ui/custom/pageHeader';
 import { CardGrid } from '@/components/ui/custom/staticCards';
+import { cn } from '@/lib/utils';
 
 import { useCreateGroup } from '../../api/mutations/group.mutations';
 import { useGetGroupList } from '../../api/queries/group.queries';
@@ -26,33 +28,34 @@ export default function GroupsPage() {
     return [
       {
         header: 'Group Name',
-        accessorKey: 'name'
+        accessorKey: 'title'
       },
       {
         header: 'Description',
-        accessorKey: 'description',
-        cell: ({ row }) => <span className="text-gray-600">{row.original.description || 'No description'}</span>
-      },
-      {
-        header: 'Users',
-        accessorKey: 'users',
-        cell: ({ row }) => <span className="text-gray-600">{row.original.users.length} users</span>
-      },
-      {
-        header: 'Permissions',
-        accessorKey: 'permissions',
-        cell: ({ row }) => <span className="text-gray-600">{row.original.permissions.length} permissions</span>
+        accessorKey: 'description'
       },
       {
         header: 'Status',
-        accessorKey: 'isActive',
-        cell: ({ row }) => (
-          <span
-            className={`px-2 py-1 rounded text-xs ${row.original.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
-          >
-            {row.original.isActive ? 'Active' : 'Inactive'}
-          </span>
-        )
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          const isActive = row.original.status === 1;
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created On',
+        accessorKey: 'date_added',
+        cell: ({ row }) => <span>{format(row.original.date_added, 'yyyy/MM/dd HH:mm:ss a')}</span>
       }
     ];
   }, []);
@@ -82,7 +85,8 @@ export default function GroupsPage() {
   const stats = [
     {
       title: 'Total Groups',
-      value: groups.length,
+      // value: groups.length,
+      value: 0,
       Icon: Users,
       description: 'Active groups',
       trend: '+2.5%',

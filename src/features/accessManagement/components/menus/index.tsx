@@ -1,30 +1,131 @@
+import { Row } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { FolderTree, Lock, Menu, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Breadcrumb, BreadcrumbPatterns } from '@/components/ui/custom/breadcrumb';
+import { Breadcrumb, BreadcrumbPatterns, DataTable, PageHeader } from '@/components/ui/custom';
 import { useFormModal } from '@/components/ui/custom/modals';
-import { PageHeader } from '@/components/ui/custom/pageHeader';
+import { cn } from '@/lib/utils';
 
-import { MenuItem } from '../../types/menu.types';
-import { MenuGroup } from '../../types/menugroup.types';
-import { MenuDialog } from './menuDialog';
-import { MenuTable } from './menuTable';
+import { useGetMenuList } from '../../api/queries/menu.queries';
+import { CreateMenuItemDto, MenuItem } from '../../types/menu.types';
+import { NewMenu } from './newMenu';
 
 export default function MenuManagementPage() {
-  const [menuGroups, setMenuGroups] = useState<MenuGroup[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { data: menuItemsData } = useGetMenuList();
+  const menuItems = useMemo(() => {
+    return menuItemsData?.data || [];
+  }, [menuItemsData?.data]);
+  console.log(menuItems);
+  // Mock data - replace with actual API calls
+  // const menuItems: MenuItem[] = useMemo(
+  //   () => [
+  //     {
+  //       id: '1',
+  //       name: 'Dashboard',
+  //       description: 'Main dashboard view',
+  //       icon: 'Home',
+  //       path: '/dashboard',
+  //       permissions: 'admin:read',
+  //       parentId: null,
+  //       order: 1,
+  //       isActive: true
+  //     },
+  //     {
+  //       id: '2',
+  //       name: 'User Management',
+  //       description: 'Manage users and roles',
+  //       icon: 'Users',
+  //       path: '/user-management',
+  //       permissions: 'admin:write',
+  //       parentId: null,
+  //       order: 2,
+  //       isActive: true
+  //     }
+  //   ],
+  //   []
+  // );
 
-  const addMenuModal = useFormModal();
+  const existingGroups = useMemo(
+    () => [
+      { id: '1', title: 'Main Navigation' },
+      { id: '2', title: 'Settings' },
+      { id: '3', title: 'Reports' }
+    ],
+    []
+  );
+
+  const formModal = useFormModal();
+
+  const columns = useMemo(
+    () => [
+      {
+        header: 'Name',
+        accessorKey: 'name',
+        cell: ({ row }: { row: Row<MenuItem> }) => <div>{row.original.name}</div>
+      },
+
+      {
+        header: 'Permissions',
+        accessorKey: 'permissions',
+        cell: ({ row }: { row: Row<MenuItem> }) => (
+          <div>
+            {row.original.permissions ? (
+              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">{row.original.permissions}</span>
+            ) : (
+              <span className="text-gray-400 text-xs">No permissions</span>
+            )}
+          </div>
+        )
+      },
+      {
+        header: 'Status',
+        accessorKey: 'isActive',
+        cell: ({ row }: { row: Row<MenuItem> }) => {
+          const isActive = row.original.isActive;
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                isActive ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', isActive ? 'bg-green-400' : 'bg-red-400')} />
+              {isActive ? 'Active' : 'Inactive'}
+            </span>
+          );
+        }
+      }
+    ],
+    []
+  );
+
+  const handleAddMenu = () => {
+    formModal.openForm({
+      title: 'Add New Menu Item',
+      children: <NewMenu onSubmit={handleSubmitMenu} loading={false} existingGroups={existingGroups} />,
+      showFooter: false
+    });
+  };
+
+  const handleSubmitMenu = async (menuData: CreateMenuItemDto) => {
+    try {
+      // Handle API call here
+      console.log(menuData);
+      toast.success('Menu item created successfully');
+      formModal.close();
+    } catch {
+      toast.error('Failed to create menu item');
+    }
+  };
 
   const stats = [
     {
       title: 'Menu Groups',
-      value: menuGroups.length,
+      value: existingGroups.length,
       icon: FolderTree,
       description: 'Active groups',
       trend: '+2.5%',
@@ -47,31 +148,6 @@ export default function MenuManagementPage() {
       trendUp: true
     }
   ];
-
-  const handleSubmitMenu = async (newItems: { groups: MenuGroup[]; items: MenuItem[] }) => {
-    try {
-      // Handle API call here
-      setMenuGroups([...menuGroups, ...newItems.groups]);
-      setMenuItems([...menuItems, ...newItems.items]);
-
-      toast.success('Menu items created successfully');
-      addMenuModal.close();
-      setError(null);
-    } catch (err) {
-      setError('Failed to add menu items');
-      console.error(err);
-      toast.error('Failed to create menu items. Please try again.');
-    }
-  };
-
-  const handleAddMenu = () => {
-    addMenuModal.openForm({
-      title: 'Create Menu Items',
-      size: 'lg',
-      showFooter: false,
-      children: <MenuDialog open={false} onOpenChange={() => {}} onSubmit={handleSubmitMenu} existingGroups={menuGroups} />
-    });
-  };
 
   return (
     <div className="p-8 space-y-8">
@@ -119,22 +195,14 @@ export default function MenuManagementPage() {
         ))}
       </motion.div>
 
-      {/* Error Display */}
-      {error && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-700 text-sm">{error}</p>
-        </motion.div>
-      )}
-
       {/* Menu Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-        <MenuTable
-          groups={menuGroups}
-          items={menuItems}
-          onUpdate={(groups, items) => {
-            setMenuGroups(groups);
-            setMenuItems(items);
-          }}
+        <DataTable
+          data={menuItems}
+          columns={columns}
+          loading={false}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
         />
       </motion.div>
     </div>

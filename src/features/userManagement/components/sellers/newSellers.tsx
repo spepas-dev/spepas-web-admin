@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GoogleMap, Libraries, Marker, useLoadScript } from '@react-google-maps/api';
-import { Store } from 'lucide-react';
-import { useMemo } from 'react';
+import { Store, User } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -10,13 +10,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 
+import { useGetGopaList } from '../../api/queries/gopa.queries';
+import { useGetUserList } from '../../api/queries/users.queries';
 import { CreateSellerDTO } from '../../types/sellers.types';
 
 const sellerSchema = z.object({
   storeName: z.string().min(1, 'Store name is required'),
   longitude: z.number(),
   latitude: z.number(),
-  Gopa_ID: z.string().min(1, 'Please select a Gopo'),
+  Gopa_ID: z.string().min(1, 'Please select a Gopa'),
   User_ID: z.string().min(1, 'Please select a user')
 });
 
@@ -28,23 +30,33 @@ interface NewSellersProps {
   selectedLocation?: { lat: number; lng: number } | null;
 }
 
-// Mock data - replace with actual API data
-const availableGopos = [
-  {
-    value: '528008c6-d9fd-4590-ad84-6b9a42b84197',
-    label: 'John Doe',
-    icon: Store
-  },
-  {
-    value: '628008c6-d9fd-4590-ad84-6b9a42b84198',
-    label: 'Jane Smith',
-    icon: Store
-  }
-];
-
 const libraries: Libraries = ['places'];
 
 export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewSellersProps) {
+  const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUserList();
+  const availableUsers = useMemo(() => {
+    return (
+      users?.data?.map((user) => ({
+        value: user.User_ID,
+        label: user.name
+      })) || []
+    );
+  }, [users?.data]);
+
+  const { data: gopas, isLoading: isLoadingGopas, isError: isErrorGopas } = useGetGopaList();
+  const availableGopas = useMemo(() => {
+    return (
+      gopas?.data?.map((gopa) => ({
+        value: gopa.Gopa_ID,
+        label: gopa?.name
+      })) || []
+    );
+  }, [gopas?.data]);
+
+  console.log(gopas);
+
+  console.log(availableGopas);
+
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries
@@ -92,16 +104,35 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
             <div className="flex-1 space-y-4">
               <FormField
                 control={form.control}
-                name="Gopa_ID"
+                name="storeName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Select Gopo</FormLabel>
+                    <FormLabel className="text-gray-700">Store Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter store name"
+                        className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
+                        disabled={loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="User_ID"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-gray-700">Select User</FormLabel>
                     <FormControl>
                       <MultiSelect
-                        options={availableGopos}
+                        options={availableUsers}
                         value={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
-                        placeholder="Select a Gopo"
+                        placeholder="Select a User"
                         maxCount={1}
                         disabled={loading}
                       />
@@ -113,16 +144,18 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
 
               <FormField
                 control={form.control}
-                name="storeName"
+                name="Gopa_ID"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Store Name</FormLabel>
+                    <FormLabel className="text-gray-700">Select Gopa</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter store name"
-                        className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
+                      <MultiSelect
+                        options={availableGopas}
+                        value={[field.value]}
+                        onValueChange={(value) => field.onChange(value[0])}
+                        placeholder="Select a Gopa"
+                        maxCount={1}
                         disabled={loading}
-                        {...field}
                       />
                     </FormControl>
                     <FormMessage className="text-red-500" />
