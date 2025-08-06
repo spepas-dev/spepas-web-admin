@@ -106,7 +106,7 @@ const activityItems = [
 
 export default function WelcomePage() {
   //   const navigate = useNavigate()
-  const { user } = useStore((state) => state.user);
+  const { user } = useStore();
 
   return (
     <div className="p-8 space-y-8">

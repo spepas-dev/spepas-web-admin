@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 
-import { useGetGopaList } from '../../api/queries/gopa.queries';
+import { useGetGopaList } from '../../api/queries/gopas.queries';
 import { useGetUserList } from '../../api/queries/users.queries';
 import { CreateSellerDTO } from '../../types/sellers.types';
 

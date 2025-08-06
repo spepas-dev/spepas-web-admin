@@ -1,4 +1,4 @@
-import { Row } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { Cog, Eye, Hammer, Plus, Users, Wrench } from 'lucide-react';
@@ -8,19 +8,18 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { useFormModal } from '@/components/ui/custom/modals';
-import { queryClient } from '@/lib/react-query';
 import { cn } from '@/lib/utils';
 
-import { useCreateGoro } from '../../api/mutations/goro.mutations';
-import { useGetGoroList } from '../../api/queries/gopa.queries';
-import { Goro, RegisterGoroDTO } from '../../types/gopa.types';
-import { NewGoros } from './newGoros';
+import { useCreateGopa } from '../../api/mutations/gopas.mutations';
+import { useGetGopaList } from '../../api/queries/gopas.queries';
+import { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
+import { NewGopas } from './newGopa';
 
 export default function GorosPage() {
-  const { data, isLoading } = useGetGoroList();
-  const goros = useMemo(() => data?.data || [], [data?.data]);
+  const { data, isLoading } = useGetGopaList();
+  const gopas = useMemo(() => data?.data || [], [data?.data]);
   const columns = useMemo(
-    () => [
+    (): ColumnDef<Gopa>[] => [
       {
         header: 'Name',
         accessorKey: 'name'
@@ -32,7 +31,7 @@ export default function GorosPage() {
       {
         header: 'Specialties',
         accessorKey: 'specialties',
-        cell: ({ row }: { row: Row<Goro> }) => (
+        cell: ({ row }) => (
           <div className="flex flex-wrap gap-1">
             {row.original.specialties?.map((specialty, index) => (
               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
@@ -45,7 +44,7 @@ export default function GorosPage() {
       {
         header: 'Status',
         accessorKey: 'status',
-        cell: ({ row }: { row: Row<Goro> }) => {
+        cell: ({ row }) => {
           const isActive = row.original.status === 1;
           return (
             <span
@@ -63,7 +62,7 @@ export default function GorosPage() {
       {
         header: 'Date Added',
         accessorKey: 'createdAt',
-        cell: ({ row }: { row: Row<Goro> }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
+        cell: ({ row }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
       },
       {
         header: 'Actions',
@@ -82,21 +81,21 @@ export default function GorosPage() {
   );
 
   const formModal = useFormModal();
-  const handleAddGoro = () => {
+  const handleAddGopa = () => {
     formModal.openForm({
-      title: 'Add New Goro',
-      children: <NewGoros onSubmit={handleSubmitGoro} loading={false} />,
+      title: 'Add New Gopa',
+      children: <NewGopas onSubmit={handleSubmitGopa} loading={false} />,
       showFooter: false
     });
   };
 
-  const { mutateAsync: createGoro } = useCreateGoro();
-  const handleSubmitGoro = async (goroData: RegisterGoroDTO) => {
+  const { mutateAsync: createGopa } = useCreateGopa();
+  const handleSubmitGopa = async (gopaData: RegisterGopaDTO) => {
     try {
-      await createGoro(goroData);
-      toast.success('Goro created successfully');
+      await createGopa(gopaData);
+      toast.success('Gopa created successfully');
     } catch {
-      toast.error('Failed to create goro');
+      toast.error('Failed to create gopa');
     } finally {
       formModal.close();
     }
@@ -104,10 +103,10 @@ export default function GorosPage() {
 
   const stats = [
     {
-      title: 'Total goro',
-      value: goros.length,
+      title: 'Total gopa',
+      value: gopas.length,
       Icon: Wrench,
-      description: 'Active goro in system',
+      description: 'Active gopa in system',
       trend: '+3.2%',
       trendUp: true
     },
@@ -133,7 +132,7 @@ export default function GorosPage() {
       title: 'Pending Approvals',
       value: '5',
       Icon: Users,
-      description: 'goro awaiting approval',
+      description: 'gopa awaiting approval',
       trend: '+0.9%',
       trendUp: false
     }
@@ -146,12 +145,12 @@ export default function GorosPage() {
 
       {/* Header */}
       <PageHeader
-        title="Goro"
-        description="Manage goro and their specialties"
+        title="Gopa"
+        description="Manage gopa and their specialties"
         actions={
-          <Button onClick={handleAddGoro} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+          <Button onClick={handleAddGopa} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
             <Plus className="w-4 h-4 mr-2" />
-            Add Goro
+            Add Gopa
           </Button>
         }
       />
@@ -162,7 +161,7 @@ export default function GorosPage() {
       {/* Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
         <DataTable
-          data={goros}
+          data={gopas}
           columns={columns}
           loading={isLoading}
           tableStyle="border rounded-lg bg-white"

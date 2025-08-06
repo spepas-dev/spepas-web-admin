@@ -68,10 +68,10 @@ export const ROUTE_PATHS = {
       CREATE: '/mepa/create',
       DETAIL: (id: string) => `/mechanics/${id}`
     },
-    GORO: {
+    GOPA: {
       BASE: 'gopa',
       CREATE: '/gopa/create',
-      DETAIL: (id: string) => `/goros/${id}`
+      DETAIL: (id: string) => `/gopas/${id}`
     },
     PAYMENT_ACCOUNT: {
       BASE: 'payment-accounts'
