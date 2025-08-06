@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { GoroService } from '../../services/gopa.service';
-import type { Goro, RegisterGoroDTO, RegisterGoroResponse } from '../../types/gopa.types';
-import { goroQueryKeys } from '../queries/gopa.queries';
+import { GopaService } from '../../services/gopa.service';
+import type { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
+import { gopaQueryKeys } from '../queries/gopa.queries';
 
 export const useCreateGoro = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: RegisterGoroDTO) => GoroService.registerGoro(data),
+    mutationFn: (data: RegisterGopaDTO) => GopaService.registerGopa(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: goroQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: gopaQueryKeys.all });
     }
   });
 };
@@ -19,9 +19,9 @@ export const useUpdateGoro = (id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Partial<Goro>) => GoroService.updateGoro(id, data),
+    mutationFn: (data: Partial<Gopa>) => GopaService.updateGopa(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: goroQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: gopaQueryKeys.all });
     }
   });
 };
