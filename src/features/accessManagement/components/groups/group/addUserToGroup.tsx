@@ -138,7 +138,7 @@ export function AddUserToGroup({ onSubmit, loading = false, groupId }: AddUserTo
                                       user.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                     )}
                                   >
-                                    {user.status}
+                                    {user.status === 1 ? 'Active' : 'Inactive'}
                                   </span>
                                   <Check className={cn('h-4 w-4', isSelected ? 'opacity-100 text-[#4A36EC]' : 'opacity-0')} />
                                 </div>

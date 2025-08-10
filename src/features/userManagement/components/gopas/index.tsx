@@ -15,7 +15,7 @@ import { useGetGopaList } from '../../api/queries/gopas.queries';
 import { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
 import { NewGopas } from './newGopa';
 
-export default function GorosPage() {
+export default function GopasPage() {
   const { data, isLoading } = useGetGopaList();
   const gopas = useMemo(() => data?.data || [], [data?.data]);
   const columns = useMemo(
