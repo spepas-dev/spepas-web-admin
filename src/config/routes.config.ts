@@ -23,7 +23,7 @@ export const ROUTE_PATHS = {
     },
     GROUP: {
       BASE: 'groups',
-      DETAIL: (id: string) => `/groups/${id}`
+      DETAIL: (groupId: string) => `${groupId}`
     },
     PERMISSION: {
       BASE: 'permissions',

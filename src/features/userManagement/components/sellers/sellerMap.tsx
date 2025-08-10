@@ -1,7 +1,7 @@
 import { GoogleMap, InfoWindow, Marker, useLoadScript } from '@react-google-maps/api';
 import { useMemo, useState } from 'react';
 
-import { Seller } from '.';
+import { Seller } from '../../types';
 
 interface SellerMapProps {
   sellers: Seller[];
@@ -55,14 +55,24 @@ export function SellerMap({ sellers, selectedLocation, onLocationSelect }: Selle
       }}
     >
       {sellers.map((seller, index) => (
-        <Marker key={index} position={{ lat: seller.latitude, lng: seller.longitude }} onClick={() => setSelectedMarker(seller)} />
+        <Marker
+          key={index}
+          position={{ lat: seller.sellerDetails.Location.coordinates[0], lng: seller.sellerDetails.Location.coordinates[1] }}
+          onClick={() => setSelectedMarker(seller)}
+        />
       ))}
 
       {selectedMarker && (
-        <InfoWindow position={{ lat: selectedMarker.latitude, lng: selectedMarker.longitude }} onCloseClick={() => setSelectedMarker(null)}>
+        <InfoWindow
+          position={{
+            lat: selectedMarker.sellerDetails.Location.coordinates[0],
+            lng: selectedMarker.sellerDetails.Location.coordinates[1]
+          }}
+          onCloseClick={() => setSelectedMarker(null)}
+        >
           <div className="p-2">
-            <h3 className="font-medium text-gray-900">{selectedMarker.storeName}</h3>
-            <p className="text-sm text-gray-600">Gopa ID: {selectedMarker.Gopa_ID}</p>
+            <h3 className="font-medium text-gray-900">{selectedMarker.sellerDetails.storeName}</h3>
+            <p className="text-sm text-gray-600">Gopa ID: {selectedMarker.sellerDetails.Gopa_ID}</p>
           </div>
         </InfoWindow>
       )}

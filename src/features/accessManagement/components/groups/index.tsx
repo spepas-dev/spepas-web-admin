@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { FolderTree, Menu, Plus, Shield, Users } from 'lucide-react';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -56,6 +57,11 @@ export default function GroupsPage() {
         header: 'Created On',
         accessorKey: 'date_added',
         cell: ({ row }) => <span>{format(row.original.date_added, 'yyyy/MM/dd HH:mm:ss a')}</span>
+      },
+      {
+        header: 'Actions',
+        accessorKey: 'actions',
+        cell: ({ row }) => <Link to={`/access-management/groups/${row.original.group_id}`}>View</Link>
       }
     ];
   }, []);
@@ -124,7 +130,7 @@ export default function GroupsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Control', '/access-control', 'Groups')} />
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Management', '/access-management', 'Groups')} />
 
       {/* Header */}
       <PageHeader

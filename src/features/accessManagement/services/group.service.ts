@@ -1,7 +1,15 @@
 import { API_ROUTES } from '@/config/api.config';
 import { ApiService } from '@/services/api.service';
 
-import { CreateGroupDto, Group, GroupListResponse, GroupStats, UpdateGroupDto } from '../types/group.types';
+import {
+  CreateGroupDto,
+  Group,
+  GroupApplicationMenuResponse,
+  GroupApplicationsResponse,
+  GroupListResponse,
+  GroupStats,
+  UpdateGroupDto
+} from '../types/group.types';
 
 export interface GroupQueryParams {
   search?: string;
@@ -35,5 +43,13 @@ export class GroupService {
 
   static async getGroupList(params?: GroupQueryParams) {
     return ApiService.get<GroupListResponse>(API_URL.BASE, { params });
+  }
+
+  static async getGroupApplications(groupId: string) {
+    return ApiService.get<GroupApplicationsResponse>(API_URL.APPLICATIONS(groupId));
+  }
+
+  static async getGroupApplicationMenu(groupId: string) {
+    return ApiService.get<GroupApplicationMenuResponse>(API_URL.APPLICATION_MENU(groupId));
   }
 }

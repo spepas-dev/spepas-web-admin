@@ -28,7 +28,11 @@ export const API_ROUTES = {
     GROUP: {
       BASE: '/auth/groups',
       DETAIL: (id: string) => `/auth/groups/${id}`,
-      CREATE: '/auth/create-group'
+      CREATE: '/auth/create-group',
+      APPLICATIONS: (groupId: string) => `/auth/applications/${groupId}`,
+      APPLICATION_MENU: (groupId: string) => `/auth/group-appmenus/${groupId}`,
+      ADD_APPLICATION_MENU: '/auth/add-groupmenus',
+      USERS: '/auth/groupusers'
     },
     PERMISSION: {
       BASE: '/auth/permissions',

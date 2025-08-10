@@ -6,7 +6,9 @@ export const groupQueryKeys = {
   all: ['group'] as const,
   list: () => [...groupQueryKeys.all, 'list'] as const,
   details: (id: string) => [...groupQueryKeys.all, 'details', id] as const,
-  stats: (id: string) => [...groupQueryKeys.all, 'stats', id] as const
+  stats: (id: string) => [...groupQueryKeys.all, 'stats', id] as const,
+  applications: (groupId: string) => [...groupQueryKeys.all, 'applications', groupId] as const,
+  applicationMenu: (groupId: string) => [...groupQueryKeys.all, 'applicationMenu', groupId] as const
 } as const;
 
 export const useGetGroupList = () => {
@@ -27,5 +29,19 @@ export const useGetGroupStats = (id: string) => {
   return useQuery({
     queryKey: groupQueryKeys.stats(id),
     queryFn: () => GroupService.getGroupStats(id)
+  });
+};
+
+export const useGetGroupApplications = (groupId: string) => {
+  return useQuery({
+    queryKey: groupQueryKeys.applications(groupId),
+    queryFn: () => GroupService.getGroupApplications(groupId)
+  });
+};
+
+export const useGetGroupApplicationMenu = (groupId: string) => {
+  return useQuery({
+    queryKey: groupQueryKeys.applicationMenu(groupId),
+    queryFn: () => GroupService.getGroupApplicationMenu(groupId)
   });
 };
