@@ -10,14 +10,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 
-import { useGetGopaList } from '../../api/queries/gopa.queries';
+import { useGetGopaList } from '../../api/queries/gopas.queries';
 import { useGetUserList } from '../../api/queries/users.queries';
 import { CreateSellerDTO } from '../../types/sellers.types';
 
 const sellerSchema = z.object({
   storeName: z.string().min(1, 'Store name is required'),
-  longitude: z.number(),
-  latitude: z.number(),
+  longitude: z.number().optional(),
+  latitude: z.number().optional(),
   Gopa_ID: z.string().min(1, 'Please select a Gopa'),
   User_ID: z.string().min(1, 'Please select a user')
 });
@@ -52,10 +52,6 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
       })) || []
     );
   }, [gopas?.data]);
-
-  console.log(gopas);
-
-  console.log(availableGopas);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',

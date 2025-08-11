@@ -1,14 +1,49 @@
 import { Location, Response } from '@/types';
 
-export interface Seller {
+export interface BusinessRegError {
+  name: string;
+  message: string;
+  http_code: number;
+}
+
+export interface Gopa {
+  id: number;
+  Gopa_ID: string;
+  Specialties: string[];
+  User_ID: string;
+  status: number;
+  date_added: string;
+}
+
+export interface SellerDetails {
   id: number;
   Seller_ID: string;
   storeName: string;
   business_reg_url: string | null;
-  business_reg_obj: any | null; // Adjust `any` if there's a specific structure
+  business_reg_obj: BusinessRegError | null;
   Location: Location;
-  Gopa_ID: string;
-  date_added: string; // ISO date string
+  Gopa_ID: string | null;
+  date_added: string;
+  status: number;
+}
+
+export interface Seller {
+  id: number;
+  User_ID: string;
+  name: string;
+  registeredBy: string | null;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  verificationStatus: number;
+  status: number;
+  user_type: string;
+  Seller_ID: string;
+  referral_Code: string | null;
+  createdAt: string;
+  updatedAt: string;
+  gopa: Gopa;
+  sellerDetails: SellerDetails;
 }
 
 export type SellerStats = {
@@ -17,7 +52,7 @@ export type SellerStats = {
   inactiveSellers: number;
 };
 
-export type CreateSellerDTO = Pick<Seller, 'storeName' | 'Gopa_ID' | 'Location'> & { User_ID: string };
+export type CreateSellerDTO = Pick<SellerDetails, 'storeName' | 'Gopa_ID' | 'Location'> & { User_ID: string };
 
 export type RegisterSellerResponse = Response<Seller>;
 

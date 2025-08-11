@@ -148,7 +148,7 @@ export default function PermissionsPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Control', '/access-control', 'Permissions')} />
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Management', '/access-management', 'Permissions')} />
 
       {/* Header */}
       <PageHeader

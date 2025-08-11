@@ -142,7 +142,7 @@ export default function RolesPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Control', '/access-control', 'Roles')} />
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Management', '/access-management', 'Roles')} />
 
       {/* Header */}
       <PageHeader

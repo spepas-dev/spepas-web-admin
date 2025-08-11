@@ -174,7 +174,7 @@ const ApplicationsPage = () => {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Control', '/access-control', 'Applications')} />
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Access Management', '/access-management', 'Applications')} />
 
       {/* Header */}
       <PageHeader

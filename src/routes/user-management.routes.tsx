@@ -8,7 +8,7 @@ const SellersPage = lazy(() => import('@/features/userManagement/components/sell
 const BuyersPage = lazy(() => import('@/features/userManagement/components/buyers'));
 const RidersPage = lazy(() => import('@/features/userManagement/components/riders'));
 const MechanicsPage = lazy(() => import('@/features/userManagement/components/mechanics'));
-const GorosPage = lazy(() => import('@/features/userManagement/components/goros'));
+const GopasPage = lazy(() => import('@/features/userManagement/components/gopas'));
 const PaymentAccountsPage = lazy(() => import('@/features/userManagement/components/payments'));
 const VehiclesPage = lazy(() => import('@/features/userManagement/components/vehicles'));
 
@@ -30,7 +30,7 @@ export const userManagementRoutes: RouteObject[] = [
       },
       { path: ROUTE_PATHS.USER_MANAGEMENT.BUYERS.BASE, children: [{ index: true, element: <BuyersPage /> }] },
       { path: ROUTE_PATHS.USER_MANAGEMENT.MECHANIC.BASE, children: [{ index: true, element: <MechanicsPage /> }] },
-      { path: ROUTE_PATHS.USER_MANAGEMENT.GORO.BASE, children: [{ index: true, element: <GorosPage /> }] },
+      { path: ROUTE_PATHS.USER_MANAGEMENT.GOPA.BASE, children: [{ index: true, element: <GopasPage /> }] },
       { path: ROUTE_PATHS.USER_MANAGEMENT.PAYMENT_ACCOUNT.BASE, children: [{ index: true, element: <PaymentAccountsPage /> }] }
     ]
   }

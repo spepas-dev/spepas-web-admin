@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Wrench } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -9,17 +8,17 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { MultiSelect } from '@/components/ui/multi-select';
 
 import { useGetUserList } from '../../api/queries/users.queries';
-import { RegisterGoroDTO } from '../../types/gopa.types';
+import { RegisterGopaDTO } from '../../types/gopa.types';
 
-const goroSchema = z.object({
+const gopaSchema = z.object({
   User_ID: z.string().min(1, 'Please select a user'),
   specialties: z.array(z.string()).min(1, 'Add at least one specialty')
 });
 
-type FormValues = z.infer<typeof goroSchema>;
+type FormValues = z.infer<typeof gopaSchema>;
 
-interface NewGorosProps {
-  onSubmit: (goro: RegisterGoroDTO) => void;
+interface NewGopasProps {
+  onSubmit: (gopa: RegisterGopaDTO) => void;
   loading?: boolean;
 }
 
@@ -34,7 +33,7 @@ const availableSpecialties = [
   { value: 'SUSPENSION', label: 'Suspension' }
 ];
 
-export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
+export function NewGopas({ onSubmit, loading = false }: NewGopasProps) {
   const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUserList();
   const availableUsers = useMemo(() => {
     return (
@@ -46,7 +45,7 @@ export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
   }, [users?.data]);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(goroSchema),
+    resolver: zodResolver(gopaSchema),
     defaultValues: {
       User_ID: '',
       specialties: []
@@ -54,11 +53,11 @@ export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
   });
 
   const handleSubmit = (values: FormValues) => {
-    const goroData: RegisterGoroDTO = {
+    const gopaData: RegisterGopaDTO = {
       User_ID: values.User_ID,
       specialties: values.specialties
     };
-    onSubmit(goroData);
+    onSubmit(gopaData);
     form.reset();
   };
 
@@ -116,7 +115,7 @@ export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
 
         <div className="flex justify-end">
           <Button type="submit" className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Goro'}
+            {loading ? 'Saving...' : 'Save Gopa'}
           </Button>
         </div>
       </form>
@@ -124,4 +123,4 @@ export function NewGoros({ onSubmit, loading = false }: NewGorosProps) {
   );
 }
 
-export default NewGoros;
+export default NewGopas;
