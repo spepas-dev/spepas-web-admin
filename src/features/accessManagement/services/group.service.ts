@@ -3,6 +3,7 @@ import { ApiService } from '@/services/api.service';
 
 import {
   CreateGroupDto,
+  CreateGroupUsersDTO,
   Group,
   GroupApplicationMenuResponse,
   GroupApplicationsResponse,
@@ -51,5 +52,9 @@ export class GroupService {
 
   static async getGroupApplicationMenu(groupId: string) {
     return ApiService.get<GroupApplicationMenuResponse>(API_URL.APPLICATION_MENU(groupId));
+  }
+
+  static async addUsersToGroup(data: CreateGroupUsersDTO[]) {
+    return ApiService.post<void>(API_URL.ADD_USERS, data);
   }
 }

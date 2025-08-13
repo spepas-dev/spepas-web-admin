@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { GroupService } from '../../services/group.service';
-import { CreateGroupDto, Group, UpdateGroupDto } from '../../types/group.types';
+import { CreateGroupDto, CreateGroupUsersDTO, Group, UpdateGroupDto } from '../../types/group.types';
 import { groupQueryKeys } from '../queries/group.queries';
 
 export const useCreateGroup = () => {
@@ -20,6 +20,17 @@ export const useUpdateGroup = (id: string) => {
 
   return useMutation({
     mutationFn: (data: UpdateGroupDto) => GroupService.updateGroup(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: groupQueryKeys.all });
+    }
+  });
+};
+
+export const useAddUsersToGroup = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateGroupUsersDTO[]) => GroupService.addUsersToGroup(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: groupQueryKeys.all });
     }
