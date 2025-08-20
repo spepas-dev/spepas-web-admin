@@ -68,6 +68,8 @@ export interface CreateGroupUsersDTO {
   group_id: string;
 }
 
+export type GroupUsersResponse = Response<any[]>;
+
 export type GroupApplicationsResponse = Response<GroupApplication[]>;
 
 export type GroupApplicationMenuResponse = Response<GroupApplicationMenu[]>;

@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Menu } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -9,17 +10,20 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
+import { useGetApplications } from '@/features/accessManagement/api/queries/applications.queries';
 
 import { CreateMenuItemDto } from '../../types/menu.types';
-import { IconPicker } from './iconPicker';
 
 const menuSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
+  applicationId: z.string().min(1, 'Application ID is required'),
+  menus: z.array(
+    z.object({
+      name: z.string().min(1, 'Name is required'),
+      description: z.string().optional(),
+      isActive: z.boolean().default(true)
+    })
+  ),
   description: z.string().optional(),
-  icon: z.string().optional(),
-  path: z.string().min(1, 'Path is required'),
-  permissions: z.string().optional(),
-  parentId: z.string().nullable().optional(),
   isActive: z.boolean().default(true)
 });
 
@@ -32,28 +36,32 @@ interface NewMenuProps {
 }
 
 export function NewMenu({ onSubmit, loading = false, existingGroups = [] }: NewMenuProps) {
+  const { data: applications } = useGetApplications();
+
+  useEffect(() => {
+    console.log(applications);
+  }, [applications]);
+
+  const applicationsOptions = useMemo(() => {
+    return applications?.data?.map((application) => ({
+      label: application.name,
+      value: application.application_id
+    }));
+  }, [applications]);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(menuSchema),
     defaultValues: {
-      name: '',
-      description: '',
-      icon: '',
-      path: '',
-      permissions: '',
-      parentId: null,
-      isActive: true
+      applicationId: '',
+      menus: [{ name: '', description: '', isActive: true }]
     }
   });
 
   const handleSubmit = (values: FormValues) => {
     const menuData: CreateMenuItemDto = {
-      name: values.name,
+      application_id: values.applicationId,
       description: values.description,
-      icon: values.icon,
-      path: values.path,
-      permissions: values.permissions,
-      parentId: values.parentId,
-      isActive: values.isActive
+      is_active: values.isActive
     };
     onSubmit(menuData);
     form.reset();
@@ -67,42 +75,28 @@ export function NewMenu({ onSubmit, loading = false, existingGroups = [] }: NewM
             <div className="flex-1 space-y-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="applicationId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-700">Menu Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter menu name"
-                        className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
-                        disabled={loading}
-                        {...field}
-                      />
+                      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={loading} value={field.value}>
+                        <SelectTrigger className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]">
+                          <SelectValue placeholder="Select application" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {applicationsOptions?.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage className="text-red-500" />
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="path"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700">Path</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter menu path (e.g., /dashboard)"
-                        className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
-                        disabled={loading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="description"
@@ -112,64 +106,6 @@ export function NewMenu({ onSubmit, loading = false, existingGroups = [] }: NewM
                     <FormControl>
                       <Textarea
                         placeholder="Enter menu description"
-                        className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
-                        disabled={loading}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="icon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700">Icon</FormLabel>
-                    <FormControl>
-                      <IconPicker value={field.value} onChange={field.onChange} disabled={loading} />
-                    </FormControl>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="parentId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700">Parent Group</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                      <FormControl>
-                        <SelectTrigger disabled={loading}>
-                          <SelectValue placeholder="Select parent group (optional)" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {existingGroups.map((group) => (
-                          <SelectItem key={group.id} value={group.id}>
-                            {group.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage className="text-red-500" />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="permissions"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-gray-700">Permissions</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., admin:read, user:write"
                         className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                         disabled={loading}
                         {...field}

@@ -40,7 +40,8 @@ export const ROUTE_PATHS = {
       UPDATE: 'update-user'
     },
     APPLICATION: {
-      BASE: 'applications'
+      BASE: 'applications',
+      DETAIL: (applicationId: string) => `${applicationId}`
     }
   },
   USER_MANAGEMENT: {
