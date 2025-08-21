@@ -18,6 +18,7 @@ import { NewGopas } from './newGopa';
 export default function GopasPage() {
   const { data, isLoading } = useGetGopaList();
   const gopas = useMemo(() => data?.data || [], [data?.data]);
+
   const columns = useMemo(
     (): ColumnDef<Gopa>[] => [
       {
@@ -32,6 +33,7 @@ export default function GopasPage() {
         header: 'Specialties',
         accessorKey: 'specialties',
         cell: ({ row }) => (
+
           <div className="flex flex-wrap gap-1">
             {row.original.specialties?.map((specialty, index) => (
               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
