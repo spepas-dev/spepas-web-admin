@@ -29,10 +29,11 @@ export const API_ROUTES = {
       BASE: '/auth/groups',
       DETAIL: (id: string) => `/auth/groups/${id}`,
       CREATE: '/auth/create-group',
-      APPLICATIONS: (groupId: string) => `/auth/applications/${groupId}`,
+      APPLICATIONS: (groupId: string) => `/auth/group-applications/${groupId}`,
       APPLICATION_MENU: (groupId: string) => `/auth/group-appmenus/${groupId}`,
       ADD_APPLICATION_MENU: '/auth/add-groupmenus',
-      USERS: '/auth/groupusers'
+      USERS: (groupId: string) => `/auth/group-appusers/${groupId}`,
+      ADD_USERS: '/auth/add-groupusers'
     },
     PERMISSION: {
       BASE: '/auth/permissions',

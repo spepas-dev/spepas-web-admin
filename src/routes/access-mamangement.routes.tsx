@@ -9,6 +9,7 @@ const MenusPage = lazy(() => import('@/features/accessManagement/components/menu
 const GroupsPage = lazy(() => import('@/features/accessManagement/components/groups'));
 const GroupDetailsPage = lazy(() => import('@/features/accessManagement/components/groups/group/group'));
 const ApplicationsPage = lazy(() => import('@/features/accessManagement/components/applications'));
+const ApplicationDetailPage = lazy(() => import('@/features/accessManagement/components/applications/application-detail'));
 
 export const accessManagementRoutes: RouteObject[] = [
   {
@@ -24,7 +25,13 @@ export const accessManagementRoutes: RouteObject[] = [
           { path: ROUTE_PATHS.ACCESS_MANAGEMENT.GROUP.DETAIL(':groupId'), element: <GroupDetailsPage /> }
         ]
       },
-      { path: ROUTE_PATHS.ACCESS_MANAGEMENT.APPLICATION.BASE, element: <ApplicationsPage /> }
+      {
+        path: ROUTE_PATHS.ACCESS_MANAGEMENT.APPLICATION.BASE,
+        children: [
+          { index: true, element: <ApplicationsPage /> },
+          { path: ROUTE_PATHS.ACCESS_MANAGEMENT.APPLICATION.DETAIL(':applicationId'), element: <ApplicationDetailPage /> }
+        ]
+      }
     ]
   }
 ];

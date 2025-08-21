@@ -1,7 +1,8 @@
 import { Row } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
-import { CheckCircle, Clock, Plus, UserPlus, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Eye, Pencil, Plus, UserPlus, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { DataTable } from '@/components/ui/custom/dataTable';
 import { useFormModal } from '@/components/ui/custom/modals';
 import { PageHeader } from '@/components/ui/custom/pageHeader';
 import { CardGrid } from '@/components/ui/custom/staticCards';
+import { ROUTE_PATHS } from '@/config/routes.config';
 import { cn } from '@/lib/utils';
 
 import { useCreateApplication, useUpdateApplication } from '../../api/mutations/application.mutations';
@@ -19,6 +21,7 @@ import { NewApplication } from './newApplication';
 
 const ApplicationsPage = () => {
   const { data, isLoading } = useGetApplications();
+  const navigate = useNavigate();
 
   const applications = useMemo(() => {
     return data?.data || [];
@@ -66,14 +69,24 @@ const ApplicationsPage = () => {
         cell: ({ row }: { row: Row<Application> }) => {
           const application = row.original;
           return (
-            <Button
-              size="sm"
-              variant="outline"
-              className="hover:bg-[#4A36EC] hover:text-white hover:cursor-pointer"
-              onClick={() => handleUpdateApplication(application)}
-            >
-              Update
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="hover:bg-[#4A36EC] hover:text-white hover:cursor-pointer"
+                onClick={() => navigate(ROUTE_PATHS.ACCESS_MANAGEMENT.APPLICATION.DETAIL(application.application_id))}
+              >
+                <Eye className="w-4 h-4" />
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="hover:bg-[#4A36EC] hover:text-white hover:cursor-pointer"
+                onClick={() => handleUpdateApplication(application)}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
+            </div>
           );
         }
       }

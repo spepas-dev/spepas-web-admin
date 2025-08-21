@@ -13,12 +13,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useGlobal } from '@/stores';
 
+import { useCarModels } from '../../api/queries/modelsQueries';
 import { CreateSparePartDTO } from '../../types';
 
 const sparePartSchema = z.object({
   name: z.string().min(1, 'Spare part name is required'),
   description: z.string().min(1, 'Description is required'),
-  price: z.number().min(0, 'Price must be 0 or greater'),
   carModel_ID: z.string().min(1, 'Car model ID is required')
 });
 
@@ -34,11 +34,11 @@ interface NewSparePartsProps {
 }
 
 export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps) {
-  const { data: inventoryData } = useGlobal();
+  const { data, isLoading, isError } = useCarModels();
 
   const models = useMemo(() => {
-    return inventoryData?.models || [];
-  }, [inventoryData]);
+    return data?.data || [];
+  }, [data?.data]);
 
   const availableModels = useMemo(() => {
     return models.map((m) => ({
@@ -50,7 +50,7 @@ export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps)
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      spareParts: [{ name: '', description: '', price: 0, carModel_ID: '' }]
+      spareParts: [{ name: '', description: '', carModel_ID: '' }]
     }
   });
 
@@ -101,27 +101,6 @@ export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps)
                           className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
                           disabled={loading}
                           {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-red-500" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name={`spareParts.${index}.price`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-700">Price</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          placeholder="Enter price"
-                          className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
-                          disabled={loading}
-                          {...field}
-                          onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         />
                       </FormControl>
                       <FormMessage className="text-red-500" />

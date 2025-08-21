@@ -12,7 +12,7 @@ import { RegisterGopaDTO } from '../../types/gopa.types';
 
 const gopaSchema = z.object({
   User_ID: z.string().min(1, 'Please select a user'),
-  specialties: z.array(z.string()).min(1, 'Add at least one specialty')
+  Specialties: z.array(z.string()).min(1, 'Add at least one specialty')
 });
 
 type FormValues = z.infer<typeof gopaSchema>;
@@ -48,14 +48,14 @@ export function NewGopas({ onSubmit, loading = false }: NewGopasProps) {
     resolver: zodResolver(gopaSchema),
     defaultValues: {
       User_ID: '',
-      specialties: []
+      Specialties: []
     }
   });
 
   const handleSubmit = (values: FormValues) => {
     const gopaData: RegisterGopaDTO = {
       User_ID: values.User_ID,
-      specialties: values.specialties
+      Specialties: values.Specialties
     };
     onSubmit(gopaData);
     form.reset();
@@ -72,13 +72,13 @@ export function NewGopas({ onSubmit, loading = false }: NewGopasProps) {
                 name="User_ID"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Select Mechanic</FormLabel>
+                    <FormLabel className="text-gray-700">Select User</FormLabel>
                     <FormControl>
                       <MultiSelect
                         options={availableUsers}
                         value={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
-                        placeholder="Select a mechanic"
+                        placeholder="Select a user"
                         maxCount={1}
                         variant="default"
                         disabled={loading}
@@ -91,7 +91,7 @@ export function NewGopas({ onSubmit, loading = false }: NewGopasProps) {
 
               <FormField
                 control={form.control}
-                name="specialties"
+                name="Specialties"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-gray-700">Specialties</FormLabel>

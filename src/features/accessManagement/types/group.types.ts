@@ -63,6 +63,13 @@ export interface GroupApplicationMenu {
   menu: Menu;
 }
 
+export interface CreateGroupUsersDTO {
+  user_id: string;
+  group_id: string;
+}
+
+export type GroupUsersResponse = Response<any[]>;
+
 export type GroupApplicationsResponse = Response<GroupApplication[]>;
 
 export type GroupApplicationMenuResponse = Response<GroupApplicationMenu[]>;

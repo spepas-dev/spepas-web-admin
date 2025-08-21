@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Building2, CheckCircle, Eye, Plus, Settings, Shield, Users, XCircle } from 'lucide-react';
+import { AppWindow, ArrowLeft, Building2, CheckCircle, Eye, Plus, Settings, Shield, Users, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -15,7 +15,8 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetGroupApplications } from '@/features/accessManagement/api/queries/group.queries';
+import { useAddUsersToGroup } from '@/features/accessManagement/api/mutations/group.mutations';
+import { useGetGroupApplications, useGetGroupUsers } from '@/features/accessManagement/api/queries/group.queries';
 import { cn } from '@/lib/utils';
 
 import { Application } from '../../../types/application.types';
@@ -34,54 +35,6 @@ const mockGroup: Group = {
   status: 1
 };
 
-const mockApplications: Application[] = [
-  {
-    id: 1,
-    application_id: 'app-1',
-    name: 'User Management System',
-    description: 'Manage users and their permissions',
-    dateAdded: '2024-01-10T08:00:00Z',
-    added_by: 'System',
-    status: 1
-  },
-  {
-    id: 2,
-    application_id: 'app-2',
-    name: 'Inventory Management',
-    description: 'Track and manage inventory items',
-    dateAdded: '2024-01-12T14:20:00Z',
-    added_by: 'System',
-    status: 1
-  }
-];
-
-const mockUsers: User[] = [
-  {
-    id: 'user-1',
-    name: 'Alice Johnson',
-    email: 'alice.johnson@example.com',
-    avatar: '',
-    role: 'Administrator',
-    status: 'active'
-  },
-  {
-    id: 'user-2',
-    name: 'Bob Smith',
-    email: 'bob.smith@example.com',
-    avatar: '',
-    role: 'Manager',
-    status: 'active'
-  },
-  {
-    id: 'user-3',
-    name: 'Carol Brown',
-    email: 'carol.brown@example.com',
-    avatar: '',
-    role: 'User',
-    status: 'inactive'
-  }
-];
-
 export default function GroupDetailsPage() {
   const { groupId } = useParams<{ groupId: string }>();
   const [activeTab, setActiveTab] = useState('overview');
@@ -99,13 +52,27 @@ export default function GroupDetailsPage() {
     isLoading: isGroupApplicationsLoading,
     isError: isGroupApplicationsError
   } = useGetGroupApplications(groupId as string);
-  useEffect(() => {
-    if (groupApplicationsData) {
-      console.log('groupApplicationsData', groupApplicationsData);
-    }
-  }, [groupApplicationsData]);
-  const groupApplications = mockApplications;
-  const groupUsers = mockUsers;
+
+  const groupApplications = useMemo(() => {
+    return (
+      groupApplicationsData?.data?.map((application) => ({
+        id: application.application_id,
+        name: application.application.name,
+        //   description: application.description
+        status: application.status === 1 ? 'active' : 'inactive',
+        date_added: application.date_added,
+        added_by: application.added_by
+      })) || []
+    );
+  }, [groupApplicationsData?.data]);
+
+  const { data: groupUsersData, isLoading: isGroupUsersLoading, isError: isGroupUsersError } = useGetGroupUsers(groupId as string);
+
+  const groupUsers = useMemo(() => {
+    return groupUsersData?.data?.user_groups.map((user) => user?.user) || [];
+  }, [groupUsersData?.data?.user_groups]);
+
+  // const groupUsers = mockUsers;
 
   const userColumns = useMemo(
     (): ColumnDef<User>[] => [
@@ -125,11 +92,11 @@ export default function GroupDetailsPage() {
         )
       },
       {
-        header: 'Role',
-        accessorKey: 'role',
+        header: 'User Type',
+        accessorKey: 'user_type',
         cell: ({ row }) => (
           <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-            {row.original.role}
+            {row.original.user_type}
           </Badge>
         )
       },
@@ -137,7 +104,7 @@ export default function GroupDetailsPage() {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
-          const isActive = row.original.status === 'active';
+          const isActive = row.original.status === 1;
           return (
             <span
               className={cn(
@@ -150,6 +117,22 @@ export default function GroupDetailsPage() {
             </span>
           );
         }
+      },
+      {
+        header: 'Verification Status',
+        accessorKey: 'verificationStatus',
+        cell: ({ row }) => (
+          <span
+            className={cn(
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+              row.original.verificationStatus === 1
+                ? 'bg-green-100 text-green-800 border border-green-200'
+                : 'bg-red-100 text-red-800 border border-red-200'
+            )}
+          >
+            {row.original.verificationStatus === 1 ? '✓ Verified' : '✗ Pending'}
+          </span>
+        )
       },
       {
         header: 'Actions',
@@ -175,7 +158,7 @@ export default function GroupDetailsPage() {
   );
 
   const applicationColumns = useMemo(
-    (): ColumnDef<Application>[] => [
+    (): ColumnDef<any>[] => [
       {
         header: 'Application',
         accessorKey: 'name',
@@ -191,21 +174,21 @@ export default function GroupDetailsPage() {
           </div>
         )
       },
-      {
-        header: 'Application ID',
-        accessorKey: 'application_id',
-        cell: ({ row }) => <code className="bg-gray-100 px-2 py-1 rounded text-sm">{row.original.application_id}</code>
-      },
-      {
-        header: 'Date Added',
-        accessorKey: 'dateAdded',
-        cell: ({ row }) => format(new Date(row.original.dateAdded), 'MMM dd, yyyy')
-      },
+      //   {
+      //     header: 'Application ID',
+      //     accessorKey: 'application_id',
+      //     cell: ({ row }) => <code className="bg-gray-100 px-2 py-1 rounded text-sm">{row.original.application_id}</code>
+      //   },
+      // {
+      //   header: 'Date Added',
+      //   accessorKey: 'date_added',
+      //   cell: ({ row }) => format(new Date(row.original.dateAdded), 'MMM dd, yyyy')
+      // },
       {
         header: 'Status',
         accessorKey: 'status',
         cell: ({ row }) => {
-          const isActive = row.original.status === 1;
+          const isActive = row.original.status === 'active';
           return (
             <span
               className={cn(
@@ -265,10 +248,17 @@ export default function GroupDetailsPage() {
     });
   };
 
+  const { mutateAsync: addUsersToGroup } = useAddUsersToGroup();
   const handleSubmitAddUser = async (userData: { userIds: string[] }) => {
     try {
       // Handle API call here
       console.log('Adding users to group:', userData);
+      const payload = userData.userIds.map((userId) => ({
+        user_id: userId,
+        group_id: groupId as string
+      }));
+      console.log('payload', payload);
+      await addUsersToGroup(payload);
       toast.success('Users added to group successfully');
       addUserModal.close();
     } catch {
@@ -306,7 +296,7 @@ export default function GroupDetailsPage() {
     },
     {
       title: 'Active Users',
-      value: groupUsers.filter((user) => user.status === 'active').length,
+      value: groupUsers.filter((user) => user.status === 1).length,
       Icon: CheckCircle,
       description: 'Currently active',
       trend: '100%',
@@ -412,14 +402,14 @@ export default function GroupDetailsPage() {
                           </div>
                           <div>
                             <p className="font-medium text-sm">{user.name}</p>
-                            <p className="text-xs text-gray-500">{user.role}</p>
+                            <p className="text-xs text-gray-500">{user.user_type}</p>
                           </div>
                         </div>
                         <Badge
                           variant="secondary"
-                          className={user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                          className={user.status === 1 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
                         >
-                          {user.status}
+                          {user.status === 1 ? 'Active' : 'Inactive'}
                         </Badge>
                       </div>
                     ))}
@@ -442,14 +432,14 @@ export default function GroupDetailsPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {groupApplications.map((app) => (
-                      <div key={app.application_id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
-                            <Building2 className="w-4 h-4 text-white" />
+                            <AppWindow className="w-4 h-4 text-white" />
                           </div>
                           <div>
                             <p className="font-medium text-sm">{app.name}</p>
-                            <p className="text-xs text-gray-500">{app.application_id}</p>
+                            {/* <p className="text-xs text-gray-500">{app.added_by}</p> */}
                           </div>
                         </div>
                         <Badge variant="secondary" className="bg-green-100 text-green-800">

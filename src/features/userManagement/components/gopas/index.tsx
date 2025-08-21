@@ -32,7 +32,8 @@ export default function GopasPage() {
       {
         header: 'Specialties',
         accessorKey: 'specialties',
-        cell: ({ row }: { row: Row<Gopa> }) => (
+        cell: ({ row }) => (
+
           <div className="flex flex-wrap gap-1">
             {row.original.specialties?.map((specialty, index) => (
               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">

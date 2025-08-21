@@ -4,12 +4,7 @@ export interface MenuItem {
   id: string;
   name: string;
   description?: string;
-  icon?: string;
-  path: string;
-  permissions?: string;
-  parentId?: string | null;
-  order?: number;
-  isActive: boolean;
+  is_active: boolean;
 }
 
 export interface MenuStats {
@@ -18,7 +13,12 @@ export interface MenuStats {
   inactiveMenus: number;
 }
 
-export type CreateMenuItemDto = Omit<MenuItem, 'id' | 'createdAt' | 'updatedAt' | 'metadata'>;
+export type CreateMenuItemDto = {
+  application_id: string;
+  menus: {
+    title: string;
+  }[];
+};
 
 export type UpdateMenuItemDto = Partial<CreateMenuItemDto>;
 

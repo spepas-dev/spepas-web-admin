@@ -3,7 +3,7 @@ import { Response } from '@/types';
 export interface Gopa {
   id: number;
   Gopa_ID: string;
-  specialties: string[];
+  Specialties: string[];
   User_ID: string;
   status: number;
   createdAt: string;
@@ -15,7 +15,7 @@ export type GopaStats = {
   inactiveGopas: number;
 };
 
-export type RegisterGopaDTO = Pick<Gopa, 'User_ID' | 'specialties'>;
+export type RegisterGopaDTO = Pick<Gopa, 'User_ID' | 'Specialties'>;
 
 export type RegisterGopaResponse = Response<Gopa>;
 
