@@ -11,7 +11,7 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { cn } from '@/lib/utils';
 
 import { Group } from '../../../types/group.types';
-import { AssignGroupDialog } from './assign-group-dialog';
+import { AssignGroups } from './AssignGroups';
 
 interface ApplicationGroupsProps {
   applicationId: string;
@@ -48,15 +48,24 @@ const mockGroups: Group[] = [
 export const ApplicationGroups = ({ applicationId }: ApplicationGroupsProps) => {
   const [assignedGroups, setAssignedGroups] = useState<Group[]>(mockGroups.slice(0, 2));
   const [availableGroups, setAvailableGroups] = useState<Group[]>(mockGroups.slice(2));
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const assignGroupModal = useFormModal();
 
-  const handleAssignGroup = (groupIds: string[]) => {
-    const groupsToAssign = availableGroups.filter((group) => groupIds.includes(group.group_id));
-    setAssignedGroups([...assignedGroups, ...groupsToAssign]);
-    setAvailableGroups(availableGroups.filter((group) => !groupIds.includes(group.group_id)));
-    assignGroupModal.close();
-    toast.success('Groups assigned successfully');
+  const handleAssignGroup = async (data: { groupIds: string[] }) => {
+    setIsSubmitting(true);
+    try {
+      const groupsToAssign = availableGroups.filter((group) => data.groupIds.includes(group.group_id));
+      setAssignedGroups([...assignedGroups, ...groupsToAssign]);
+      setAvailableGroups(availableGroups.filter((group) => !data.groupIds.includes(group.group_id)));
+      assignGroupModal.close();
+      toast.success('Groups assigned successfully');
+    } catch (error) {
+      console.error('Error assigning groups:', error);
+      toast.error('Failed to assign groups. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRemoveGroup = (groupId: string) => {
@@ -143,7 +152,18 @@ export const ApplicationGroups = ({ applicationId }: ApplicationGroupsProps) => 
           <h2 className="text-xl font-semibold text-gray-900">Assigned Groups</h2>
           <p className="text-sm text-gray-600 mt-1">Manage group assignments for this application</p>
         </div>
-        <Button onClick={assignGroupModal.open} className="bg-[#4A36EC] hover:bg-[#3A2BDC]" disabled={availableGroups.length === 0}>
+        <Button
+          onClick={() =>
+            assignGroupModal.openForm({
+              title: 'Assign Groups',
+              size: 'md',
+              showFooter: false,
+              children: <AssignGroups onSubmit={handleAssignGroup} loading={isSubmitting} availableGroups={availableGroups} />
+            })
+          }
+          className="bg-[#4A36EC] hover:bg-[#3A2BDC]"
+          disabled={availableGroups.length === 0}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Assign Groups
         </Button>
@@ -163,13 +183,24 @@ export const ApplicationGroups = ({ applicationId }: ApplicationGroupsProps) => 
               <UserCheck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No groups assigned</h3>
               <p className="text-gray-600 mb-4">Assign groups to give them access to this application</p>
-              <Button onClick={assignGroupModal.open} className="bg-[#4A36EC] hover:bg-[#3A2BDC]" disabled={availableGroups.length === 0}>
+              <Button
+                onClick={() =>
+                  assignGroupModal.openForm({
+                    title: 'Assign Groups',
+                    size: 'md',
+                    showFooter: false,
+                    children: <AssignGroups onSubmit={handleAssignGroup} loading={isSubmitting} availableGroups={availableGroups} />
+                  })
+                }
+                className="bg-[#4A36EC] hover:bg-[#3A2BDC]"
+                disabled={availableGroups.length === 0}
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Assign Groups
               </Button>
             </div>
           ) : (
-            <DataTable data={assignedGroups} columns={columns} searchKey="title" placeholder="Search assigned groups..." />
+            <DataTable data={assignedGroups} columns={columns} />
           )}
         </CardContent>
       </Card>
@@ -201,14 +232,6 @@ export const ApplicationGroups = ({ applicationId }: ApplicationGroupsProps) => 
           </CardContent>
         </Card>
       )}
-
-      {/* Assign Group Dialog */}
-      <AssignGroupDialog
-        isOpen={assignGroupModal.isOpen}
-        onClose={assignGroupModal.close}
-        onSubmit={handleAssignGroup}
-        availableGroups={availableGroups}
-      />
     </motion.div>
   );
 };

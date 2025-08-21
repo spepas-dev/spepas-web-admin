@@ -1,18 +1,19 @@
 import { Row } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
-import { Menu, Plus, Trash2, Edit } from 'lucide-react';
+import { Edit, Menu, Plus, Trash2 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { DataTable } from '@/components/ui/custom/dataTable';
 import { useFormModal } from '@/components/ui/custom/modals';
+import { useCreateMenu } from '@/features/accessManagement/api/mutations/menu.mutations';
 import { cn } from '@/lib/utils';
 
 import { Menu as MenuType } from '../../../types/group.types';
-import { CreateMenuDialog } from './create-menu-dialog';
-import { EditMenuDialog } from './edit-menu-dialog';
+import { NewMenu } from './NewMenu';
 
 interface ApplicationMenusProps {
   applicationId: string;
@@ -59,41 +60,73 @@ const mockMenus: MenuType[] = [
 export const ApplicationMenus = ({ applicationId }: ApplicationMenusProps) => {
   const [menus, setMenus] = useState<MenuType[]>(mockMenus);
   const [selectedMenu, setSelectedMenu] = useState<MenuType | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createMenuModal = useFormModal();
   const editMenuModal = useFormModal();
 
-  const handleCreateMenu = (menuData: Partial<MenuType>) => {
-    const newMenu: MenuType = {
-      id: Date.now(),
-      menuID: `menu-${Date.now()}`,
-      title: menuData.title || '',
-      added_by: 'current-user',
+  const { mutateAsync: createMenu } = useCreateMenu();
+  const handleCreateMenu = async (menuDataArray: Partial<MenuType>[]) => {
+    setIsSubmitting(true);
+    console.log('menuDataArray =>>> ', menuDataArray);
+    const payload = {
       application_id: applicationId,
-      status: 1,
-      date_added: new Date().toISOString(),
-      application: {
-        id: 1,
-        application_id: applicationId,
-        name: 'Test App',
-        status: 1,
-        dateAdded: '2024-01-01T00:00:00Z',
-        added_by: 'user-1'
-      }
+      menus: menuDataArray.map((menu) => ({
+        title: menu.title || ''
+      }))
     };
-
-    setMenus([...menus, newMenu]);
-    createMenuModal.close();
-    toast.success('Menu created successfully');
+    console.log('payload =>>> ', payload);
+    try {
+      const response = await createMenu(payload);
+      console.log('response =>>> ', response);
+      toast.success('Menu created successfully');
+    } catch (error) {
+      toast.error('Failed to create menu. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+      createMenuModal.close();
+    }
   };
 
-  const handleUpdateMenu = (menuData: Partial<MenuType>) => {
-    if (!selectedMenu) return;
+  const handleUpdateMenu = async (menuDataArray: Partial<MenuType>[]) => {
+    if (!selectedMenu || menuDataArray.length === 0) {
+      return;
+    }
 
-    setMenus(menus.map((menu) => (menu.id === selectedMenu.id ? { ...menu, ...menuData } : menu)));
-    editMenuModal.close();
-    setSelectedMenu(null);
-    toast.success('Menu updated successfully');
+    setIsSubmitting(true);
+    try {
+      const updatedMenu = menuDataArray[0]; // For update, we only use the first menu
+      setMenus(menus.map((menu) => (menu.id === selectedMenu.id ? { ...menu, ...updatedMenu } : menu)));
+      editMenuModal.close();
+      setSelectedMenu(null);
+      toast.success('Menu updated successfully');
+    } catch (error) {
+      console.error('Error updating menu:', error);
+      toast.error('Failed to update menu. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddMenu = () => {
+    createMenuModal.openForm({
+      title: 'Create New Menu',
+      size: 'md',
+      showFooter: false,
+      children: <NewMenu onSubmit={handleCreateMenu} loading={isSubmitting} applicationId={applicationId} />
+    });
+  };
+
+  const handleEditMenu = (menu: MenuType) => {
+    setSelectedMenu(menu);
+    editMenuModal.openForm({
+      title: 'Update Menu',
+      size: 'md',
+      showFooter: false,
+      children: (
+        <NewMenu onSubmit={handleUpdateMenu} loading={isSubmitting} mode="update" initialData={[menu]} applicationId={applicationId} />
+      )
+    });
   };
 
   const handleDeleteMenu = (menuId: number) => {
@@ -153,15 +186,7 @@ export const ApplicationMenus = ({ applicationId }: ApplicationMenusProps) => {
           const menu = row.original;
           return (
             <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="hover:bg-[#4A36EC] hover:text-white"
-                onClick={() => {
-                  setSelectedMenu(menu);
-                  editMenuModal.open();
-                }}
-              >
+              <Button size="sm" variant="outline" className="hover:bg-[#4A36EC] hover:text-white" onClick={() => handleEditMenu(menu)}>
                 <Edit className="w-4 h-4" />
               </Button>
               <Button size="sm" variant="outline" className="hover:bg-red-600 hover:text-white" onClick={() => handleDeleteMenu(menu.id)}>
@@ -182,7 +207,7 @@ export const ApplicationMenus = ({ applicationId }: ApplicationMenusProps) => {
           <h2 className="text-xl font-semibold text-gray-900">Application Menus</h2>
           <p className="text-sm text-gray-600 mt-1">Manage menus and navigation items for this application</p>
         </div>
-        <Button onClick={createMenuModal.open} className="bg-[#4A36EC] hover:bg-[#3A2BDC]">
+        <Button onClick={handleAddMenu} className="bg-[#4A36EC] hover:bg-[#3A2BDC] text-white">
           <Plus className="w-4 h-4 mr-2" />
           Add Menu
         </Button>
@@ -197,22 +222,9 @@ export const ApplicationMenus = ({ applicationId }: ApplicationMenusProps) => {
           <CardDescription>All menus associated with this application</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable data={menus} columns={columns} searchKey="title" placeholder="Search menus..." />
+          <DataTable data={menus} columns={columns} />
         </CardContent>
       </Card>
-
-      {/* Create Menu Dialog */}
-      <CreateMenuDialog
-        isOpen={createMenuModal.isOpen}
-        onClose={createMenuModal.close}
-        onSubmit={handleCreateMenu}
-        applicationId={applicationId}
-      />
-
-      {/* Edit Menu Dialog */}
-      {selectedMenu && (
-        <EditMenuDialog isOpen={editMenuModal.isOpen} onClose={editMenuModal.close} onSubmit={handleUpdateMenu} menu={selectedMenu} />
-      )}
     </motion.div>
   );
 };

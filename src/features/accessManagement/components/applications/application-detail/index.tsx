@@ -10,6 +10,7 @@ import { PageHeader } from '@/components/ui/custom';
 import { Breadcrumb } from '@/components/ui/custom/breadcrumb';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ROUTE_PATHS } from '@/config/routes.config';
+import { useGetApplications } from '@/features/accessManagement/api/queries/applications.queries';
 import { cn } from '@/lib/utils';
 
 // import { useGetApplication } from '../../../api/queries/applications.queries';
@@ -23,26 +24,17 @@ const ApplicationDetail = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
 
-  // TODO: Replace with actual API call when endpoint is ready
-  // const { data: applicationData, isLoading } = useGetApplication(applicationId || '');
-  // const application = useMemo(() => {
-  //   return applicationData?.data;
-  // }, [applicationData?.data]);
+  // applications list
+  const { data: applicationsData, isLoading: isApplicationsLoading } = useGetApplications();
+  const applications = useMemo(() => {
+    return applicationsData?.data;
+  }, [applicationsData?.data]);
 
   // Dummy data for development
-  const isLoading = false;
-  const application: Application = useMemo(
-    () => ({
-      id: 1,
-      application_id: applicationId || 'app-123',
-      name: 'MOPA Application',
-      description: 'Motor Vehicle and Driver Licensing Authority application for managing vehicle registrations and driver licenses.',
-      status: 1,
-      dateAdded: '2024-01-15T10:30:00.000Z',
-      added_by: 'admin-user-123'
-    }),
-    [applicationId]
-  );
+  const isLoading = isApplicationsLoading;
+  const application: Application = useMemo(() => {
+    return applications?.find((app) => app.application_id === applicationId);
+  }, [applications, applicationId]);
 
   const breadcrumbItems = useMemo(() => {
     return [
@@ -108,10 +100,10 @@ const ApplicationDetail = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <p className="text-sm font-medium text-gray-500">Application ID</p>
               <p className="text-sm text-gray-900 font-mono">{application.application_id}</p>
-            </div>
+            </div> */}
             <div className="space-y-2">
               <p className="text-sm font-medium text-gray-500">Created</p>
               <p className="text-sm text-gray-900">{new Date(application.dateAdded).toLocaleDateString()}</p>

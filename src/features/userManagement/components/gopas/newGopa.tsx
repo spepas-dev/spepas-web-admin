@@ -72,13 +72,13 @@ export function NewGopas({ onSubmit, loading = false }: NewGopasProps) {
                 name="User_ID"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700">Select Mechanic</FormLabel>
+                    <FormLabel className="text-gray-700">Select User</FormLabel>
                     <FormControl>
                       <MultiSelect
                         options={availableUsers}
                         value={[field.value]}
                         onValueChange={(value) => field.onChange(value[0])}
-                        placeholder="Select a mechanic"
+                        placeholder="Select a user"
                         maxCount={1}
                         variant="default"
                         disabled={loading}

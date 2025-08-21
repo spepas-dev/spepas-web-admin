@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Edit, Mail, Phone, User } from 'lucide-react';
+import { Calendar, Edit, User } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useFormModal } from '@/components/ui/custom/modals';
 import { cn } from '@/lib/utils';
 
-import { Application } from '../../../types/application.types';
 import { useUpdateApplication } from '../../../api/mutations/application.mutations';
+import { Application } from '../../../types/application.types';
 
 interface ApplicationInfoProps {
   application: Application;
@@ -21,18 +20,16 @@ export const ApplicationInfo = ({ application }: ApplicationInfoProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: application.name,
-    description: application.description || '',
-    status: application.status
+    description: application.description || ''
   });
 
-  const updateApplicationMutation = useUpdateApplication(application.id.toString());
+  const updateApplicationMutation = useUpdateApplication(application.id?.toString());
 
   const handleSave = async () => {
     try {
       await updateApplicationMutation.mutateAsync({
         name: formData.name,
-        description: formData.description,
-        status: formData.status
+        description: formData.description
       });
       setIsEditing(false);
     } catch (error) {
@@ -43,8 +40,7 @@ export const ApplicationInfo = ({ application }: ApplicationInfoProps) => {
   const handleCancel = () => {
     setFormData({
       name: application.name,
-      description: application.description || '',
-      status: application.status
+      description: application.description || ''
     });
     setIsEditing(false);
   };
@@ -88,18 +84,6 @@ export const ApplicationInfo = ({ application }: ApplicationInfoProps) => {
                   placeholder="Enter application description"
                   rows={3}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <select
-                  id="status"
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: Number(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A36EC] focus:border-transparent"
-                >
-                  <option value={1}>Active</option>
-                  <option value={0}>Inactive</option>
-                </select>
               </div>
               <div className="flex gap-2">
                 <Button onClick={handleSave} disabled={updateApplicationMutation.isPending}>
@@ -152,10 +136,10 @@ export const ApplicationInfo = ({ application }: ApplicationInfoProps) => {
                     })}
                   </p>
                 </div>
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500">Application ID</p>
                   <p className="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded">{application.application_id}</p>
-                </div>
+                </div> */}
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-gray-500">Added By</p>
                   <p className="text-sm text-gray-900 font-mono bg-gray-50 px-2 py-1 rounded">{application.added_by}</p>

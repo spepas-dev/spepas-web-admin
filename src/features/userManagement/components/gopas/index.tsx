@@ -10,7 +10,6 @@ import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from 
 import { useFormModal } from '@/components/ui/custom/modals';
 import { cn } from '@/lib/utils';
 
-<<<<<<< HEAD:src/features/userManagement/components/gopas/index.tsx
 import { useCreateGopa } from '../../api/mutations/gopas.mutations';
 import { useGetGopaList } from '../../api/queries/gopas.queries';
 import { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
@@ -19,16 +18,6 @@ import { NewGopas } from './newGopa';
 export default function GopasPage() {
   const { data, isLoading } = useGetGopaList();
   const gopas = useMemo(() => data?.data || [], [data?.data]);
-=======
-import { useCreateGoro } from '../../api/mutations/goro.mutations';
-import { useGetGopaList } from '../../api/queries/gopa.queries';
-import { Gopa, RegisterGopaDTO } from '../../types/gopa.types';
-import { NewGoros } from './newGoros';
-
-export default function GorosPage() {
-  const { data, isLoading } = useGetGopaList();
-  const goros = useMemo(() => data?.data || [], [data?.data]);
->>>>>>> main:src/features/userManagement/components/goros/index.tsx
   const columns = useMemo(
     (): ColumnDef<Gopa>[] => [
       {
@@ -42,11 +31,7 @@ export default function GorosPage() {
       {
         header: 'Specialties',
         accessorKey: 'specialties',
-<<<<<<< HEAD:src/features/userManagement/components/gopas/index.tsx
         cell: ({ row }) => (
-=======
-        cell: ({ row }: { row: Row<Gopa> }) => (
->>>>>>> main:src/features/userManagement/components/goros/index.tsx
           <div className="flex flex-wrap gap-1">
             {row.original.specialties?.map((specialty, index) => (
               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
@@ -59,11 +44,7 @@ export default function GorosPage() {
       {
         header: 'Status',
         accessorKey: 'status',
-<<<<<<< HEAD:src/features/userManagement/components/gopas/index.tsx
         cell: ({ row }) => {
-=======
-        cell: ({ row }: { row: Row<Gopa> }) => {
->>>>>>> main:src/features/userManagement/components/goros/index.tsx
           const isActive = row.original.status === 1;
           return (
             <span
@@ -81,11 +62,7 @@ export default function GorosPage() {
       {
         header: 'Date Added',
         accessorKey: 'createdAt',
-<<<<<<< HEAD:src/features/userManagement/components/gopas/index.tsx
         cell: ({ row }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
-=======
-        cell: ({ row }: { row: Row<Gopa> }) => <div>{format(row.original.createdAt, 'dd/MM/yyyy HH:mm:ss a')}</div>
->>>>>>> main:src/features/userManagement/components/goros/index.tsx
       },
       {
         header: 'Actions',
@@ -112,13 +89,8 @@ export default function GorosPage() {
     });
   };
 
-<<<<<<< HEAD:src/features/userManagement/components/gopas/index.tsx
   const { mutateAsync: createGopa } = useCreateGopa();
   const handleSubmitGopa = async (gopaData: RegisterGopaDTO) => {
-=======
-  const { mutateAsync: createGoro } = useCreateGoro();
-  const handleSubmitGoro = async (goroData: RegisterGopaDTO) => {
->>>>>>> main:src/features/userManagement/components/goros/index.tsx
     try {
       await createGopa(gopaData);
       toast.success('Gopa created successfully');

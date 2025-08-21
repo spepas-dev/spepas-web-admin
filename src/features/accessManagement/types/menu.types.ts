@@ -13,9 +13,11 @@ export interface MenuStats {
   inactiveMenus: number;
 }
 
-export type CreateMenuItemDto = Omit<MenuItem, 'id' | 'createdAt' | 'updatedAt' | 'metadata'> & {
+export type CreateMenuItemDto = {
   application_id: string;
-  menus: MenuItem[];
+  menus: {
+    title: string;
+  }[];
 };
 
 export type UpdateMenuItemDto = Partial<CreateMenuItemDto>;
