@@ -72,6 +72,7 @@ export const createAuthSlice: StateCreator<AuthSlice> = (set, get) => ({
         });
 
         if (navigate) {
+          console.log('navigate function exists');
           navigate('/auth/login');
         } else {
           window.location.replace('/auth/login');
