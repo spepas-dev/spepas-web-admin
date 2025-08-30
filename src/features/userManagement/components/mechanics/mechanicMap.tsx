@@ -1,10 +1,10 @@
 import { GoogleMap, InfoWindow, Marker, useLoadScript } from '@react-google-maps/api';
 import { useMemo, useState } from 'react';
 
-import { Mechanic } from '.';
+import { Mepa } from '../../types/mechanics.types';
 
 interface MechanicMapProps {
-  mechanics: Mechanic[];
+  mechanics: Mepa[];
   selectedLocation: { lat: number; lng: number } | null;
   onLocationSelect: (location: { lat: number; lng: number }) => void;
 }
@@ -14,10 +14,10 @@ const libraries = ['places'];
 export function MechanicMap({ mechanics, selectedLocation, onLocationSelect }: MechanicMapProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
-    libraries: libraries as any
+    libraries: libraries as 'places'[]
   });
 
-  const [selectedMarker, setSelectedMarker] = useState<Mechanic | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<Mepa | null>(null);
 
   const center = useMemo(
     () => selectedLocation || { lat: 5.6037, lng: -0.187 }, // Default to Accra
@@ -55,11 +55,24 @@ export function MechanicMap({ mechanics, selectedLocation, onLocationSelect }: M
       }}
     >
       {mechanics.map((mechanic, index) => (
-        <Marker key={index} position={{ lat: mechanic.latitude, lng: mechanic.longitude }} onClick={() => setSelectedMarker(mechanic)} />
+        <Marker
+          key={index}
+          position={{
+            lat: mechanic.location?.coordinates[0],
+            lng: mechanic.location?.coordinates[1]
+          }}
+          onClick={() => setSelectedMarker(mechanic)}
+        />
       ))}
 
       {selectedMarker && (
-        <InfoWindow position={{ lat: selectedMarker.latitude, lng: selectedMarker.longitude }} onCloseClick={() => setSelectedMarker(null)}>
+        <InfoWindow
+          position={{
+            lat: selectedMarker.location?.coordinates[0],
+            lng: selectedMarker.location?.coordinates[1]
+          }}
+          onCloseClick={() => setSelectedMarker(null)}
+        >
           <div className="p-2">
             <h3 className="font-medium text-gray-900">{selectedMarker.shop_name}</h3>
             <p className="text-sm text-gray-600">{selectedMarker.address}</p>

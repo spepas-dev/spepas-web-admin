@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GoogleMap, Libraries, Marker, useLoadScript } from '@react-google-maps/api';
-import { Bike } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 
+import { useGetUserList } from '../../api/queries/users.queries';
 import { CreateRiderDTO } from '../../types/riders.types';
 
 const riderSchema = z.object({
@@ -27,20 +27,6 @@ interface NewRidersProps {
   selectedLocation?: { lat: number; lng: number } | null;
 }
 
-// Mock data - replace with actual API data
-const availableUsers = [
-  {
-    value: 'user1',
-    label: 'John Doe',
-    icon: Bike
-  },
-  {
-    value: 'user2',
-    label: 'Jane Smith',
-    icon: Bike
-  }
-];
-
 const libraries: Libraries = ['places'];
 
 export function NewRiders({ onSubmit, loading = false, selectedLocation }: NewRidersProps) {
@@ -48,6 +34,16 @@ export function NewRiders({ onSubmit, loading = false, selectedLocation }: NewRi
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
     libraries
   });
+
+  const { data: users } = useGetUserList();
+  const availableUsers = useMemo(() => {
+    return (
+      users?.data?.map((user) => ({
+        value: user.User_ID,
+        label: user.name
+      })) || []
+    );
+  }, [users]);
 
   const center = useMemo(() => ({ lat: 5.6037, lng: -0.187 }), []);
 
@@ -62,16 +58,19 @@ export function NewRiders({ onSubmit, loading = false, selectedLocation }: NewRi
   });
 
   const handleSubmit = (values: FormValues) => {
-    const riderData: CreateRiderDTO = {
-      licenseNumber: values.licenseNumber,
-      User_ID: values.User_ID,
-      location: {
-        type: 'Point',
-        coordinates: [values.longitude, values.latitude]
-      }
-    };
-    onSubmit(riderData);
-    form.reset();
+    try {
+      const riderData: CreateRiderDTO = {
+        licenseNumber: values.licenseNumber,
+        User_ID: values.User_ID,
+        longitude: values.longitude,
+        latitude: values.latitude
+      };
+      onSubmit(riderData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      form.reset();
+    }
   };
 
   if (loadError) {

@@ -14,7 +14,7 @@ export interface MepaQueryParams {
 
 export class MepasService {
   static async registerMepa(data: CreateMepaDTO): Promise<RegisterMepaResponse> {
-    return ApiService.post<RegisterMepaResponse>(`${MEPA_ENDPOINT.BASE}`, data);
+    return ApiService.post<RegisterMepaResponse>(`${MEPA_ENDPOINT.CREATE}`, data);
   }
 
   static async getMepa(id: string): Promise<Mepa> {

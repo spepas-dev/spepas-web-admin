@@ -1,5 +1,4 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { MapPin, Plus, ShoppingBag, Store, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -12,6 +11,7 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { cn } from '@/lib/utils';
 
+import { useCreateSeller } from '../../api/mutations/sellers.mutations';
 import { useGetSellerList } from '../../api/queries/sellers.queries';
 import { CreateSellerDTO, Seller } from '../../types/sellers.types';
 import { NewSellers } from './newSellers';
@@ -87,22 +87,35 @@ export default function SellersPage() {
   );
 
   const formModal = useFormModal();
+  const [selectedLocationForForm, setSelectedLocationForForm] = useState<{ lat: number; lng: number } | null>(null);
+
   const handleAddSeller = () => {
     formModal.openForm({
       title: 'Add New Seller',
-      children: <NewSellers onSubmit={handleSubmitSeller} loading={false} />,
+      children: <NewSellers onSubmit={handleSubmitSeller} loading={false} selectedLocation={selectedLocationForForm} />,
       showFooter: false
     });
   };
 
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setSelectedLocationForForm(location);
+
+    // Show a toast notification with the selected coordinates
+    toast.success(`Location selected: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
+  };
+
+  const { mutateAsync: createSeller } = useCreateSeller();
   const handleSubmitSeller = async (sellerData: CreateSellerDTO) => {
     try {
       // Handle API call here
       console.log(sellerData);
-      toast.success('Seller created successfully');
-      formModal.close();
+      const response = await createSeller(sellerData);
+      toast.success(`${response.data.sellerDetails.storeName} created successfully`);
     } catch {
-      toast.error('Failed to create seller');
+      toast.error(`Failed to create seller ${sellerData.storeName}`);
+    } finally {
+      formModal.close();
     }
   };
 
@@ -175,7 +188,7 @@ export default function SellersPage() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-2 h-[400px] rounded-lg overflow-hidden border"
         >
-          <SellerMap sellers={sellers} selectedLocation={selectedLocation} onLocationSelect={setSelectedLocation} />
+          <SellerMap sellers={sellers} selectedLocation={selectedLocation} onLocationSelect={handleLocationSelect} />
         </motion.div>
       </div>
     </div>

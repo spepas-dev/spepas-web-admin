@@ -16,7 +16,7 @@ export interface RiderQueryParams {
 
 export class RidersService {
   static async registerRider(data: CreateRiderDTO): Promise<RegisterRiderResponse> {
-    return ApiService.post<RegisterRiderResponse>(`${RIDER_ENDPOINT}`, data);
+    return ApiService.post<RegisterRiderResponse>(`${RIDER_ENDPOINT.CREATE}`, data);
   }
 
   static async getRider(id: string): Promise<Rider> {
