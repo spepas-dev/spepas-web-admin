@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   static async logout() {
-    return ApiService.post('/auth/logout');
+    return ApiService.post('/auth/signout');
   }
 
   static async getCurrentUser() {

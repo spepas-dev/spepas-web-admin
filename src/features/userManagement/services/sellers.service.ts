@@ -14,7 +14,7 @@ export interface SellerQueryParams {
 
 export class SellersService {
   static async registerSeller(data: CreateSellerDTO): Promise<RegisterSellerResponse> {
-    return ApiService.post<RegisterSellerResponse>(`${SELLER_ENDPOINT}`, data);
+    return ApiService.post<RegisterSellerResponse>(`${SELLER_ENDPOINT.CREATE}`, data);
   }
 
   static async getSeller(id: string): Promise<Seller> {

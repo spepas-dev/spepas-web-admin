@@ -52,7 +52,7 @@ export type SellerStats = {
   inactiveSellers: number;
 };
 
-export type CreateSellerDTO = Pick<SellerDetails, 'storeName' | 'Gopa_ID' | 'Location'> & { User_ID: string };
+export type CreateSellerDTO = Pick<SellerDetails, 'storeName' | 'Gopa_ID'> & { User_ID: string; longitude: number; latitude: number };
 
 export type RegisterSellerResponse = Response<Seller>;
 

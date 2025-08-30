@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GoogleMap, Libraries, Marker, useLoadScript } from '@react-google-maps/api';
-import { Store, User } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,7 +32,7 @@ interface NewSellersProps {
 const libraries: Libraries = ['places'];
 
 export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewSellersProps) {
-  const { data: users, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUserList();
+  const { data: users } = useGetUserList();
   const availableUsers = useMemo(() => {
     return (
       users?.data?.map((user) => ({
@@ -43,15 +42,17 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
     );
   }, [users?.data]);
 
-  const { data: gopas, isLoading: isLoadingGopas, isError: isErrorGopas } = useGetGopaList();
+  const { data: gopas } = useGetGopaList();
   const availableGopas = useMemo(() => {
     return (
       gopas?.data?.map((gopa) => ({
-        value: gopa.Gopa_ID,
-        label: gopa?.name
+        value: gopa.User_ID,
+        label: gopa.name // Using Gopa_ID as label since name doesn't exist
       })) || []
     );
   }, [gopas?.data]);
+
+  console.log(gopas);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
@@ -64,8 +65,8 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
     resolver: zodResolver(sellerSchema),
     defaultValues: {
       storeName: '',
-      longitude: selectedLocation?.lng || center.lng,
-      latitude: selectedLocation?.lat || center.lat,
+      longitude: selectedLocation?.lng ?? center.lng,
+      latitude: selectedLocation?.lat ?? center.lat,
       Gopa_ID: '',
       User_ID: ''
     }
@@ -75,10 +76,8 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
     const sellerData: CreateSellerDTO = {
       storeName: values.storeName,
       Gopa_ID: values.Gopa_ID,
-      Location: {
-        type: 'Point',
-        coordinates: [values.longitude, values.latitude]
-      },
+      longitude: values.longitude || 0,
+      latitude: values.latitude || 0,
       User_ID: values.User_ID
     };
     onSubmit(sellerData);
@@ -159,6 +158,60 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
                 )}
               />
 
+              {/* Coordinate Display Fields */}
+              <div className="space-y-2">
+                {selectedLocation && (
+                  <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                    <p className="text-sm text-green-700">
+                      📍 Location selected from main map: {selectedLocation.lat.toFixed(6)}, {selectedLocation.lng.toFixed(6)}
+                    </p>
+                  </div>
+                )}
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="latitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Latitude</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Click on map to select location"
+                            className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
+                            disabled={loading}
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-500" />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="longitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700">Longitude</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Click on map to select location"
+                            className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]"
+                            disabled={loading}
+                            {...field}
+                            value={field.value || ''}
+                            onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-red-500" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
               <div className="h-[200px] rounded-lg overflow-hidden">
                 <GoogleMap
                   zoom={13}
@@ -173,8 +226,8 @@ export function NewSellers({ onSubmit, loading = false, selectedLocation }: NewS
                 >
                   <Marker
                     position={{
-                      lat: form.watch('latitude'),
-                      lng: form.watch('longitude')
+                      lat: form.watch('latitude') || 0,
+                      lng: form.watch('longitude') || 0
                     }}
                   />
                 </GoogleMap>

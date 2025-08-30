@@ -1,9 +1,10 @@
-import { Row } from '@tanstack/react-table';
+import { ColumnDef, Row } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { MapPin, Plus, Store, Users, Wrench } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
+import { Badge } from '@/components/ui';
 import { Button } from '@/components/ui/button';
 import { DataTable, PageHeader } from '@/components/ui/custom';
 import { Breadcrumb, BreadcrumbPatterns } from '@/components/ui/custom/breadcrumb';
@@ -11,34 +12,46 @@ import { useFormModal } from '@/components/ui/custom/modals';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { cn } from '@/lib/utils';
 
+import { useCreateMepa } from '../../api/mutations/mechanics.mutations';
 import { useGetMepaList } from '../../api/queries/mepas.queries';
 import { CreateMepaDTO, Mepa } from '../../types/mechanics.types';
+import { MechanicMap } from './mechanicMap';
 import { NewMechanics } from './newMechanics';
 
 export default function MechanicsPage() {
   const { data, isLoading } = useGetMepaList();
   const mepas = useMemo(() => data?.data || [], [data?.data]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  const formModal = useFormModal();
+  const [selectedLocationForForm, setSelectedLocationForForm] = useState<{ lat: number; lng: number } | null>(null);
+
   const columns = useMemo(
-    () => [
+    (): ColumnDef<Mepa>[] => [
       {
-        header: 'Shop Name',
-        accessorKey: 'shop_name',
-        cell: ({ row }: { row: Row<Mepa> }) => <div>{row.original.shop_name}</div>
+        header: 'Name',
+        accessorKey: 'name'
       },
       {
-        header: 'Address',
-        accessorKey: 'address',
-        cell: ({ row }: { row: Row<Mepa> }) => <div>{row.original.address}</div>
+        header: 'Email',
+        accessorKey: 'email'
       },
       {
-        header: 'User ID',
-        accessorKey: 'User_ID',
-        cell: ({ row }: { row: Row<Mepa> }) => <div>{row.original.User_ID}</div>
+        header: 'Phone',
+        accessorKey: 'phoneNumber'
+      },
+      {
+        header: 'User Type',
+        accessorKey: 'user_type',
+        cell: ({ row }) => {
+          const userType = row.original.user_type;
+          return <Badge variant="outline">{String(userType.charAt(0).toUpperCase() + userType.slice(1)).replace(/_/g, ' ')}</Badge>;
+        }
       },
       {
         header: 'Status',
         accessorKey: 'status',
-        cell: ({ row }: { row: Row<Mepa> }) => {
+        cell: ({ row }) => {
           const isActive = row.original.status === 1;
           return (
             <span
@@ -55,26 +68,34 @@ export default function MechanicsPage() {
       },
       {
         header: 'Date Added',
-        accessorKey: 'date_added',
-        cell: ({ row }: { row: Row<Mepa> }) => <div>{new Date(row.original.date_added).toLocaleDateString()}</div>
+        accessorKey: 'createdAt',
+        cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleDateString()}</div>
       }
     ],
     []
   );
 
-  const formModal = useFormModal();
   const handleAddMechanic = () => {
     formModal.openForm({
       title: 'Add New Mechanic Shop',
-      children: <NewMechanics onSubmit={handleSubmitMechanic} loading={false} />,
+      children: <NewMechanics onSubmit={handleSubmitMechanic} loading={false} selectedLocation={selectedLocationForForm} />,
       showFooter: false
     });
   };
 
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setSelectedLocationForForm(location);
+
+    // Show a toast notification with the selected coordinates
+    toast.success(`Location selected: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
+  };
+
+  const { mutateAsync: createMechanic } = useCreateMepa();
   const handleSubmitMechanic = async (mechanicData: CreateMepaDTO) => {
     try {
-      // Handle API call here
-      console.log(mechanicData);
+      const response = await createMechanic(mechanicData);
+      console.log('response =>>>', response);
       toast.success('Mechanic shop created successfully');
       formModal.close();
     } catch {
@@ -137,16 +158,29 @@ export default function MechanicsPage() {
       {/* Stats Cards */}
       <CardGrid cards={stats} />
 
-      {/* Table */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <DataTable
-          data={mepas}
-          columns={columns}
-          loading={isLoading}
-          tableStyle="border rounded-lg bg-white"
-          tableHeadClassName="text-[#4A36EC] font-semibold"
-        />
-      </motion.div>
+      {/* Map and Table Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        {/* Table */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-4">
+          <DataTable
+            data={mepas}
+            columns={columns}
+            loading={isLoading}
+            tableStyle="border rounded-lg bg-white"
+            tableHeadClassName="text-[#4A36EC] font-semibold"
+          />
+        </motion.div>
+
+        {/* Map */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="lg:col-span-2 h-[400px] rounded-lg overflow-hidden border"
+        >
+          <MechanicMap mechanics={mepas} selectedLocation={selectedLocation} onLocationSelect={handleLocationSelect} />
+        </motion.div>
+      </div>
     </div>
   );
 }

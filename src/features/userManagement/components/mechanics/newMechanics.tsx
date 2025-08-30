@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GoogleMap, Libraries, Marker, useLoadScript } from '@react-google-maps/api';
-import { Wrench } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { MultiSelect } from '@/components/ui/multi-select';
 
+import { useGetUserList } from '../../api/queries/users.queries';
 import { CreateMepaDTO } from '../../types/mechanics.types';
 
 const mechanicSchema = z.object({
@@ -28,20 +29,6 @@ interface NewMechanicsProps {
   selectedLocation?: { lat: number; lng: number } | null;
 }
 
-// Mock data - replace with actual API data
-const availableUsers = [
-  {
-    value: 'user1',
-    label: 'John Doe',
-    icon: Wrench
-  },
-  {
-    value: 'user2',
-    label: 'Jane Smith',
-    icon: Wrench
-  }
-];
-
 const libraries: Libraries = ['places'];
 
 export function NewMechanics({ onSubmit, loading = false, selectedLocation }: NewMechanicsProps) {
@@ -51,6 +38,9 @@ export function NewMechanics({ onSubmit, loading = false, selectedLocation }: Ne
   });
 
   const center = useMemo(() => ({ lat: 5.6037, lng: -0.187 }), []);
+
+  const { data: users } = useGetUserList();
+  const availableUsers = useMemo(() => users?.data.map((user) => ({ value: user.User_ID, label: user.name, icon: User })) || [], [users]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(mechanicSchema),
@@ -67,14 +57,18 @@ export function NewMechanics({ onSubmit, loading = false, selectedLocation }: Ne
     const mechanicData: CreateMepaDTO = {
       shop_name: values.shop_name,
       address: values.address,
-      location: {
-        type: 'Point',
-        coordinates: [values.longitude, values.latitude]
-      },
+      longitude: values.longitude,
+      latitude: values.latitude,
       User_ID: values.User_ID
     };
-    onSubmit(mechanicData);
-    form.reset();
+
+    try {
+      onSubmit(mechanicData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      form.reset();
+    }
   };
 
   if (loadError) {

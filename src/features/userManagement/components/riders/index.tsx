@@ -1,46 +1,39 @@
-import { Row } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { motion } from 'framer-motion';
 import { Bike, IdCard, MapPin, Plus, Users } from 'lucide-react';
 import { useMemo } from 'react';
-import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { useFormModal } from '@/components/ui/custom/modals';
+import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
 
+import { useCreateRider } from '../../api/mutations/riders.mutations';
 import { useGetRiderList } from '../../api/queries/riders.queries';
 import { CreateRiderDTO, Rider } from '../../types/riders.types';
 import { NewRiders } from './newRiders';
 
 export default function RidersPage() {
   const { data, isLoading } = useGetRiderList();
+  console.log(data);
   const riders = useMemo(() => data?.data || [], [data?.data]);
   const columns = useMemo(
-    () => [
+    (): ColumnDef<Rider>[] => [
       {
-        header: 'License Number',
-        accessorKey: 'licenseNumber',
-        cell: ({ row }: { row: Row<Rider> }) => <div>{row.original.licenseNumber}</div>
+        header: 'Name',
+        accessorKey: 'name',
+        cell: ({ row }) => <div>{row.original.name}</div>
       },
       {
-        header: 'User ID',
-        accessorKey: 'User_ID',
-        cell: ({ row }: { row: Row<Rider> }) => <div>{row.original.User_ID}</div>
-      },
-      {
-        header: 'Location',
-        accessorKey: 'location',
-        cell: ({ row }: { row: Row<Rider> }) => (
-          <div>
-            {row.original.location?.coordinates[1]}, {row.original.location?.coordinates[0]}
-          </div>
-        )
+        header: 'Phone Number',
+        accessorKey: 'phoneNumber',
+        cell: ({ row }) => <div>{row.original.phoneNumber}</div>
       },
       {
         header: 'Status',
         accessorKey: 'status',
-        cell: ({ row }: { row: Row<Rider> }) => {
+        cell: ({ row }) => {
           const isActive = row.original.status === 1;
           return (
             <span
@@ -56,9 +49,25 @@ export default function RidersPage() {
         }
       },
       {
+        header: 'Verification Status',
+        accessorKey: 'verificationStatus',
+        cell: ({ row }) => (
+          <span
+            className={cn(
+              'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+              row.original.verificationStatus === 1
+                ? 'bg-green-100 text-green-800 border border-green-200'
+                : 'bg-red-100 text-red-800 border border-red-200'
+            )}
+          >
+            {row.original.verificationStatus === 1 ? 'Verified' : 'Unverified'}
+          </span>
+        )
+      },
+      {
         header: 'Date Added',
-        accessorKey: 'date_added',
-        cell: ({ row }: { row: Row<Rider> }) => <div>{new Date(row.original.date_added).toLocaleDateString()}</div>
+        accessorKey: 'createdAt',
+        cell: ({ row }) => <div>{new Date(row.original.createdAt).toLocaleDateString()}</div>
       }
     ],
     []
@@ -73,14 +82,14 @@ export default function RidersPage() {
     });
   };
 
+  const { mutateAsync: createRider, isPending: isCreatingRider } = useCreateRider();
   const handleSubmitRider = async (riderData: CreateRiderDTO) => {
     try {
-      // Handle API call here
-      console.log(riderData);
-      toast.success('Rider created successfully');
+      const response = await createRider(riderData);
+      toastConfig.success(`${response.data.name} created successfully `);
       formModal.close();
     } catch {
-      toast.error('Failed to create rider');
+      toastConfig.error('Failed to create rider');
     }
   };
 
@@ -103,7 +112,8 @@ export default function RidersPage() {
     },
     {
       title: 'License Types',
-      value: new Set(riders.map((r) => r.licenseNumber?.split('-')[0])).size,
+      // value: new Set(riders.map((r) => r.licenseNumber?.split('-')[0])).size,
+      value: 0,
       Icon: IdCard,
       description: 'Different categories',
       trend: '+3.1%',

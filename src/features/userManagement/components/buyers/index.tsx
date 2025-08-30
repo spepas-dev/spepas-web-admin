@@ -2,7 +2,7 @@ import { ColumnDef, Row } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { MapPin, Plus, ShoppingBag, Store, Users } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,16 @@ import { cn } from '@/lib/utils';
 
 import { useGetBuyerList } from '../../api/queries/buyer.queries';
 import { Buyer, CreateBuyerDTO } from '../../types/buyer.types';
-import { Mepa } from '../../types/mechanics.types';
+import { BuyerMap } from './buyerMap';
 import { NewBuyers } from './newBuyers';
 
 export default function BuyersPage() {
   const { data, isLoading } = useGetBuyerList();
   const buyers = useMemo(() => data?.data || [], [data?.data]);
+  const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
 
   const formModal = useFormModal();
+  const [selectedLocationForForm, setSelectedLocationForForm] = useState<{ lat: number; lng: number } | null>(null);
 
   const columns = useMemo(
     (): ColumnDef<Buyer>[] => [
@@ -66,9 +68,17 @@ export default function BuyersPage() {
   const handleAddBuyer = () => {
     formModal.openForm({
       title: 'Add New Buyer',
-      children: <NewBuyers onSubmit={handleSubmitBuyer} loading={false} />,
+      children: <NewBuyers onSubmit={handleSubmitBuyer} loading={false} selectedLocation={selectedLocationForForm} />,
       showFooter: false
     });
+  };
+
+  const handleLocationSelect = (location: { lat: number; lng: number }) => {
+    setSelectedLocation(location);
+    setSelectedLocationForForm(location);
+
+    // Show a toast notification with the selected coordinates
+    toast.success(`Location selected: ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`);
   };
 
   const handleSubmitBuyer = async (buyerData: CreateBuyerDTO) => {
@@ -101,7 +111,7 @@ export default function BuyersPage() {
     },
     {
       title: 'Assigned Gopas',
-      value: new Set(buyers.map((b) => b.Gopa_ID)).size,
+      value: new Set(buyers.map((b) => b.gopa?.Gopa_ID).filter(Boolean)).size,
       Icon: Users,
       description: 'Active Gopas',
       trend: '+1.5%',
@@ -126,27 +136,40 @@ export default function BuyersPage() {
       <PageHeader
         title="Buyers"
         description="Manage buyers and their locations"
-        actions={
-          <Button onClick={handleAddBuyer} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Buyer
-          </Button>
-        }
+        // actions={
+        //   <Button onClick={handleAddBuyer} className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white">
+        //     <Plus className="w-4 h-4 mr-2" />
+        //     Add Buyer
+        //   </Button>
+        // }
       />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />
 
-      {/* Table */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <DataTable
-          data={buyers}
-          columns={columns}
-          loading={isLoading}
-          tableStyle="border rounded-lg bg-white"
-          tableHeadClassName="text-[#4A36EC] font-semibold"
-        />
-      </motion.div>
+      {/* Map and Table Container */}
+      <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
+        {/* Table */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-4">
+          <DataTable
+            data={buyers}
+            columns={columns}
+            loading={isLoading}
+            tableStyle="border rounded-lg bg-white"
+            tableHeadClassName="text-[#4A36EC] font-semibold"
+          />
+        </motion.div>
+
+        {/* Map */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="lg:col-span-2 h-[440px] rounded-lg overflow-hidden border relative md:top-16.5 right-0"
+        >
+          <BuyerMap buyers={buyers} selectedLocation={selectedLocation} onLocationSelect={handleLocationSelect} />
+        </motion.div>
+      </div>
     </div>
   );
 }

@@ -1,23 +1,23 @@
 import { GoogleMap, InfoWindow, Marker, useLoadScript } from '@react-google-maps/api';
 import { useMemo, useState } from 'react';
 
-import { Seller } from '.';
+import { Buyer } from '../../types/buyer.types';
 
-interface SellerMapProps {
-  sellers: Seller[];
+interface BuyerMapProps {
+  buyers: Buyer[];
   selectedLocation: { lat: number; lng: number } | null;
   onLocationSelect: (location: { lat: number; lng: number }) => void;
 }
 
 const libraries = ['places'];
 
-export function SellerMap({ sellers, selectedLocation, onLocationSelect }: SellerMapProps) {
+export function BuyerMap({ buyers, selectedLocation, onLocationSelect }: BuyerMapProps) {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
-    libraries: libraries as any
+    libraries: libraries as 'places'[]
   });
 
-  const [selectedMarker, setSelectedMarker] = useState<Seller | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<Buyer | null>(null);
 
   const center = useMemo(
     () => selectedLocation || { lat: 5.6037, lng: -0.187 }, // Default to Accra
@@ -54,15 +54,28 @@ export function SellerMap({ sellers, selectedLocation, onLocationSelect }: Selle
         }
       }}
     >
-      {sellers.map((seller, index) => (
-        <Marker key={index} position={{ lat: seller.latitude, lng: seller.longitude }} onClick={() => setSelectedMarker(seller)} />
+      {buyers.map((buyer, index) => (
+        <Marker
+          key={index}
+          position={{
+            lat: buyer.sellerDetails?.Location.coordinates[0] || 0,
+            lng: buyer.sellerDetails?.Location.coordinates[1] || 0
+          }}
+          onClick={() => setSelectedMarker(buyer)}
+        />
       ))}
 
       {selectedMarker && (
-        <InfoWindow position={{ lat: selectedMarker.latitude, lng: selectedMarker.longitude }} onCloseClick={() => setSelectedMarker(null)}>
+        <InfoWindow
+          position={{
+            lat: selectedMarker.sellerDetails?.Location.coordinates[0] || 0,
+            lng: selectedMarker.sellerDetails?.Location.coordinates[1] || 0
+          }}
+          onCloseClick={() => setSelectedMarker(null)}
+        >
           <div className="p-2">
-            <h3 className="font-medium text-gray-900">{selectedMarker.storeName}</h3>
-            <p className="text-sm text-gray-600">Gopa ID: {selectedMarker.Gopa_ID}</p>
+            <h3 className="font-medium text-gray-900">{selectedMarker.name}</h3>
+            <p className="text-sm text-gray-600">{selectedMarker.email}</p>
           </div>
         </InfoWindow>
       )}

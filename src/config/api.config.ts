@@ -84,6 +84,7 @@ export const API_ROUTES = {
     },
     SELLER: {
       BASE: '/user/sellers-all',
+      CREATE: '/user/seller-registration-admin',
       DETAIL: (id: string) => `/user/sellers/${id}`,
       STATS: (id: string) => `/user/sellers/${id}/stats`
     },
@@ -94,6 +95,7 @@ export const API_ROUTES = {
     },
     RIDER: {
       BASE: '/user/riders-all',
+      CREATE: '/user/rider-registration-admin',
       DETAIL: (id: string) => `/user/riders/${id}`,
       VEHICLES: {
         BASE: '/user/riders/vehicles',
@@ -102,6 +104,7 @@ export const API_ROUTES = {
     },
     MEPA: {
       BASE: '/user/mepas-all',
+      CREATE: '/user/mepa-registration-admin',
       DETAIL: (id: string) => `/user/mepa/${id}`,
       SERVICES: (id: string) => `/user/mepa/${id}/services`
     },
