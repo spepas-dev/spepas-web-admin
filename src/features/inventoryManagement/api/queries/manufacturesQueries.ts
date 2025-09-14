@@ -1,7 +1,7 @@
 // src/features/inventoryManagement/api/queries/useBrands.ts
 import { useQuery } from '@tanstack/react-query';
 
-import { ManufactureQueryParams, ManufacturesService } from '../../services/manufactures.services';
+import { ManufactureQueryParams, ManufacturesService } from '../../services/manufactures.service';
 // import { Manufacturer } from '../../types/manufactures.types';
 
 export const manufactureKeys = {

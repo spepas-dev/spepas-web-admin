@@ -1,7 +1,11 @@
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { cn } from '@/lib/utils';
+
+import { Button } from '../button';
 
 export interface PageHeaderProps {
   /** The main title of the page */
@@ -85,14 +89,21 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   const sizeConfig = sizeVariants[size];
   const layoutConfig = layoutVariants[layout];
+  const navigate = useNavigate();
 
   const HeaderContent = () => (
     <>
       <div className={cn(layoutConfig, className)}>
         {/* Title and Description Section */}
         <div className={cn(sizeConfig.spacing, layout === 'centered' ? 'items-center' : '')}>
-          <TitleTag className={cn(sizeConfig.title, 'text-[#4A36EC]', titleClassName)}>{title}</TitleTag>
-          {description && <p className={cn(sizeConfig.description, 'text-gray-600', descriptionClassName)}>{description}</p>}
+          <div className="flex items-center gap-2">
+            <Button size="icon" onClick={() => navigate(-1)}>
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <TitleTag className={cn(sizeConfig.title, 'text-[#4A36EC]', titleClassName)}>{title}</TitleTag>
+          </div>
+
+          {description && <p className={cn(sizeConfig.description, 'text-gray-600 mr-4', descriptionClassName)}>{description}</p>}
         </div>
 
         {/* Actions Section */}

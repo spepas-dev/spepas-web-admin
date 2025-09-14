@@ -87,6 +87,11 @@ export const ROUTE_PATHS = {
     BASE: 'inventory-management',
     CAR: {
       BASE: 'cars',
+      CATEGORY: {
+        BASE: 'categories',
+        CREATE: '/cars/categories/create',
+        DETAIL: (id: string) => `/cars/categories/${id}`
+      },
       MANUFACTURER: {
         BASE: 'manufacturers',
         CREATE: '/cars/manufacturers/create',

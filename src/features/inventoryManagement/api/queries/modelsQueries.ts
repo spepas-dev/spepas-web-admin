@@ -1,7 +1,7 @@
 // src/features/inventoryManagement/api/queries/useBrands.ts
 import { useQuery } from '@tanstack/react-query';
 
-import { CarModelQueryParams, ModelsService } from '../../services/models.services';
+import { CarModelQueryParams, ModelsService } from '../../services/models.service';
 import { CarModel } from '../../types/models.types';
 
 export const modelKeys = {

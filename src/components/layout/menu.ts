@@ -6,6 +6,7 @@ import {
   Factory,
   Handshake,
   Key,
+  Layers,
   LayoutDashboard,
   Menu,
   Shield,
@@ -16,6 +17,8 @@ import {
   Wallet,
   Wrench
 } from 'lucide-react';
+
+import { ROUTE_PATHS } from '@/config/routes.config';
 
 import { MenuGroup } from '../../types/MenuItem';
 
@@ -145,28 +148,34 @@ export const menuGroups: MenuGroup[] = [
     title: 'Inventory Management',
     items: [
       {
+        id: 'categories',
+        name: 'Categories',
+        icon: Layers,
+        path: `${ROUTE_PATHS.INVENTORY_MANAGEMENT.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.CATEGORY.BASE}`
+      },
+      {
         id: 'manufacturers',
         name: 'Manufacturers',
         icon: Factory,
-        path: '/inventory-management/cars/manufacturers'
+        path: `${ROUTE_PATHS.INVENTORY_MANAGEMENT.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MANUFACTURER.BASE}`
       },
       {
         id: 'brands ',
         name: 'Brands',
         icon: Tag,
-        path: '/inventory-management/cars/brands'
+        path: `${ROUTE_PATHS.INVENTORY_MANAGEMENT.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BRAND.BASE}`
       },
       {
         id: 'models',
         name: 'Models',
         icon: Car,
-        path: '/inventory-management/cars/models'
+        path: `${ROUTE_PATHS.INVENTORY_MANAGEMENT.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MODEL.BASE}`
       },
       {
         id: 'spare-parts',
         name: 'Spare Parts',
         icon: Bolt,
-        path: '/inventory-management/cars/spare-parts'
+        path: `${ROUTE_PATHS.INVENTORY_MANAGEMENT.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE}/${ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.SPARE_PART.BASE}`
       }
     ]
   },

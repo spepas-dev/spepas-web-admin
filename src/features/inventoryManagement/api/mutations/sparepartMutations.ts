@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { SparePartsService } from '../../services/spareparts.services';
+import { SparePartsService } from '../../services/spareparts.service';
 import type { CreateSparePartDTO, UpdateSparePartDTO } from '../../types/spareparts.types';
 import { sparepartKeys } from '../queries/sparepartsQueries';
 
