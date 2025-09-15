@@ -1,7 +1,7 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { AppWindow, ArrowLeft, Building2, CheckCircle, Eye, Plus, Settings, Shield, Users, XCircle } from 'lucide-react';
+import { AppWindow, Building2, CheckCircle, Eye, Plus, Settings, Shield, Users, XCircle } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -25,16 +25,6 @@ import { User } from '../../../types/user.types';
 import { AddApplicationToGroup } from './addApplicationToGroup';
 import { AddUserToGroup } from './addUserToGroup';
 
-// Mock data - replace with actual API calls
-const mockGroup: Group = {
-  id: '1',
-  title: 'Admin Group',
-  group_applications: [{ application_id: 'app-1' }, { application_id: 'app-2' }],
-  date_added: '2024-01-15T10:30:00Z',
-  added_by: 'John Doe',
-  status: 1
-};
-
 export default function GroupDetailsPage() {
   const { groupId } = useParams<{ groupId: string }>();
   const [activeTab, setActiveTab] = useState('overview');
@@ -45,7 +35,7 @@ export default function GroupDetailsPage() {
   const addApplicationModal = useFormModal();
 
   // Mock data - replace with actual API calls based on groupId
-  const group = mockGroup;
+  // const group = mockGroup;
 
   const {
     data: groupApplicationsData,
@@ -72,7 +62,8 @@ export default function GroupDetailsPage() {
     return groupUsersData?.data?.user_groups.map((user) => user?.user) || [];
   }, [groupUsersData?.data?.user_groups]);
 
-  // const groupUsers = mockUsers;
+  // group details
+  const { title, date_added, added_by, status } = groupUsersData?.data || {};
 
   const userColumns = useMemo(
     (): ColumnDef<User>[] => [
@@ -133,26 +124,26 @@ export default function GroupDetailsPage() {
             {row.original.verificationStatus === 1 ? '✓ Verified' : '✗ Pending'}
           </span>
         )
-      },
-      {
-        header: 'Actions',
-        id: 'actions',
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => console.log('View user:', row.original.id)}>
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-              onClick={() => console.log('Remove user:', row.original.id)}
-            >
-              <XCircle className="h-4 w-4" />
-            </Button>
-          </div>
-        )
       }
+      // {
+      //   header: 'Actions',
+      //   id: 'actions',
+      //   cell: ({ row }) => (
+      //     <div className="flex items-center gap-2">
+      //       <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => console.log('View user:', row.original.id)}>
+      //         <Eye className="h-4 w-4" />
+      //       </Button>
+      //       <Button
+      //         variant="ghost"
+      //         size="sm"
+      //         className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+      //         onClick={() => console.log('Remove user:', row.original.id)}
+      //       >
+      //         <XCircle className="h-4 w-4" />
+      //       </Button>
+      //     </div>
+      //   )
+      // }
     ],
     []
   );
@@ -201,31 +192,31 @@ export default function GroupDetailsPage() {
             </span>
           );
         }
-      },
-      {
-        header: 'Actions',
-        id: 'actions',
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              onClick={() => console.log('View application:', row.original.application_id)}
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-              onClick={() => console.log('Remove application:', row.original.application_id)}
-            >
-              <XCircle className="h-4 w-4" />
-            </Button>
-          </div>
-        )
       }
+      // {
+      //   header: 'Actions',
+      //   id: 'actions',
+      //   cell: ({ row }) => (
+      //     <div className="flex items-center gap-2">
+      //       <Button
+      //         variant="ghost"
+      //         size="sm"
+      //         className="h-8 w-8 p-0"
+      //         onClick={() => console.log('View application:', row.original.application_id)}
+      //       >
+      //         <Eye className="h-4 w-4" />
+      //       </Button>
+      //       <Button
+      //         variant="ghost"
+      //         size="sm"
+      //         className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+      //         onClick={() => console.log('Remove application:', row.original.application_id)}
+      //       >
+      //         <XCircle className="h-4 w-4" />
+      //       </Button>
+      //     </div>
+      //   )
+      // }
     ],
     []
   );
@@ -318,26 +309,26 @@ export default function GroupDetailsPage() {
       <Breadcrumb
         items={[
           ...BreadcrumbPatterns.threeTier('Access Management', '/access-management', 'Groups'),
-          { label: group.title, href: `/access-management/groups/${group.id}` }
+          { label: title, href: `/access-management/groups/${groupId}` }
         ]}
       />
 
       {/* Header */}
       <PageHeader
-        title={group.title}
+        title={title}
         description="Group Details & Management"
-        actions={
-          <div className="flex space-x-2">
-            <Button variant="outline" className="gap-2">
-              <Settings className="w-4 h-4" />
-              Settings
-            </Button>
-            <Button className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white gap-2">
-              <Plus className="w-4 h-4" />
-              Quick Actions
-            </Button>
-          </div>
-        }
+        // actions={
+        //   <div className="flex space-x-2">
+        //     <Button variant="outline" className="gap-2">
+        //       <Settings className="w-4 h-4" />
+        //       Settings
+        //     </Button>
+        //     <Button className="bg-[#4A36EC] hover:bg-[#5B4AEE] text-white gap-2">
+        //       <Plus className="w-4 h-4" />
+        //       Quick Actions
+        //     </Button>
+        //   </div>
+        // }
       />
 
       {/* Group Info Card */}
@@ -350,14 +341,15 @@ export default function GroupDetailsPage() {
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl">{group.title}</CardTitle>
+                  <CardTitle className="text-xl">{title}</CardTitle>
                   <CardDescription>
-                    Created by {group.added_by} • {format(new Date(group.date_added), 'MMM dd, yyyy')}
+                    {/* Created by {added_by} •  */}
+                    {date_added ? format(new Date(date_added), 'MMM dd, yyyy') : null}
                   </CardDescription>
                 </div>
               </div>
-              <Badge variant={group.status === 1 ? 'default' : 'secondary'} className="bg-green-100 text-green-800">
-                {group.status === 1 ? 'Active' : 'Inactive'}
+              <Badge variant={status === 1 ? 'default' : 'secondary'} className="bg-green-100 text-green-800">
+                {status === 1 ? 'Active' : 'Inactive'}
               </Badge>
             </div>
           </CardHeader>

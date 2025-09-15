@@ -1,7 +1,7 @@
 // src/features/inventoryManagement/api/queries/useBrands.ts
 import { useQuery } from '@tanstack/react-query';
 
-import { BrandQueryParams, BrandsService } from '../../services/brands.services';
+import { BrandQueryParams, BrandsService } from '../../services/brands.service';
 import { Brand } from '../../types/brands.types';
 
 export const brandKeys = {

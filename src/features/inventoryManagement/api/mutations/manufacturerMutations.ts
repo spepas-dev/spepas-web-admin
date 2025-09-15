@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ManufacturesService } from '../../services/manufactures.services';
+import { ManufacturesService } from '../../services/manufactures.service';
 import type { CreateManufacturerDTO, UpdateManufacturerDTO } from '../../types/manufactures.types';
 import { manufactureKeys } from '../queries/manufacturesQueries';
 

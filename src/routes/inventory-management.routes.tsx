@@ -7,6 +7,7 @@ const ManufacturersPage = lazy(() => import('@/features/inventoryManagement/comp
 const BrandsPage = lazy(() => import('@/features/inventoryManagement/components/brands'));
 const ModelsPage = lazy(() => import('@/features/inventoryManagement/components/models'));
 const SparePartsPage = lazy(() => import('@/features/inventoryManagement/components/spareparts'));
+const CategoriesPage = lazy(() => import('@/features/inventoryManagement/components/categories'));
 
 export const inventoryManagementRoutes: RouteObject[] = [
   {
@@ -15,6 +16,7 @@ export const inventoryManagementRoutes: RouteObject[] = [
       {
         path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BASE,
         children: [
+          { path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.CATEGORY.BASE, children: [{ index: true, element: <CategoriesPage /> }] },
           { path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MANUFACTURER.BASE, children: [{ index: true, element: <ManufacturersPage /> }] },
           { path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.BRAND.BASE, children: [{ index: true, element: <BrandsPage /> }] },
           { path: ROUTE_PATHS.INVENTORY_MANAGEMENT.CAR.MODEL.BASE, children: [{ index: true, element: <ModelsPage /> }] },

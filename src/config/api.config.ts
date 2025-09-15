@@ -54,6 +54,11 @@ export const API_ROUTES = {
   },
   INVENTORY_MANAGEMENT: {
     CAR: {
+      CATEGORY: {
+        BASE: '/inventry/category-all',
+        DETAIL: (id: string) => `/inventry/categories/${id}`,
+        CREATE: '/inventry/add-category-admin'
+      },
       MANUFACTURER: {
         BASE: '/inventry/car-manufacturers-all',
         DETAIL: (id: string) => `/inventry/manufacturers/${id}`,

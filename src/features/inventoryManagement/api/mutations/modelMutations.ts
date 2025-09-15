@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { ModelsService } from '../../services/models.services';
+import { ModelsService } from '../../services/models.service';
 import type { CreateCarModel, UpdateCarModel } from '../../types/models.types';
 import { modelKeys } from '../queries/modelsQueries';
 

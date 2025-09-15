@@ -1,8 +1,8 @@
 import { StateCreator } from 'zustand';
 
-import { BrandsService } from '@/features/inventoryManagement/services/brands.services';
-import { ManufacturesService } from '@/features/inventoryManagement/services/manufactures.services';
-import { ModelsService } from '@/features/inventoryManagement/services/models.services';
+import { BrandsService } from '@/features/inventoryManagement/services/brands.service';
+import { ManufacturesService } from '@/features/inventoryManagement/services/manufactures.service';
+import { ModelsService } from '@/features/inventoryManagement/services/models.service';
 import type { Brand } from '@/features/inventoryManagement/types/brands.types';
 import type { Manufacturer } from '@/features/inventoryManagement/types/manufactures.types';
 import type { CarModel } from '@/features/inventoryManagement/types/models.types';

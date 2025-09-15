@@ -1,7 +1,7 @@
 // src/features/inventoryManagement/api/queries/useBrands.ts
 import { useQuery } from '@tanstack/react-query';
 
-import { SparePartQueryParams, SparePartsService } from '../../services/spareparts.services.ts';
+import { SparePartQueryParams, SparePartsService } from '../../services/spareparts.service.ts';
 import { SparePart } from '../../types/spareparts.types';
 
 export const sparepartKeys = {
