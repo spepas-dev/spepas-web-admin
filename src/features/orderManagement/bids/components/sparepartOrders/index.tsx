@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion';
 import { ChevronRight, Package, Search, ShoppingCart, Tag, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, PageHeader } from '@/components/ui/custom';
 import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+
+import { useRequestBidsAll } from '../../api/queries/bidsQueries';
 // import { toastConfig } from '@/lib/toast';
 
 // Mock data for spare parts orders - replace with actual API call
@@ -280,6 +283,15 @@ const statusMap: StatusMap = {
 export default function SparePartOrdersPage() {
   const navigate = useNavigate();
   const { id } = useParams();
+
+  const { isLoading, error, data: ordersData } = useRequestBidsAll(id as string);
+
+  const ordersM = useMemo(() => {
+    return ordersData;
+  }, [ordersData]);
+
+  console.log('ordersMemo =>>> ', ordersM);
+
   const [searchQuery, setSearchQuery] = useState('');
 
   // In a real application, you would fetch the spare part orders based on the ID
@@ -337,29 +349,19 @@ export default function SparePartOrdersPage() {
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/dashboard" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/order-management/orders" className="hover:text-[#4A36EC]">
-          Orders
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Spare Part Orders</span>
-      </div>
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Order Management', '/order-management/orders', 'Spare Part Orders')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Spare Part Orders</h1>
-          <p className="text-sm text-gray-600">View and manage orders for specific spare parts</p>
-        </div>
-        <div className="relative w-72">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search orders..." className="pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        </div>
-      </motion.div>
+      <PageHeader
+        title="Spare Part Orders"
+        description="View and manage orders for specific spare parts"
+        actions={
+          <div className="relative w-72">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search orders..." className="pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
       <CardGrid cards={stats} />

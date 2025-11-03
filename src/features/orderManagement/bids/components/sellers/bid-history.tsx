@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronRight, Package, Search, ShoppingCart, Tag } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSellerBidsForRequestsHistoryAll } from '@/features/orderManagement/bids/api/queries/bidsQueries';
 
 // Mock data for bid history - replace with actual API call
 const bidHistory = [
@@ -135,13 +136,20 @@ const bidHistory = [
 ];
 
 export default function SellerBidHistoryPage() {
+  // Navigation
   const navigate = useNavigate();
-  const { id } = useParams();
-  const [searchQuery, setSearchQuery] = useState('');
-
   const handleBack = () => {
     navigate('/order-management/sellers');
   };
+
+  // Get the seller ID from the URL
+  const { id } = useParams();
+  const { data: bidsData, isLoading: isBidsLoading, isError: isBidsError } = useSellerBidsForRequestsHistoryAll(id as string);
+  const bidsList = useMemo(() => bidsData?.data || [], [bidsData?.data]);
+
+  console.log('bids', bidsList);
+
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredBids = bidHistory.filter(
     (bid) =>

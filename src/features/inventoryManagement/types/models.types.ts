@@ -1,3 +1,4 @@
+import { Brand } from './brands.types';
 import { SparePart } from './spareparts.types';
 
 export interface CarModel {
@@ -18,6 +19,4 @@ export interface CreateCarModel {
   yearOfMake: number;
 }
 
-export interface UpdateCarModel extends Partial<CreateCarModel> {
-  // Additional fields specific to updates can go here
-}
+export type UpdateCarModel = Pick<CreateCarModel, 'name' | 'yearOfMake'>;

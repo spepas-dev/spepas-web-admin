@@ -1,0 +1,7 @@
+I am thinking of a number of senarios;
+
+- there are two endpoints for getting GOPA requests. 
+there is the assigned active request and the unassigned active request. 
+when the request button is clicked, I want the user to be routed to requests page 
+and on that page they should see or be able to navigate to assigned active request and assigned request history, 
+vice versa for when the user clicked history, the see assigned request history and unassigned request history

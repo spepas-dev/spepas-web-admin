@@ -19,9 +19,7 @@ export interface CreateBrandDTO {
   type: VehicleType;
 }
 
-export interface UpdateBrandDTO extends Partial<CreateBrandDTO> {
-  // Additional fields specific to updates can go here
-}
+export type UpdateBrandDTO = Pick<CreateBrandDTO, 'name' | 'manufacturer_ID' | 'type'>;
 
 export interface BrandFilters {
   search?: string;

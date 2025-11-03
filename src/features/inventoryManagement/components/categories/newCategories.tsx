@@ -14,7 +14,7 @@ import { CreateCategoryDTO } from '../../types';
 
 const categorySchema = z.object({
   name: z.string().min(1, 'Category name is required'),
-  parent_ID: z.string().optional()
+  parent_ID: z.string().nullable()
 });
 
 const formSchema = z.object({
@@ -44,7 +44,7 @@ const NewCategories = ({ onSubmit, loading = false }: NewCategoriesProps) => {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      categories: [{ name: '', parent_ID: '' }]
+      categories: [{ name: '', parent_ID: null }]
     }
   });
 

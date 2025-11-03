@@ -1,13 +1,20 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { ChevronRight, Package, Search, ShoppingCart, Tag } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSellerBidsForActiveRequestAll } from '@/features/orderManagement/bids/api/queries/bidsQueries';
+import { cn } from '@/lib/utils';
+
+import { Order } from '../../types/orders.type';
 
 // Mock data for active bids - replace with actual API call
 const activeBids = [
@@ -139,9 +146,100 @@ export default function SellerActiveBidsPage() {
   const { id } = useParams();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleBack = () => {
-    navigate('/order-management/sellers');
-  };
+  const { data: bidsData, isLoading: isBidsLoading, isError: isBidsError } = useSellerBidsForActiveRequestAll(id as string);
+  const bidsList = useMemo(() => bidsData?.data || [], [bidsData?.data]);
+
+  const columns = useMemo(
+    (): ColumnDef<Order>[] => [
+      {
+        header: 'Row Number',
+        accessorKey: 'id',
+        cell: ({ row }) => {
+          return <span className="text-xs font-medium">#{row.index + 1}</span>;
+        }
+      },
+      {
+        header: 'Bid ID',
+        accessorKey: 'id'
+      },
+      {
+        header: 'Spare Part',
+        accessorKey: 'orderRequest.sparePart.name',
+        cell: ({ row }) => {
+          return (
+            <div>
+              <p className="font-medium">{row.original.orderRequest.sparePart.name}</p>
+              <p className="text-sm text-gray-500">
+                {row.original.orderRequest.sparePart.carModel.carBrand.name} {row.original.orderRequest.sparePart.carModel.name}
+              </p>
+            </div>
+          );
+        }
+      },
+      {
+        header: 'Requester',
+        accessorKey: 'orderRequest.requester.name'
+      },
+      {
+        header: 'Quantity',
+        accessorKey: 'orderRequest.quantity'
+      },
+      {
+        header: 'Price',
+        accessorKey: 'price',
+        cell: ({ row }) => {
+          return <div>{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'GHS' }).format(row.original.price)}</div>;
+        }
+      },
+      {
+        header: 'Date Assigned',
+        accessorKey: 'date_assigned',
+        cell: ({ row }) => {
+          return <div>{format(new Date(row.original.date_assigned), 'dd/MM/yyyy HH:mm:ss a')}</div>;
+        }
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                row.original.status === 0
+                  ? 'bg-yellow-500 text-yellow-800 border border-yellow-200'
+                  : 'bg-green-500 text-green-800 border border-green-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', row.original.status === 0 ? 'bg-yellow-400' : 'bg-green-400')} />
+              {row.original.status === 0 ? 'Pending' : 'Accepted'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Actions',
+        accessorKey: 'actions',
+        cell: ({ row }) => {
+          return (
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
+                onClick={() => navigate(`/order-management/bids/${row.original.id}`)}
+              >
+                View Details
+              </Button>
+            </div>
+          );
+        }
+      }
+    ],
+    [navigate]
+  );
+
+  console.log('bids', bidsList);
 
   const filteredBids = activeBids.filter(
     (bid) =>
@@ -153,7 +251,7 @@ export default function SellerActiveBidsPage() {
     {
       title: 'Total Active Bids',
       value: activeBids.length,
-      icon: Tag,
+      Icon: Tag,
       description: 'Current active bids',
       trend: '+2.5%',
       trendUp: true
@@ -161,7 +259,7 @@ export default function SellerActiveBidsPage() {
     {
       title: 'Total Value',
       value: `GHS ${activeBids.reduce((sum, bid) => sum + bid.price, 0).toFixed(2)}`,
-      icon: ShoppingCart,
+      Icon: ShoppingCart,
       description: 'Total value of active bids',
       trend: '+8.3%',
       trendUp: true
@@ -169,137 +267,52 @@ export default function SellerActiveBidsPage() {
     {
       title: 'Average Price',
       value: `GHS ${(activeBids.reduce((sum, bid) => sum + bid.price, 0) / activeBids.length).toFixed(2)}`,
-      icon: Package,
+      Icon: Package,
       description: 'Average bid price',
       trend: '+5.2%',
       trendUp: true
     }
   ];
 
+  if (isBidsLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isBidsError) {
+    return <div>Error loading bids</div>;
+  }
+
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/dashboard" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/order-management" className="hover:text-[#4A36EC]">
-          Order Management
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/order-management/sellers" className="hover:text-[#4A36EC]">
-          Sellers
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Active Bids</span>
-      </div>
+      <Breadcrumb
+        items={BreadcrumbPatterns.fourTier('Order Management', '/order-management', 'Sellers', '/order-management/sellers', 'Active Bids')}
+      />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Active Bids</h1>
-          <p className="text-sm text-gray-600">View and manage active bids for seller #{id}</p>
-        </div>
-        <div className="flex items-center space-x-4">
+
+      <PageHeader
+        title="Active Bids"
+        description="View and manage active bids for seller #{id}"
+        actions={
           <div className="relative w-72">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search bids..." className="pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
-          <Button variant="outline" onClick={handleBack}>
-            Back to Sellers
-          </Button>
-        </div>
-      </motion.div>
+        }
+      />
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+      <CardGrid cards={stats} />
 
       {/* Active Bids Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <Card className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-          <CardHeader>
-            <CardTitle className="text-[#4A36EC]">Active Bids</CardTitle>
-            <CardDescription>List of all active bids for this seller</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Bid ID</TableHead>
-                  <TableHead>Spare Part</TableHead>
-                  <TableHead>Requester</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Date Assigned</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredBids.map((bid) => (
-                  <TableRow key={bid.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium">#{bid.id}</TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{bid.orderRequest.sparePart.name}</p>
-                        <p className="text-sm text-gray-500">
-                          {bid.orderRequest.sparePart.carModel.carBrand.name} {bid.orderRequest.sparePart.carModel.name}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{bid.orderRequest.requester.name}</TableCell>
-                    <TableCell>{bid.orderRequest.quantity}</TableCell>
-                    <TableCell>GHS {bid.price.toFixed(2)}</TableCell>
-                    <TableCell>{new Date(bid.date_assigned).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Badge className={`${bid.status === 0 ? 'bg-yellow-500' : 'bg-green-500'} text-white`}>
-                        {bid.status === 0 ? 'Pending' : 'Accepted'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
-                          onClick={() => navigate(`/order-management/bids/${bid.id}`)}
-                        >
-                          View Details
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <DataTable
+          data={filteredBids}
+          columns={columns}
+          loading={isBidsLoading}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
     </div>
   );
