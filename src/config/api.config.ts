@@ -124,12 +124,23 @@ export const API_ROUTES = {
       VERIFY: (id: string) => `/payment-accounts/${id}/verify`
     }
   },
-  REQUESTS: {
-    BASE: '/gateway/v1/requests',
-    DETAIL: (id: string) => `/gateway/v1/requests/${id}`,
-    ASSIGN: (id: string) => `/gateway/v1/requests/${id}/assign`,
-    CANCEL: (id: string) => `/gateway/v1/requests/${id}/cancel`,
-    COMPLETE: (id: string) => `/gateway/v1/requests/${id}/complete`
+  REQUEST: {
+    BASE: '/requests',
+    REQUEST_DETAIL: (id: string) => `/request/request-datail/${id}`,
+    GOPA_SELLER_FOR_REQUEST: (gopaid: string, request_id: string) => `/request/GOPA-seller-for-request/${gopaid}/${request_id}`,
+    GOPA_ASSIGNED_ACTIVE_REQUEST: (user_id: string) => `/request/GOPA-assigned-active-request/${user_id}`,
+    GOPA_ASSIGNED_ACTIVE_REQUEST_HISTORY: (user_id: string) => `/request/GOPA-assigned-active-request-history/${user_id}`,
+    GOPA_UNASSIGNED_ACTIVE_REQUEST: (user_id: string) => `/request/GOPA-unassigned-active-request/${user_id}`,
+    GOPA_UNASSIGNED_REQUEST_HISTORY: (user_id: string) => `/request/GOPA-unassigned-request-history/${user_id}`,
+    ASSIGN: (id: string) => `/request/${id}/assign`,
+    CANCEL: (id: string) => `/request/${id}/cancel`,
+    COMPLETE: (id: string) => `/request/${id}/complete`
+  },
+  BID: {
+    BASE: '/gateway/v1/bid',
+    REQUEST_BIDS_ALL: (request_id: string) => `/bid/request-bids-all/${request_id}`,
+    SELLER_BIDS_FOR_ACTIVE_REQUEST_ALL: (seller_id: string) => `/bid/seller-bids-for-active-requests-all/${seller_id}`,
+    SELLER_BIDS_FOR_REQUESTS_HISTORY_ALL: (seller_id: string) => `/bid/seller-bids-for-requests-history-all/${seller_id}`
   },
   WALLET_MANAGEMENT: {
     BASE: '/wallet/get-system-wallets',

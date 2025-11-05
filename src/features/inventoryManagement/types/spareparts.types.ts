@@ -1,3 +1,5 @@
+import { CarModel } from './models.types';
+
 export interface ImageObject {
   data1: string;
   data2: string;
@@ -27,12 +29,14 @@ export interface SparePart {
   createdAt: string;
   updatedAt: string;
   images: SparePartImage[];
+  carModel: CarModel;
 }
 
 export interface CreateSparePartDTO {
   name: string;
   description: string;
   carModel_ID: string;
+  category_ID: string | null;
 }
 
 // export interface UpdateSparePartDTO extends Partial<CreateSparePartDTO> {

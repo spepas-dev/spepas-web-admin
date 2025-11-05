@@ -124,6 +124,12 @@ export const ROUTE_PATHS = {
         DETAIL: (id: string) => `/orders/sellers/${id}`,
         HISTORY: (id: string) => `/orders/sellers/${id}/history`
       }
+    },
+    GOPAS: {
+      BASE: 'gopas',
+      DETAIL: (id: string) => `/gopas/${id}`,
+      HISTORY: (id: string) => `/gopas/${id}/history`,
+      REQUESTS: (id: string) => `/gopas/${id}/requests`
     }
   },
   WALLET_MANAGEMENT: {

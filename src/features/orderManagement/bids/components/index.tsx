@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ChevronRight, Package, Plus, Search, ShoppingCart, Tag } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
@@ -11,95 +11,39 @@ import { CardGrid } from '@/components/ui/custom/staticCards';
 import { Input } from '@/components/ui/input';
 import { useSpareParts } from '@/features/inventoryManagement/api/queries/sparepartsQueries';
 
-// Mock data for spare parts - replace with actual data later
-const spareParts = [
-  {
-    id: '1',
-    name: 'Brake Pad Set',
-    category: 'Brakes',
-    condition: 'New',
-    price: 89.99,
-    stock: 15,
-    manufacturer: 'Bosch',
-    bids: 3
-  },
-  {
-    id: '2',
-    name: 'Oil Filter',
-    category: 'Filters',
-    condition: 'New',
-    price: 12.99,
-    stock: 50,
-    manufacturer: 'Mann',
-    bids: 5
-  },
-  {
-    id: '3',
-    name: 'Spark Plug Set',
-    category: 'Ignition',
-    condition: 'New',
-    price: 24.99,
-    stock: 30,
-    manufacturer: 'NGK',
-    bids: 2
-  },
-  {
-    id: '4',
-    name: 'Air Filter',
-    category: 'Filters',
-    condition: 'New',
-    price: 18.99,
-    stock: 45,
-    manufacturer: 'K&N',
-    bids: 1
-  },
-  {
-    id: '5',
-    name: 'Timing Belt',
-    category: 'Engine',
-    condition: 'New',
-    price: 65.99,
-    stock: 20,
-    manufacturer: 'Gates',
-    bids: 4
-  },
-  {
-    id: '6',
-    name: 'Radiator',
-    category: 'Cooling',
-    condition: 'New',
-    price: 120.99,
-    stock: 10,
-    manufacturer: 'Denso',
-    bids: 0
-  }
-];
-
 export default function BidsPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: sparePartsData } = useSpareParts();
 
-  useEffect(() => {
-    console.log(sparePartsData);
-  }, [sparePartsData?.data]);
+  const spareParts = useMemo(() => {
+    return sparePartsData?.data.map((part) => ({
+      id: part.id,
+      name: part.name,
+      sparePart_ID: part.SparePart_ID,
+      manufacturer: part.carModel.carBrand.manufacturer.name,
+      condition: 'New',
+      bids: 0,
+      price: part.price,
+      stock: 10
+    }));
+  }, [sparePartsData]);
 
   const handleSparePartClick = (id: string) => {
     navigate(`/order-management/orders/${id}`);
   };
 
-  const filteredParts = spareParts.filter(
+  const filteredParts = spareParts?.filter(
     (part) =>
-      part.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      part.manufacturer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      part.category.toLowerCase().includes(searchQuery.toLowerCase())
+      part.name.toLowerCase().includes(searchQuery.toLowerCase()) || part.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
+    // part.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const stats = [
     {
       title: 'Total Parts',
-      value: spareParts.length,
+      value: spareParts?.length || 0,
       Icon: Package,
       description: 'Available spare parts',
       trend: '+12.5%',
@@ -107,7 +51,7 @@ export default function BidsPage() {
     },
     {
       title: 'Active Bids',
-      value: spareParts.reduce((sum, part) => sum + part.bids, 0),
+      value: spareParts?.reduce((sum, part) => sum + part.bids, 0) || 0,
       Icon: Tag,
       description: 'Total active bids',
       trend: '+8.3%',
@@ -115,7 +59,7 @@ export default function BidsPage() {
     },
     {
       title: 'Categories',
-      value: [...new Set(spareParts.map((part) => part.category))].length,
+      value: [...new Set(spareParts?.map((part) => part.category))].length,
       Icon: ShoppingCart,
       description: 'Different part categories',
       trend: '+5.2%',
@@ -123,7 +67,7 @@ export default function BidsPage() {
     },
     {
       title: 'Manufacturers',
-      value: [...new Set(spareParts.map((part) => part.manufacturer))].length,
+      value: [...new Set(spareParts?.map((part) => part.manufacturer))].length,
       Icon: Package,
       description: 'Different manufacturers',
       trend: '+3.7%',
@@ -169,11 +113,11 @@ export default function BidsPage() {
         transition={{ delay: 0.2 }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
-        {filteredParts.map((part) => (
+        {filteredParts?.map((part) => (
           <Card
             key={part.id}
             className="cursor-pointer hover:shadow-lg transition-shadow border border-gray-200 hover:border-[#4A36EC]"
-            onClick={() => handleSparePartClick(part.id)}
+            onClick={() => handleSparePartClick(part.sparePart_ID)}
           >
             <CardHeader>
               <div className="flex justify-between items-start">

@@ -115,7 +115,7 @@ export const menuGroups: MenuGroup[] = [
         id: 'gopa-orders',
         name: 'Gopa Orders',
         icon: Handshake,
-        path: '/order-management/gopa-orders'
+        path: '/order-management/orders/gopas'
       },
       {
         id: 'seller-orders',

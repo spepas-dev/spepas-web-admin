@@ -2,7 +2,6 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { SparePartQueryParams, SparePartsService } from '../../services/spareparts.service.ts';
-import { SparePart } from '../../types/spareparts.types';
 
 export const sparepartKeys = {
   all: ['spareparts'] as const,

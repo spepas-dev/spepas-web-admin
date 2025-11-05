@@ -1,0 +1,1 @@
+import{E as e,ax as t}from"./index-BEfPUQd3.js";const l={all:["models"],detail:s=>[...l.all,"detail",s],lists:()=>[...l.all,"list"],list:s=>[...l.lists(),s],stats:()=>[...l.all,"stats"]},r=s=>e({queryKey:l.list({}),queryFn:()=>t.getCarModels(s)});export{l as m,r as u};

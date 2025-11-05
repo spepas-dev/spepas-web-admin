@@ -1,13 +1,19 @@
+import { ColumnDef } from '@tanstack/react-table';
+import { format, formatDate } from 'date-fns';
 import { motion } from 'framer-motion';
 import { ChevronRight, Package, Search, ShoppingCart, Tag, User } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Breadcrumb, BreadcrumbPatterns, CardGrid, DataTable, PageHeader } from '@/components/ui/custom';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useGetSellerList } from '@/features/userManagement/api/queries/sellers.queries';
+import { Seller } from '@/features/userManagement/types/sellers.types';
+import { cn } from '@/lib/utils';
 
 // Mock data for sellers - replace with actual API call
 const sellers = [
@@ -57,21 +63,112 @@ export default function SellersPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleViewActiveBids = (sellerId: number) => {
+  const { data: sellersData, isLoading, isError } = useGetSellerList();
+  const sellersList = useMemo(() => sellersData?.data || [], [sellersData?.data]);
+
+  console.log('sellers', sellersList);
+  const handleViewActiveBids = (sellerId: string) => {
     navigate(`/order-management/orders/sellers/${sellerId}/active-bids`);
   };
 
-  const handleViewRequestHistory = (sellerId: number) => {
+  const handleViewRequestHistory = (sellerId: string) => {
     navigate(`/order-management/orders/sellers/${sellerId}/request-history`);
   };
 
-  const filteredSellers = sellers.filter((seller) => seller.storeName.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredSellers = sellersList.filter((seller) => seller.sellerDetails.storeName.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const columns = useMemo(
+    (): ColumnDef<Seller>[] => [
+      {
+        header: 'Serial Number',
+        accessorKey: 'id',
+        cell: ({ row }) => {
+          return <span className="text-xs font-medium">#{row.index + 1}</span>;
+        }
+      },
+      {
+        header: 'Store Name',
+        accessorKey: 'sellerDetails.storeName'
+      },
+      {
+        header: 'Date Added',
+        accessorKey: 'sellerDetails.date_added',
+        cell: ({ row }) => {
+          return (
+            <span className="text-xs font-medium">{format(new Date(row.original.sellerDetails.date_added), 'dd/MM/yyyy HH:mm:ss a')}</span>
+          );
+        }
+      },
+      {
+        header: 'Total Orders',
+        accessorKey: 'stats.totalOrders'
+      },
+      {
+        header: 'Active Bids',
+        accessorKey: 'stats.activeBids'
+      },
+      {
+        header: 'Completed Orders',
+        accessorKey: 'stats.completedOrders'
+      },
+      {
+        header: 'Total Revenue',
+        accessorKey: 'stats.totalRevenue'
+      },
+      {
+        header: 'Status',
+        accessorKey: 'status',
+        cell: ({ row }) => {
+          return (
+            <span
+              className={cn(
+                'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
+                row.original.status === 1
+                  ? 'bg-green-100 text-green-800 border border-green-200'
+                  : 'bg-red-100 text-red-800 border border-red-200'
+              )}
+            >
+              <span className={cn('w-1.5 h-1.5 rounded-full mr-1.5', row.original.status === 1 ? 'bg-green-400' : 'bg-red-400')} />
+              <span className="text-xs font-medium">{row.original.status === 1 ? 'Active' : 'Inactive'}</span>
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Actions',
+        accessorKey: 'actions',
+        cell: ({ row }) => {
+          return (
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
+                onClick={() => handleViewActiveBids(row.original.Seller_ID)}
+              >
+                Active Bids
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
+                onClick={() => handleViewRequestHistory(row.original.Seller_ID)}
+              >
+                Request History
+              </Button>
+            </div>
+          );
+        }
+      }
+    ],
+    []
+  );
 
   const stats = [
     {
       title: 'Total Sellers',
       value: sellers.length,
-      icon: User,
+      Icon: User,
       description: 'Registered sellers',
       trend: '+5.2%',
       trendUp: true
@@ -79,7 +176,7 @@ export default function SellersPage() {
     {
       title: 'Active Bids',
       value: sellers.reduce((sum, seller) => sum + seller.stats.activeBids, 0),
-      icon: Tag,
+      Icon: Tag,
       description: 'Total active bids',
       trend: '+8.3%',
       trendUp: true
@@ -87,7 +184,7 @@ export default function SellersPage() {
     {
       title: 'Completed Orders',
       value: sellers.reduce((sum, seller) => sum + seller.stats.completedOrders, 0),
-      icon: ShoppingCart,
+      Icon: ShoppingCart,
       description: 'Successfully completed orders',
       trend: '+5.2%',
       trendUp: true
@@ -95,131 +192,51 @@ export default function SellersPage() {
     {
       title: 'Total Revenue',
       value: `GHS ${sellers.reduce((sum, seller) => sum + seller.stats.totalRevenue, 0).toFixed(2)}`,
-      icon: Package,
+      Icon: Package,
       description: 'Total revenue from orders',
       trend: '+12.5%',
       trendUp: true
     }
   ];
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (isError) {
+    return <div>Error loading sellers</div>;
+  }
+
   return (
     <div className="p-8 space-y-8">
       {/* Breadcrumbs */}
-      <div className="flex items-center text-sm text-muted-foreground">
-        <a href="/dashboard" className="hover:text-[#4A36EC]">
-          Dashboard
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <a href="/order-management" className="hover:text-[#4A36EC]">
-          Order Management
-        </a>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-[#4A36EC] font-medium">Sellers</span>
-      </div>
+
+      <Breadcrumb items={BreadcrumbPatterns.threeTier('Order Management', '/order-management/orders', 'Sellers')} />
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-[#4A36EC]">Sellers</h1>
-          <p className="text-sm text-gray-600">View and manage seller orders and bids</p>
-        </div>
-        <div className="relative w-72">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search sellers..." className="pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        </div>
-      </motion.div>
+      <PageHeader
+        title="Sellers"
+        description="View and manage seller orders and bids"
+        actions={
+          <div className="relative w-72">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search sellers..." className="pl-8" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-      >
-        {stats.map((stat, index) => (
-          <Card key={index} className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <h3 className="text-2xl font-bold text-gray-900 mt-2">{stat.value}</h3>
-                </div>
-                <div className="bg-[#4A36EC]/10 p-2 rounded-lg">
-                  <stat.icon className="w-5 h-5 text-[#4A36EC]" />
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between">
-                <p className="text-xs text-gray-500">{stat.description}</p>
-                <span className={`text-xs font-medium ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>{stat.trend}</span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </motion.div>
+
+      <CardGrid cards={stats} />
 
       {/* Sellers Table */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-        <Card className="border border-gray-200 hover:border-[#4A36EC] transition-colors">
-          <CardHeader>
-            <CardTitle className="text-[#4A36EC]">Sellers</CardTitle>
-            <CardDescription>List of all sellers and their order statistics</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Seller ID</TableHead>
-                  <TableHead>Store Name</TableHead>
-                  <TableHead>Date Added</TableHead>
-                  <TableHead>Total Orders</TableHead>
-                  <TableHead>Active Bids</TableHead>
-                  <TableHead>Completed Orders</TableHead>
-                  <TableHead>Total Revenue</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredSellers.map((seller) => (
-                  <TableRow key={seller.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium">#{seller.id}</TableCell>
-                    <TableCell>{seller.storeName}</TableCell>
-                    <TableCell>{new Date(seller.date_added).toLocaleDateString()}</TableCell>
-                    <TableCell>{seller.stats.totalOrders}</TableCell>
-                    <TableCell>{seller.stats.activeBids}</TableCell>
-                    <TableCell>{seller.stats.completedOrders}</TableCell>
-                    <TableCell>GHS {seller.stats.totalRevenue.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge className={`${seller.status === 1 ? 'bg-green-500' : 'bg-red-500'} text-white`}>
-                        {seller.status === 1 ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
-                          onClick={() => handleViewActiveBids(seller.id)}
-                        >
-                          Active Bids
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white"
-                          onClick={() => handleViewRequestHistory(seller.id)}
-                        >
-                          Request History
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <DataTable
+          data={filteredSellers}
+          columns={columns}
+          loading={isLoading}
+          tableStyle="border rounded-lg bg-white"
+          tableHeadClassName="text-[#4A36EC] font-semibold"
+        />
       </motion.div>
     </div>
   );

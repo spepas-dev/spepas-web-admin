@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, Plus, Trash2 } from 'lucide-react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -9,17 +9,19 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { useGlobal } from '@/stores';
 
+import { useCategories } from '../../api/queries/categoryQueries';
 import { useCarModels } from '../../api/queries/modelsQueries';
 import { CreateSparePartDTO } from '../../types';
 
 const sparePartSchema = z.object({
   name: z.string().min(1, 'Spare part name is required'),
   description: z.string().min(1, 'Description is required'),
-  carModel_ID: z.string().min(1, 'Car model ID is required')
+  carModel_ID: z.string().min(1, 'Car model ID is required'),
+  category_ID: z.string().nullable()
 });
 
 const formSchema = z.object({
@@ -35,6 +37,16 @@ interface NewSparePartsProps {
 
 export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps) {
   const { data, isLoading, isError } = useCarModels();
+  const { data: categoriesData, isLoading: isLoadingCategories, isError: isErrorCategories } = useCategories();
+
+  const availableCategories = useMemo(() => {
+    return categoriesData?.data?.map((c) => ({
+      value: c.Category_ID,
+      label: c.name
+    }));
+  }, [categoriesData?.data]);
+
+  console.log('availableCategories', availableCategories);
 
   const models = useMemo(() => {
     return data?.data || [];
@@ -50,7 +62,7 @@ export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps)
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      spareParts: [{ name: '', description: '', carModel_ID: '' }]
+      spareParts: [{ name: '', description: '', carModel_ID: '', category_ID: null }]
     }
   });
 
@@ -63,6 +75,13 @@ export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps)
     onSubmit(values.spareParts);
     form.reset();
   };
+
+  if (isLoading || isLoadingCategories) {
+    return <div>Loading...</div>;
+  }
+  if (isError || isErrorCategories) {
+    return <div>Error loading spare parts or categories</div>;
+  }
 
   return (
     <Form {...form}>
@@ -153,6 +172,30 @@ export function NewSpareParts({ onSubmit, loading = false }: NewSparePartsProps)
                           </Command>
                         </PopoverContent>
                       </Popover>
+                      <FormMessage className="text-red-500" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name={`spareParts.${index}.category_ID`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-gray-700">Category</FormLabel>
+                      <FormControl>
+                        <Select value={field.value ?? ''} onValueChange={(value) => field.onChange(value)} disabled={loading}>
+                          <SelectTrigger className="border-gray-200 focus:border-[#4A36EC] focus:ring-[#4A36EC]">
+                            <SelectValue placeholder="Select a Category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableCategories?.map((category) => (
+                              <SelectItem key={category.value} value={category.value}>
+                                {category.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
                       <FormMessage className="text-red-500" />
                     </FormItem>
                   )}

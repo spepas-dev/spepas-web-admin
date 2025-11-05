@@ -9,7 +9,7 @@ export interface Category {
 
 export interface CreateCategoryDTO {
   name: string;
-  parent_ID?: string;
+  parent_ID?: string | null;
 }
 
 export interface UpdateCategoryDTO extends Partial<CreateCategoryDTO> {
@@ -33,6 +33,6 @@ export interface CategoryStats {
 
 export type CategoryListResponse = Response<Category[]>;
 
-export type CategoryResponse = Response<Category>;
+export type CategoryResponse = Response<Category[]>;
 
 export type CategoryStatsResponse = Response<CategoryStats>;
