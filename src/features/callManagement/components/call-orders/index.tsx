@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Breadcrumb, BreadcrumbPatterns, CardGrid, PageHeader } from '@/components/ui/custom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import BuyerSearch from './components/BuyerSearch';
+import CallOrderWizard from './components/BuyerSearch';
 import CallOrdersList from './components/CallOrdersList';
 
 // Mock data for call order stats - replace with actual API call
@@ -103,7 +103,7 @@ export default function CallOrdersPage() {
                     Phone & USSD Order Placement
                   </h3>
                   <p className="text-xs text-muted-foreground mb-4">Search for buyers by phone number and place orders on their behalf</p>
-                  <BuyerSearch />
+                  <CallOrderWizard />
                 </div>
               </TabsContent>
 

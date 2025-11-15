@@ -6,10 +6,8 @@ import { ApiService } from './api.service';
 interface AuthResponse {
   status: number;
   message: string;
-  data: {
-    token: string;
+  filtered: {
     user: User;
-    refreshToken: string;
   };
 }
 
@@ -23,6 +21,6 @@ export class AuthService {
   }
 
   static async getCurrentUser() {
-    return ApiService.get<AuthResponse['data']['user']>('/auth/user');
+    return ApiService.get<AuthResponse['filtered']['user']>('/auth/user');
   }
 }

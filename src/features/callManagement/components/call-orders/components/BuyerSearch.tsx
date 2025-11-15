@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Search, Phone, User, Calendar, ShoppingBag, AlertCircle } from 'lucide-react';
+import { Search, Phone, User, ShoppingBag, AlertCircle, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -12,8 +12,10 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 import { CallOrderBuyer } from '../../../types/call-orders.types';
-import BuyerDetails from './BuyerDetails';
-import OrderPlacement from './OrderPlacement';
+import StepIndicator from './StepIndicator';
+import BuyerConfirmation from './BuyerConfirmation';
+import OrderDetails from './OrderDetails';
+import OrderSummary from './OrderSummary';
 
 // Mock data for buyer search - replace with actual API call
 const mockBuyers: CallOrderBuyer[] = [
@@ -56,10 +58,29 @@ const phoneSearchSchema = z.object({
 
 type PhoneSearchForm = z.infer<typeof phoneSearchSchema>;
 
-export default function BuyerSearch() {
+export interface OrderFormData {
+  call_type: 'PHONE' | 'USSD';
+  call_duration?: number;
+  sparePart: {
+    name: string;
+    category_ID: string;
+    manufacturer_ID: string;
+    carBrand_ID: string;
+    carModel_ID: string;
+    yearOfMake: number;
+    description?: string;
+  };
+  quantity: number;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  require_image: 0 | 1;
+  notes?: string;
+}
+
+export default function CallOrderWizard() {
+  const [currentStep, setCurrentStep] = useState(1);
   const [searchResults, setSearchResults] = useState<CallOrderBuyer[]>([]);
   const [selectedBuyer, setSelectedBuyer] = useState<CallOrderBuyer | null>(null);
-  const [showOrderForm, setShowOrderForm] = useState(false);
+  const [orderData, setOrderData] = useState<OrderFormData | null>(null);
   const [isSearching, setIsSearching] = useState(false);
 
   const form = useForm<PhoneSearchForm>({
@@ -69,12 +90,18 @@ export default function BuyerSearch() {
     }
   });
 
+  const steps = [
+    { id: 1, title: 'Search Buyer', description: 'Find customer by phone number' },
+    { id: 2, title: 'Confirm Buyer', description: 'Verify customer details' },
+    { id: 3, title: 'Order Details', description: 'Enter spare part information' },
+    { id: 4, title: 'Review & Submit', description: 'Confirm and place order' }
+  ];
+
   const onSearch = async (data: PhoneSearchForm) => {
     setIsSearching(true);
 
     // Simulate API call
     setTimeout(() => {
-      // Mock search logic - filter buyers by phone number
       const results = mockBuyers.filter((buyer) => buyer.phoneNumber.includes(data.phoneNumber.replace(/\s|-|\(|\)/g, '')));
       setSearchResults(results);
       setIsSearching(false);
@@ -83,133 +110,150 @@ export default function BuyerSearch() {
 
   const handleSelectBuyer = (buyer: CallOrderBuyer) => {
     setSelectedBuyer(buyer);
-    setShowOrderForm(false);
+    setCurrentStep(2);
   };
 
-  const handlePlaceOrder = () => {
-    setShowOrderForm(true);
+  const handleBuyerConfirmed = () => {
+    setCurrentStep(3);
+  };
+
+  const handleOrderDetailsComplete = (data: OrderFormData) => {
+    setOrderData(data);
+    setCurrentStep(4);
   };
 
   const handleOrderComplete = () => {
-    // Reset the form after successful order placement
+    // Reset the entire wizard
+    setCurrentStep(1);
     setSelectedBuyer(null);
-    setShowOrderForm(false);
+    setOrderData(null);
     setSearchResults([]);
     form.reset();
   };
 
+  const handleBackToStep = (step: number) => {
+    setCurrentStep(step);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Phone Search Form */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base font-semibold text-[#4A36EC] flex items-center">
-            <Search className="h-4 w-4 mr-2" />
-            Search Buyer by Phone Number
-          </CardTitle>
-          <CardDescription>Enter the customer's phone number to find their account and place an order</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSearch)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="+233 24 123 4567" className="pl-10" {...field} />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="bg-[#4A36EC] hover:bg-[#4A36EC]/90" disabled={isSearching}>
-                {isSearching ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Searching...
-                  </>
-                ) : (
-                  <>
-                    <Search className="h-4 w-4 mr-2" />
-                    Search Buyer
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+      {/* Step Indicator */}
+      <StepIndicator steps={steps} currentStep={currentStep} />
 
-      {/* Search Results */}
-      {searchResults.length > 0 && !selectedBuyer && (
+      {/* Step 1: Search Buyer */}
+      {currentStep === 1 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-semibold text-[#10B981]">Search Results ({searchResults.length} found)</CardTitle>
-            <CardDescription>Select a buyer to view their details and place an order</CardDescription>
+            <CardTitle className="text-lg font-semibold text-[#4A36EC] flex items-center">
+              <Search className="h-5 w-5 mr-2" />
+              Step 1: Search Customer
+            </CardTitle>
+            <CardDescription>Enter the customer's phone number to find their account</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {searchResults.map((buyer) => (
-                <div
-                  key={buyer.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-                  onClick={() => handleSelectBuyer(buyer)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="bg-[#4A36EC] text-white rounded-full p-2">
-                        <User className="h-4 w-4" />
+          <CardContent className="space-y-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSearch)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Customer Phone Number</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input placeholder="+233 24 123 4567" className="pl-10" {...field} />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="bg-[#4A36EC] hover:bg-[#4A36EC]/90" disabled={isSearching}>
+                  {isSearching ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4 mr-2" />
+                      Search Customer
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="space-y-4">
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-semibold text-[#10B981] mb-3">Search Results ({searchResults.length} found)</h3>
+                  <div className="space-y-3">
+                    {searchResults.map((buyer) => (
+                      <div
+                        key={buyer.id}
+                        className="border rounded-lg p-4 hover:bg-blue-50 cursor-pointer transition-colors hover:border-[#4A36EC]"
+                        onClick={() => handleSelectBuyer(buyer)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="bg-[#4A36EC] text-white rounded-full p-2">
+                              <User className="h-4 w-4" />
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-sm">{buyer.name}</h4>
+                              <p className="text-xs text-muted-foreground">{buyer.phoneNumber}</p>
+                              <p className="text-xs text-muted-foreground">{buyer.email}</p>
+                            </div>
+                          </div>
+                          <div className="text-right space-y-1">
+                            <Badge variant={buyer.verificationStatus === 1 ? 'default' : 'secondary'} className="text-xs">
+                              {buyer.verificationStatus === 1 ? 'Verified' : 'Unverified'}
+                            </Badge>
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <ShoppingBag className="h-3 w-3 mr-1" />
+                              {buyer.totalOrders || 0} orders
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium text-sm">{buyer.name}</h4>
-                        <p className="text-xs text-muted-foreground">{buyer.phoneNumber}</p>
-                        <p className="text-xs text-muted-foreground">{buyer.email}</p>
-                      </div>
-                    </div>
-                    <div className="text-right space-y-1">
-                      <Badge variant={buyer.verificationStatus === 1 ? 'default' : 'secondary'} className="text-xs">
-                        {buyer.verificationStatus === 1 ? 'Verified' : 'Unverified'}
-                      </Badge>
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <ShoppingBag className="h-3 w-3 mr-1" />
-                        {buyer.totalOrders || 0} orders
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            {/* No Results */}
+            {searchResults.length === 0 && form.formState.isSubmitted && !isSearching && (
+              <div className="border-t pt-4">
+                <div className="text-center py-8">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-muted-foreground mb-2">No Customer Found</h3>
+                  <p className="text-sm text-muted-foreground">
+                    No customer found with the provided phone number. Please check the number and try again.
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
 
-      {/* No Results */}
-      {searchResults.length === 0 && form.formState.isSubmitted && !isSearching && (
-        <Card>
-          <CardContent className="text-center py-8">
-            <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-muted-foreground mb-2">No Buyer Found</h3>
-            <p className="text-sm text-muted-foreground">
-              No buyer found with the provided phone number. Please check the number and try again.
-            </p>
-          </CardContent>
-        </Card>
+      {/* Step 2: Buyer Confirmation */}
+      {currentStep === 2 && selectedBuyer && (
+        <BuyerConfirmation buyer={selectedBuyer} onConfirm={handleBuyerConfirmed} onBack={() => handleBackToStep(1)} />
       )}
 
-      {/* Selected Buyer Details */}
-      {selectedBuyer && !showOrderForm && (
-        <BuyerDetails buyer={selectedBuyer} onPlaceOrder={handlePlaceOrder} onBack={() => setSelectedBuyer(null)} />
+      {/* Step 3: Order Details */}
+      {currentStep === 3 && selectedBuyer && (
+        <OrderDetails buyer={selectedBuyer} onComplete={handleOrderDetailsComplete} onBack={() => handleBackToStep(2)} />
       )}
 
-      {/* Order Placement Form */}
-      {selectedBuyer && showOrderForm && (
-        <OrderPlacement buyer={selectedBuyer} onComplete={handleOrderComplete} onBack={() => setShowOrderForm(false)} />
+      {/* Step 4: Order Summary */}
+      {currentStep === 4 && selectedBuyer && orderData && (
+        <OrderSummary buyer={selectedBuyer} orderData={orderData} onComplete={handleOrderComplete} onBack={() => handleBackToStep(3)} />
       )}
     </div>
   );

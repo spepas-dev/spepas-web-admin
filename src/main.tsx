@@ -6,7 +6,7 @@ async function getClientIP(): Promise<string | null> {
     const res = await fetch('https://api.spepas.com/client-ip');
     const data = await res.json();
 
-    console.log('API Gateway============================, ', data);
+    // console.log('API Gateway============================, ', data);
     return data.ip;
   } catch {
     return null;
@@ -32,8 +32,8 @@ async function getClientIP(): Promise<string | null> {
     const txn = apm.getCurrentTransaction();
     if (txn && ip) {
       txn.addLabels({ 'client.ip': ip });
-      console.log('🚀 IP Address=================:', ip);
-      console.log('🚀 Label applied to transaction:', txn);
+      // console.log('🚀 IP Address=================:', ip);
+      // console.log('🚀 Label applied to transaction:', txn);
     } else {
       console.log('⚠️ No transaction available yet, retrying...');
       setTimeout(checkAndLabel, 100); // retry until available

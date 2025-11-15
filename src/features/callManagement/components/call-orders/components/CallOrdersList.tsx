@@ -1,13 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
-import { Eye, Package2, Phone, Search, Smartphone, User } from 'lucide-react';
+import { Eye, Phone, Smartphone } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/custom';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { DataTable } from '@/components/ui/custom/dataTable';
 import { cn } from '@/lib/utils';
 
 import { CallOrder } from '../../../types/call-orders.types';
@@ -16,294 +15,201 @@ import { CallOrder } from '../../../types/call-orders.types';
 const mockCallOrders: CallOrder[] = [
   {
     id: 1,
-    order_ID: 'CO-2025-001',
+    Call_Order_ID: 'CO001',
     buyer_ID: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-    admin_ID: 'admin-123',
+    buyer_name: 'John Doe',
+    buyer_phone: '+233241234567',
+    spare_part_name: 'Brake Pads',
     call_type: 'PHONE',
     call_duration: 5,
-    order_details: {
-      sparePart: {
-        name: 'Brake Pad Set',
-        category_ID: 'cat2',
-        carModel_ID: 'model1',
-        manufacturer_ID: 'man1',
-        yearOfMake: 2020,
-        description: 'Front brake pads for Toyota Camry'
-      },
-      quantity: 2,
-      priority: 'HIGH',
-      require_image: 1,
-      notes: 'Customer needs urgent replacement'
-    },
+    quantity: 2,
+    priority: 'HIGH',
     status: 'COMPLETED',
-    createdAt: '2025-04-24T10:30:00.000Z',
-    updatedAt: '2025-04-24T14:20:00.000Z',
-    buyer: {
-      id: 1,
-      User_ID: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phoneNumber: '+233241234567',
-      verificationStatus: 1,
-      status: 1,
-      user_type: 'BUYER',
-      createdAt: '2025-01-15T10:30:00.000Z',
-      updatedAt: '2025-04-20T14:20:00.000Z'
-    },
-    admin: {
-      id: 1,
-      name: 'Admin User',
-      User_ID: 'admin-123'
-    }
+    require_image: 1,
+    notes: 'Customer needs urgent delivery',
+    createdAt: '2025-11-15T10:30:00.000Z',
+    updatedAt: '2025-11-15T11:00:00.000Z'
   },
   {
     id: 2,
-    order_ID: 'CO-2025-002',
+    Call_Order_ID: 'CO002',
     buyer_ID: '4fa85f64-5717-4562-b3fc-2c963f66afa7',
-    admin_ID: 'admin-124',
+    buyer_name: 'Jane Smith',
+    buyer_phone: '+233241234568',
+    spare_part_name: 'Oil Filter',
     call_type: 'USSD',
-    order_details: {
-      sparePart: {
-        name: 'Engine Oil Filter',
-        category_ID: 'cat1',
-        carModel_ID: 'model2',
-        manufacturer_ID: 'man1',
-        yearOfMake: 2021,
-        description: 'Oil filter for Toyota Camry XLE'
-      },
-      quantity: 1,
-      priority: 'MEDIUM',
-      require_image: 0,
-      notes: 'Regular maintenance'
-    },
-    status: 'PROCESSING',
-    createdAt: '2025-04-24T14:15:00.000Z',
-    updatedAt: '2025-04-24T14:15:00.000Z',
-    buyer: {
-      id: 2,
-      User_ID: '4fa85f64-5717-4562-b3fc-2c963f66afa7',
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      phoneNumber: '+233241234568',
-      verificationStatus: 1,
-      status: 1,
-      user_type: 'BUYER',
-      createdAt: '2025-02-10T08:45:00.000Z',
-      updatedAt: '2025-04-19T16:30:00.000Z'
-    },
-    admin: {
-      id: 2,
-      name: 'Admin User 2',
-      User_ID: 'admin-124'
-    }
+    call_duration: 0,
+    quantity: 1,
+    priority: 'MEDIUM',
+    status: 'PENDING',
+    require_image: 0,
+    notes: '',
+    createdAt: '2025-11-15T09:15:00.000Z',
+    updatedAt: '2025-11-15T09:15:00.000Z'
+  },
+  {
+    id: 3,
+    Call_Order_ID: 'CO003',
+    buyer_ID: '5fa85f64-5717-4562-b3fc-2c963f66afa8',
+    buyer_name: 'Michael Johnson',
+    buyer_phone: '+233241234569',
+    spare_part_name: 'Headlight Bulb',
+    call_type: 'PHONE',
+    call_duration: 3,
+    quantity: 4,
+    priority: 'LOW',
+    status: 'IN_PROGRESS',
+    require_image: 1,
+    notes: 'Customer prefers LED bulbs',
+    createdAt: '2025-11-15T08:45:00.000Z',
+    updatedAt: '2025-11-15T10:20:00.000Z'
   }
 ];
 
 export default function CallOrdersList() {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleViewDetails = (orderId: string) => {
-    navigate(`/order-management/call-orders/${orderId}`);
+  const filteredOrders = useMemo(() => {
+    if (!searchTerm) return mockCallOrders;
+
+    return mockCallOrders.filter(
+      (order) =>
+        order.buyer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.buyer_phone.includes(searchTerm) ||
+        order.spare_part_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.Call_Order_ID.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'COMPLETED':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'IN_PROGRESS':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
-  const filteredOrders = mockCallOrders.filter(
-    (order) =>
-      order.order_ID.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.buyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.buyer.phoneNumber.includes(searchQuery.toLowerCase()) ||
-      order.order_details.sparePart.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'URGENT':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'HIGH':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'MEDIUM':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'LOW':
+        return 'bg-green-100 text-green-800 border-green-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
 
-  const columns = useMemo(
-    (): ColumnDef<CallOrder>[] => [
+  const columns: ColumnDef<CallOrder>[] = useMemo(
+    () => [
       {
+        accessorKey: 'Call_Order_ID',
         header: 'Order ID',
-        accessorKey: 'order_ID',
-        cell: ({ row }) => {
-          return <span className="text-xs font-mono text-[#4A36EC] font-medium">{row.original.order_ID}</span>;
-        }
+        cell: ({ row }) => <div className="font-medium text-sm">{row.getValue('Call_Order_ID')}</div>
       },
       {
-        header: 'Buyer',
-        accessorKey: 'buyer.name',
-        cell: ({ row }) => {
-          return (
-            <div className="flex flex-col">
-              <span className="font-medium text-sm">{row.original.buyer.name}</span>
-              <span className="text-xs text-muted-foreground">{row.original.buyer.phoneNumber}</span>
-            </div>
-          );
-        }
+        accessorKey: 'buyer_name',
+        header: 'Customer',
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium text-sm">{row.getValue('buyer_name')}</div>
+            <div className="text-xs text-muted-foreground">{row.original.buyer_phone}</div>
+          </div>
+        )
       },
       {
+        accessorKey: 'spare_part_name',
         header: 'Spare Part',
-        accessorKey: 'order_details.sparePart.name',
-        cell: ({ row }) => {
-          return (
-            <div className="flex flex-col">
-              <span className="font-medium text-sm">{row.original.order_details.sparePart.name}</span>
-              <span className="text-xs text-muted-foreground">Year: {row.original.order_details.sparePart.yearOfMake}</span>
-            </div>
-          );
-        }
+        cell: ({ row }) => <div className="font-medium text-sm">{row.getValue('spare_part_name')}</div>
       },
       {
-        header: 'Call Type',
         accessorKey: 'call_type',
+        header: 'Call Type',
         cell: ({ row }) => {
-          const callType = row.original.call_type;
-          const Icon = callType === 'PHONE' ? Phone : Smartphone;
+          const callType = row.getValue('call_type') as string;
           return (
-            <div className="flex items-center">
-              <Icon className="h-3 w-3 mr-1 text-muted-foreground" />
-              <span className="text-sm font-medium">{callType}</span>
+            <div className="flex items-center space-x-1">
+              {callType === 'PHONE' ? <Phone className="h-3 w-3 text-blue-600" /> : <Smartphone className="h-3 w-3 text-green-600" />}
+              <span className="text-sm">{callType}</span>
             </div>
           );
         }
       },
       {
-        header: 'Quantity',
-        accessorKey: 'order_details.quantity',
-        cell: ({ row }) => {
-          return (
-            <div className="flex items-center">
-              <Package2 className="h-3 w-3 mr-1 text-muted-foreground" />
-              <span className="text-sm font-medium">{row.original.order_details.quantity}</span>
-            </div>
-          );
-        }
+        accessorKey: 'quantity',
+        header: 'Qty',
+        cell: ({ row }) => <div className="text-center font-medium">{row.getValue('quantity')}</div>
       },
       {
+        accessorKey: 'priority',
         header: 'Priority',
-        accessorKey: 'order_details.priority',
         cell: ({ row }) => {
-          const priority = row.original.order_details.priority;
-          return (
-            <Badge
-              variant={
-                priority === 'URGENT'
-                  ? 'destructive'
-                  : priority === 'HIGH'
-                    ? 'destructive'
-                    : priority === 'MEDIUM'
-                      ? 'default'
-                      : 'secondary'
-              }
-              className="text-xs"
-            >
-              {priority}
-            </Badge>
-          );
+          const priority = row.getValue('priority') as string;
+          return <Badge className={cn('text-xs', getPriorityColor(priority))}>{priority}</Badge>;
         }
       },
       {
-        header: 'Status',
         accessorKey: 'status',
+        header: 'Status',
         cell: ({ row }) => {
-          const status = row.original.status;
-          const statusMap = {
-            DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-800 border-gray-200' },
-            SUBMITTED: { label: 'Submitted', color: 'bg-blue-100 text-blue-800 border-blue-200' },
-            PROCESSING: { label: 'Processing', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-            COMPLETED: { label: 'Completed', color: 'bg-green-100 text-green-800 border-green-200' },
-            CANCELLED: { label: 'Cancelled', color: 'bg-red-100 text-red-800 border-red-200' }
-          };
-          const statusInfo = statusMap[status as keyof typeof statusMap] || statusMap.DRAFT;
-
-          return (
-            <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border', statusInfo.color)}>
-              {statusInfo.label}
-            </span>
-          );
+          const status = row.getValue('status') as string;
+          return <Badge className={cn('text-xs', getStatusColor(status))}>{status.replace('_', ' ')}</Badge>;
         }
       },
       {
-        header: 'Call Duration',
-        accessorKey: 'call_duration',
-        cell: ({ row }) => {
-          const duration = row.original.call_duration;
-          return duration ? (
-            <span className="text-xs font-medium">{duration} min</span>
-          ) : (
-            <span className="text-xs text-muted-foreground">-</span>
-          );
-        }
-      },
-      {
-        header: 'Admin',
-        accessorKey: 'admin.name',
-        cell: ({ row }) => {
-          return (
-            <div className="flex items-center">
-              <User className="h-3 w-3 mr-1 text-muted-foreground" />
-              <span className="text-xs font-medium">{row.original.admin.name}</span>
-            </div>
-          );
-        }
-      },
-      {
-        header: 'Date Created',
         accessorKey: 'createdAt',
-        cell: ({ row }) => {
-          return <span className="text-xs font-medium">{format(new Date(row.original.createdAt), 'dd/MM/yyyy HH:mm')}</span>;
-        }
+        header: 'Created',
+        cell: ({ row }) => (
+          <div className="text-sm text-muted-foreground">{format(new Date(row.getValue('createdAt')), 'dd MMM yyyy, HH:mm')}</div>
+        )
       },
       {
+        id: 'actions',
         header: 'Actions',
-        accessorKey: 'actions',
-        cell: ({ row }) => {
-          return (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white text-xs px-2 py-1"
-              onClick={() => handleViewDetails(row.original.order_ID)}
-            >
-              <Eye className="h-3 w-3 mr-1" />
-              View Details
-            </Button>
-          );
-        }
+        cell: ({ row }) => (
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-[#4A36EC] text-[#4A36EC] hover:bg-[#4A36EC] hover:text-white text-xs px-2 py-1"
+            onClick={() => {
+              // Handle view details
+              console.log('View details for order:', row.original.Call_Order_ID);
+            }}
+          >
+            <Eye className="h-3 w-3 mr-1" />
+            View
+          </Button>
+        )
       }
     ],
-    [navigate]
+    []
   );
 
   return (
     <div className="space-y-4">
       {/* Search */}
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search call orders..."
-            className="pl-8"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="text-sm text-muted-foreground">
-          {filteredOrders.length} of {mockCallOrders.length} orders
-        </div>
+      <div className="flex items-center space-x-2">
+        <Input
+          placeholder="Search by customer name, phone, part name, or order ID..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="max-w-sm"
+        />
       </div>
 
       {/* Data Table */}
-      <DataTable
-        data={filteredOrders}
-        columns={columns}
-        loading={false}
-        tableStyle="border rounded-lg bg-white"
-        tableHeadClassName="text-[#4A36EC] font-semibold"
-      />
-
-      {filteredOrders.length === 0 && (
-        <div className="text-center py-8">
-          <Package2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">No call orders found</p>
-          {searchQuery && <p className="text-sm text-muted-foreground mt-1">Try adjusting your search criteria</p>}
-        </div>
-      )}
+      <DataTable columns={columns} data={filteredOrders} searchKey="buyer_name" searchPlaceholder="Search call orders..." />
     </div>
   );
 }
