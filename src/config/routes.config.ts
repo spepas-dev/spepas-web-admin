@@ -114,6 +114,13 @@ export const ROUTE_PATHS = {
       }
     }
   },
+  CALL_MANAGEMENT: {
+    BASE: 'call-in-management',
+    CALLS_ORDERS: {
+      BASE: 'calls-orders',
+      DETAIL: (id: string) => `/calls-orders/${id}`
+    }
+  },
   ORDER_MANAGEMENT: {
     BASE: 'order-management',
     ORDERS: {
