@@ -1,12 +1,12 @@
 import { format } from 'date-fns';
 import { ArrowLeft, ArrowRight, Calendar, CheckCircle, Mail, Phone, ShoppingBag, User, UserCheck } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-import { CallOrderBuyer } from '../../../types/call-orders.types';
+import { CallOrderBuyer } from '../types/call-orders.types';
 
 interface BuyerConfirmationProps {
   buyer: CallOrderBuyer;

@@ -32,21 +32,29 @@ export interface CallOrderRequest {
 
 export interface CallOrder {
   id: number;
-  order_ID: string;
+  Call_Order_ID: string;
   buyer_ID: string;
-  admin_ID: string;
+  buyer_name: string;
+  buyer_phone: string;
+  spare_part_name: string;
+  admin_ID?: string;
   call_type: 'PHONE' | 'USSD';
   call_duration?: number;
-  order_details: CallOrderRequest;
-  status: 'DRAFT' | 'SUBMITTED' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED';
+  quantity: number;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  status: 'DRAFT' | 'SUBMITTED' | 'PROCESSING' | 'COMPLETED' | 'CANCELLED' | 'PENDING' | 'IN_PROGRESS';
+  require_image: 0 | 1;
+  notes?: string;
   createdAt: string;
   updatedAt: string;
-  buyer: CallOrderBuyer;
-  admin: {
+  // Optional nested objects for detailed views
+  buyer?: CallOrderBuyer;
+  admin?: {
     id: number;
     name: string;
     User_ID: string;
   };
+  order_details?: CallOrderRequest;
 }
 
 export interface Manufacturer {
@@ -170,4 +178,23 @@ export interface CallOrderStats {
   completedOrders: number;
   averageCallDuration: string;
   todaysCalls: number;
+}
+
+// Order form data interface for the wizard
+export interface OrderFormData {
+  call_type: 'PHONE' | 'USSD';
+  call_duration?: number;
+  sparePart: {
+    name: string;
+    category_ID: string;
+    manufacturer_ID: string;
+    carBrand_ID: string;
+    carModel_ID: string;
+    yearOfMake: number;
+    description?: string;
+  };
+  quantity: number;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  require_image: 0 | 1;
+  notes?: string;
 }

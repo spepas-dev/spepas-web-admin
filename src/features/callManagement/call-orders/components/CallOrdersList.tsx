@@ -12,8 +12,8 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
-import { useCallOrders, useExportCallOrders } from '../../../call-orders/hooks/useCallOrders';
-import { CallOrder } from '../../../call-orders/types/call-orders.types';
+import { useCallOrders, useExportCallOrders } from '../hooks/useCallOrders';
+import { CallOrder } from '../types/call-orders.types';
 
 export default function CallOrdersList() {
   const navigate = useNavigate();

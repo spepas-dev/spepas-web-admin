@@ -1,14 +1,14 @@
 import { ArrowLeft, Car, CheckCircle, Clock, Image, Mail, Package, Phone, Smartphone, User } from 'lucide-react';
 import { useState } from 'react';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { toastConfig } from '@/lib/toast';
 import { cn } from '@/lib/utils';
-import { toast } from '@/lib/toast';
 
-import { CallOrderBuyer, OrderFormData } from '../../../call-orders/types/call-orders.types';
+import { CallOrderBuyer, OrderFormData } from '../types/call-orders.types';
 
 interface OrderSummaryProps {
   buyer: CallOrderBuyer;
@@ -25,7 +25,7 @@ export default function OrderSummary({ buyer, orderData, onComplete, onBack }: O
 
     // Simulate API call to create the order
     setTimeout(() => {
-      toast.success('Order placed successfully!');
+      toastConfig.success('Order placed successfully!');
       setIsSubmitting(false);
       onComplete();
     }, 2000);

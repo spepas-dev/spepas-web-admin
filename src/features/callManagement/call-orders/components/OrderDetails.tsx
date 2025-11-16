@@ -8,26 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Manufacturer } from '@/features/orderManagement/orderDetails/types';
 
-import {
-  CallOrderBuyer,
-  CarManufacturer,
-  CarBrand,
-  CarModel,
-  SparePartCategory,
-  OrderFormData
-} from '../../../call-orders/types/call-orders.types';
+import { CallOrderBuyer, CarBrand, CarModel, Category, OrderFormData } from '../types/call-orders.types';
 
 // Mock data - replace with actual API calls
-const mockManufacturers: CarManufacturer[] = [
-  { id: 1, Manufacturer_ID: 'man1', name: 'Toyota', status: 1, createdAt: '2025-01-01' },
-  { id: 2, Manufacturer_ID: 'man2', name: 'Honda', status: 1, createdAt: '2025-01-01' },
-  { id: 3, Manufacturer_ID: 'man3', name: 'Ford', status: 1, createdAt: '2025-01-01' }
+const mockManufacturers: Manufacturer[] = [
+  { id: 1, Manufacturer_ID: 'man1', name: 'Toyota', country: 'Japan', status: 1, createdAt: '2025-01-01' },
+  { id: 2, Manufacturer_ID: 'man2', name: 'Honda', country: 'Japan', status: 1, createdAt: '2025-01-01' },
+  { id: 3, Manufacturer_ID: 'man3', name: 'Ford', country: 'USA', status: 1, createdAt: '2025-01-01' }
 ];
 
 const mockCarBrands: CarBrand[] = [
@@ -96,7 +90,7 @@ const mockCarModels: CarModel[] = [
   }
 ];
 
-const mockCategories: SparePartCategory[] = [
+const mockCategories: Category[] = [
   { id: 1, Category_ID: 'cat1', name: 'Engine Parts', description: 'Engine components and parts', status: 1, createdAt: '2025-01-01' },
   {
     id: 2,

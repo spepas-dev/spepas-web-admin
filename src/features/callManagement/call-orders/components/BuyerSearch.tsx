@@ -10,8 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { useBuyerSearch } from '../../../call-orders/hooks/useCallOrders';
-import { CallOrderBuyer, OrderFormData } from '../../../call-orders/types/call-orders.types';
+import { useBuyerSearch } from '../hooks/useCallOrders';
+import { CallOrderBuyer, OrderFormData } from '../types/call-orders.types';
 import BuyerConfirmation from './BuyerConfirmation';
 import OrderDetails from './OrderDetails';
 import OrderSummary from './OrderSummary';
