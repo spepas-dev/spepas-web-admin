@@ -9,6 +9,7 @@ import {
   Layers,
   LayoutDashboard,
   Menu,
+  Phone,
   Shield,
   ShoppingCart,
   Store,
@@ -98,6 +99,18 @@ export const menuGroups: MenuGroup[] = [
         name: 'Gopa',
         icon: Handshake,
         path: '/user-management/gopa'
+      }
+    ]
+  },
+  {
+    id: 'call-in-management',
+    title: 'Call In Management',
+    items: [
+      {
+        id: 'calls-orders',
+        name: 'Calls Orders',
+        icon: Phone,
+        path: '/call-in-management/calls-orders'
       }
     ]
   },

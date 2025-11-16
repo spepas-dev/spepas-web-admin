@@ -6,6 +6,7 @@ import { ProtectedRoute } from '@/components/layout/protected-route';
 import { RootLayout } from '../components/layout/root-layout';
 import { accessManagementRoutes } from './access-mamangement.routes';
 import { authRoutes } from './authentication.routes';
+import { callManagementRoutes } from './call-management.routes';
 import { inventoryManagementRoutes } from './inventory-management.routes';
 import { orderManagementRoutes } from './order-management.routes';
 import { settingsRoutes } from './settings.routes';
@@ -28,6 +29,7 @@ const routes: RouteObject[] = [
       ...inventoryManagementRoutes,
       ...userManagementRoutes,
       ...orderManagementRoutes,
+      ...callManagementRoutes,
       ...walletManagementRoutes,
       ...settingsRoutes
     ]
